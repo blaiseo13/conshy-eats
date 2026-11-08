@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=11">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=11">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=11">
+<link rel="manifest" href="manifest.webmanifest?v=12">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=12">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=11"></script>
-<script src="places.js?v=11"></script>
-<script src="map-data.js?v=11"></script>
+<script src="firebase-config.js?v=12"></script>
+<script src="places.js?v=12"></script>
+<script src="map-data.js?v=12"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -276,6 +276,17 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 .geyser i:nth-child(2){animation-delay:.25s;left:-6px}.geyser i:nth-child(3){animation-delay:.5s;left:10px}.geyser i:nth-child(4){animation-delay:.75s}
 @keyframes spray{0%{transform:translateY(0) scale(.6);opacity:1}100%{transform:translateY(-40px) scale(1.1);opacity:0}}
 @media (prefers-reduced-motion:reduce){.actor,.prop{display:none}}
+.prop .big{font-size:30px;line-height:1;position:relative;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.prop .big i{font-style:normal;position:absolute;font-size:18px}
+.prop .big i:nth-child(1){left:-14px;top:-8px}.prop .big i:nth-child(2){left:26px;top:-4px}
+.prop .spark{font-size:30px;position:relative;animation:zz .25s steps(1) infinite}.prop .spark i{position:absolute;font-style:normal;left:14px;top:-10px;font-size:18px}
+@keyframes zz{0%{opacity:1}50%{opacity:.35}}
+.prop .swarm{animation:buzz .2s linear infinite alternate}@keyframes buzz{0%{translate:-2px 0}100%{translate:2px -2px}}
+.prop .fireworks{animation:boom 1.2s ease-out infinite}@keyframes boom{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.prop .floaty{animation:floaty 2.5s ease-in-out infinite}@keyframes floaty{0%,100%{translate:0 0}50%{translate:4px -10px}}
+.prop .rain{animation:floaty 3s ease-in-out infinite}
+.prop .douse{opacity:.45;transition:opacity 2.4s}
+.a-tag{position:absolute;left:50%;top:100%;transform:translate(-50%,1px);font-size:8.5px;font-weight:800;color:#334155;background:rgba(255,255,255,.85);border-radius:6px;padding:0 4px;white-space:nowrap;letter-spacing:.02em}
 .models{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px}
 .models button{border:1px solid var(--glass-line);background:rgba(255,255,255,.75);border-radius:12px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px}
 .models button span{font-size:20px}
@@ -915,7 +926,7 @@ function renderDrawer(){
       <div class="half"><div class="top"><span class="label" style="color:var(--food)">Food</span><b class="tnum">${fmt(s.food)}</b></div><div class="bar"><i style="width:0;background:var(--food)" data-w="${(s.food||0)*10}%"></i></div></div>
       <div class="half"><div class="top"><span class="label" style="color:var(--exp)">Experience</span><b class="tnum">${fmt(s.exp)}</b></div><div class="bar"><i style="width:0;background:var(--exp)" data-w="${(s.exp||0)*10}%"></i></div></div>
     </div></div>
-    <div class="rx-inline">${mascotHTML(s.combined??s.food??s.exp,false)}<div class="rx-say"><b>${esc(sayFor(s.combined??s.food??s.exp))}</b><span>${s.combined!=null?(tier(s.combined)?tier(s.combined)[2]:''):'Log a visit to get my take'}</span></div></div>
+    <div class="rx-inline">${mascotHTML(s.combined??s.food??s.exp,false,p)}<div class="rx-say"><b>${esc(sayFor(s.combined??s.food??s.exp))}</b><span>${s.combined!=null?(tier(s.combined)?tier(s.combined)[2]:''):'Log a visit to get my take'}</span></div></div>
 
     ${s.drinkCount?`<div class="drinkline"><span>🍹 Drinks</span><b class="tnum" style="color:${scoreColor(s.drink)}">${fmt(s.drink)}</b></div>`:''}</div>`;
   { const rv=reviewOf(p.id); h+= rv?`<div class="card rvcard" style="margin-top:10px;padding:12px 16px"><div class="rvstars" style="color:${scoreColor(rv.rating*2)}">★${rv.rating.toFixed(1)}</div><div style="min-width:0"><div style="font-weight:700">${rv.count?rv.count.toLocaleString()+' ':''}${esc(rv.site)} reviews</div><div class="hint" style="margin:0">${s.combined!=null?`You: ${fmt(s.combined)} vs crowd ${fmt(rv.rating*2)} · `:''}<a href="${esc(rv.source)}" target="_blank" rel="noopener">source</a>${MENUS[p.id]&&MENUS[p.id].asOf?' · as of '+esc(MENUS[p.id].asOf):''}</div></div></div>`:''; }
@@ -1069,9 +1080,9 @@ const MOODS=[
   {min:5,  key:'sad',      say:['Meh…','Kinda let down.','Expected more.'],   emoji:'😒'},
   {min:-1, key:'nope',     say:['Never again.','Nope. Nope.','Bring the antacids.'], emoji:'🤢'}];
 function moodFor(score){ if(score==null) return {key:'curious',say:['Try it and tell me!','Hmm, what’s good here?'],emoji:'🤔'}; return MOODS.find(m=>score>=m.min); }
-function mascotSVG(key,id){
+function mascotSVG(key,id,look){
   const green=key==='nope';
-  const body=green?['#86EFAC','#16A34A']:['#FDA4AF','#F43F5E'];
+  const body=green?['#86EFAC','#16A34A']:look?[hslHex(look.hue,85,78),hslHex(look.hue,75,48)]:['#FDA4AF','#F43F5E'];
   const eyes={
     obsessed:'<path d="M41 52c-4-5-11-1-7 5l7 6 7-6c4-6-3-10-7-5z" fill="#E11D48"/><path d="M79 52c-4-5-11-1-7 5l7 6 7-6c4-6-3-10-7-5z" fill="#E11D48"/>',
     love:'<path d="M34 56q7-8 14 0" stroke="#1F1F2E" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M72 56q7-8 14 0" stroke="#1F1F2E" stroke-width="4" fill="none" stroke-linecap="round"/>',
@@ -1102,13 +1113,32 @@ function mascotSVG(key,id){
       <ellipse cx="44" cy="104" rx="9" ry="5" fill="${body[1]}"/><ellipse cx="76" cy="104" rx="9" ry="5" fill="${body[1]}"/>
       <circle cx="60" cy="64" r="40" fill="url(#mb${id})" stroke="#67E8F9" stroke-width="2" filter="url(#mg${id})"/>
       <ellipse cx="46" cy="40" rx="12" ry="7" fill="#fff" opacity=".35"/>
-      <g class="hat"><path d="M40 30q-10-14 4-18q4-10 16-6q12-4 16 6q14 4 4 18z" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/><rect x="40" y="26" width="40" height="8" rx="3" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/></g>
-      <g class="arm"><path d="M100 70q12-6 10-22" stroke="${body[1]}" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M106 48v-14M110 48v-14M114 48v-14M106 48q4 6 8 0M110 50v8" stroke="#CBD5E1" stroke-width="2.4" stroke-linecap="round" fill="none"/></g>
+      ${HATS[(look&&look.hat)||'toque']||HATS.toque}
+      <g class="arm"><path d="M100 70q12-6 10-22" stroke="${body[1]}" stroke-width="6" fill="none" stroke-linecap="round"/>${look&&look.item?`<text x="110" y="46" font-size="22" text-anchor="middle">${look.item}</text>`:'<path d="M106 48v-14M110 48v-14M114 48v-14M106 48q4 6 8 0M110 50v8" stroke="#CBD5E1" stroke-width="2.4" stroke-linecap="round" fill="none"/>'}</g>
       ${eyes}${mouth}${extra}
     </g></svg>`;
 }
+
+/* each restaurant's mascot: own color, hat and signature item */
+const LOOKS={ burger:['toque','🍔'], pizza:['toque','🍕'], sombrero:['sombrero','🌮'], coffee:['beanie','☕'], beer:['cap','🍺'], icecream:['cone','🍦'],
+  donut:['beanie','🍩'], bagel:['beanie','🥯'], takeout:['toque','🥡'], pagoda:['toque','🍜'], taj:['toque','🍛'], bowl:['toque','🍜'], temple:['laurel','🥙'],
+  tower:['toque','🍝'], drumstick:['cap','🍗'], hoagie:['cap','🥪'], pancakes:['toque','🥞'], cloche:['bow','🍽️'], salad:['beanie','🥗'], cigar:['top','🥃'], fries:['cap','🍟'] };
+function hslHex(h,s,l){ s/=100; l/=100; const k=n=>(n+h/30)%12, a=s*Math.min(l,1-l), f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1))); return '#'+[f(0),f(8),f(4)].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join(''); }
+function companyLook(p){ if(!p) return null; let h=0; for(const ch of p.id) h=(h*31+ch.charCodeAt(0))>>>0; const hue=h%360; const [hat,item]=LOOKS[p.mkey]||['toque','🍴'];
+  const words=(p.name||'').replace(/^(the|iii)\s+/i,'').replace(/['’]s/g,'').split(/\s+/); let short=''; for(const w of words){ if(w==='&'||/^and$/i.test(w)) continue; if(short.length>=6||(short+' '+w).trim().length>14) break; short=(short+' '+w).trim(); } return {hue,hat,item,name:short||words[0]}; }
+const HATS={
+  toque:'<g class="hat"><path d="M40 30q-10-14 4-18q4-10 16-6q12-4 16 6q14 4 4 18z" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/><rect x="40" y="26" width="40" height="8" rx="3" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/></g>',
+  sombrero:'<g class="hat"><ellipse cx="60" cy="30" rx="44" ry="8" fill="#F0B347" stroke="#C2410C" stroke-width="1.5"/><path d="M44 30q2-24 16-24t16 24z" fill="#F0B347" stroke="#C2410C" stroke-width="1.5"/><path d="M45 25h30" stroke="#DC2626" stroke-width="4"/><path d="M45 21h30" stroke="#16A34A" stroke-width="2.5"/></g>',
+  cap:'<g class="hat"><path d="M30 34q2-20 30-20t28 18z" fill="#57534E"/><path d="M76 30q16 2 20 8q-12 2-22-2z" fill="#44403C"/><circle cx="60" cy="15" r="2.5" fill="#44403C"/></g>',
+  beanie:'<g class="hat"><path d="M30 34q0-26 30-26t30 26z" fill="#6366F1"/><rect x="28" y="28" width="64" height="9" rx="4" fill="#4F46E5"/><circle cx="60" cy="8" r="6" fill="#A5B4FC"/></g>',
+  cone:'<g class="hat"><path d="M48 30l12-26 12 26z" fill="#FBBF24"/><path d="M50 26l20 0M53 20l14 0M56 14l8 0" stroke="#D97706" stroke-width="1.5"/><circle cx="60" cy="5" r="5" fill="#F9A8D4"/></g>',
+  laurel:'<g class="hat" fill="#65A30D"><path d="M30 34q4-14 18-20q-6 10-18 20z"/><path d="M90 34q-4-14-18-20q6 10 18 20z"/><ellipse cx="38" cy="24" rx="6" ry="3" transform="rotate(-40 38 24)"/><ellipse cx="82" cy="24" rx="6" ry="3" transform="rotate(40 82 24)"/></g>',
+  top:'<g class="hat"><rect x="42" y="2" width="36" height="28" rx="3" fill="#1F2937"/><rect x="32" y="26" width="56" height="7" rx="3" fill="#111827"/><rect x="42" y="20" width="36" height="5" fill="#B91C1C"/></g>',
+  bow:'<g class="hat"><path d="M60 96l-14-7v14zM60 96l14-7v14z" fill="#111827"/><circle cx="60" cy="96" r="3" fill="#374151"/>'+'<path d="M40 30q-10-14 4-18q4-10 16-6q12-4 16 6q14 4 4 18z" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/><rect x="40" y="26" width="40" height="8" rx="3" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/></g>'
+};
+
 let mascotSeq=0;
-function mascotHTML(score,big){ const m=moodFor(score); const id='m'+(mascotSeq++); return `<div class="mascot-wrap ${big?'big':''}">${mascotSVG(m.key,id)}</div>`; }
+function mascotHTML(score,big,p){ const m=moodFor(score); const id='m'+(mascotSeq++); return `<div class="mascot-wrap ${big?'big':''}">${mascotSVG(m.key,id,companyLook(p))}</div>`; }
 function sayFor(score){ const m=moodFor(score); return m.say[Math.floor(Math.random()*m.say.length)]; }
 
 /* comical boing: kick the spring so the building balloons past its size and wobbles back */
@@ -1118,7 +1148,7 @@ function boing(id,k){ const c=anim[id]; if(!c) return; c.vS=(c.vS||0)+Math.max(c
 function react(p){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const sc=p.sc.combined ?? p.sc.food ?? p.sc.exp; const m=moodFor(sc);
-  const el=$('#react'); el.innerHTML=`<div class="rx-card">${mascotHTML(sc,true)}<div class="rx-bubble"><b>${esc(sayFor(sc))}</b><span>${esc(p.name)}${sc!=null?` · <em style="color:${scoreColor(sc)}">${fmt(sc)}</em>`:''}</span></div></div>`;
+  const el=$('#react'); el.innerHTML=`<div class="rx-card">${mascotHTML(sc,true,p)}<div class="rx-bubble"><b>${esc(sayFor(sc))}</b><span>${esc(p.name)}${sc!=null?` · <em style="color:${scoreColor(sc)}">${fmt(sc)}</em>`:''}</span></div></div>`;
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),3400);
   el.onclick=()=>el.classList.remove('show');
@@ -1204,8 +1234,9 @@ function buildGraph(){
   const feats=map.querySourceFeatures('omt',{sourceLayer:'transportation',filter:['in',['get','class'],['literal',['minor','service','tertiary','secondary','primary']]]});
   const nodes=new Map(), adj=new Map(); const key=c=>c[0].toFixed(5)+','+c[1].toFixed(5);
   const add=(c)=>{ const k=key(c); if(!nodes.has(k)){ nodes.set(k,c); adj.set(k,new Set()); } return k; };
+  const b=map.getBounds(), padX=(b.getEast()-b.getWest())*.35, padY=(b.getNorth()-b.getSouth())*.35; const inB=c=>c[0]>b.getWest()-padX&&c[0]<b.getEast()+padX&&c[1]>b.getSouth()-padY&&c[1]<b.getNorth()+padY;
   for(const f of feats){ const g=f.geometry; const lines=g.type==='LineString'?[g.coordinates]:g.type==='MultiLineString'?g.coordinates:[];
-    for(const ln of lines){ for(let i=1;i<ln.length;i++){ const a=add(ln[i-1]), b=add(ln[i]); if(a!==b){ adj.get(a).add(b); adj.get(b).add(a); } } } }
+    for(const ln of lines){ for(let i=1;i<ln.length;i++){ if(!inB(ln[i-1])||!inB(ln[i])) continue; const a=add(ln[i-1]), b2=add(ln[i]); if(a!==b2){ adj.get(a).add(b2); adj.get(b2).add(a); } } } }
   // stitch near-duplicate nodes (tile edges) with a 2 m grid
   const grid=new Map(); for(const [k,c] of nodes){ const gk=Math.round(c[0]/2.5e-5)+':'+Math.round(c[1]/2e-5); if(grid.has(gk)){ const o=grid.get(gk); adj.get(k).add(o); adj.get(o).add(k); } else grid.set(gk,k); }
   if(nodes.size<40) return;
@@ -1225,13 +1256,13 @@ function route(fromLL,toLL){
   const path=[]; let k=t; while(k){ path.push(G.nodes.get(k)); if(k===s) break; k=came.get(k); } path.reverse();
   return [fromLL,...path,toLL];
 }
-function randomNodeNear(ll,maxM){ const G=LIFE.graph; if(!G) return ll; for(let i=0;i<40;i++){ const c=G.nodes.get(G.keys[(Math.random()*G.keys.length)|0]); if(mDist(c,ll)<maxM) return c; } return G.nodes.get(G.keys[(Math.random()*G.keys.length)|0]); }
+function randomNodeNear(ll,maxM){ const G=LIFE.graph; if(!G) return ll; const a=Math.random()*Math.PI*2, r=Math.sqrt(Math.random())*maxM; const k=Math.cos(ll[1]*Math.PI/180); const t=[ll[0]+Math.cos(a)*r/(111320*k), ll[1]+Math.sin(a)*r/110540]; return G.nodes.get(nearestNode(t)); }
 /* actors */
 let actorSeq=0;
 function makeActor(kind,ll,opt={}){
   const el=document.createElement('div'); el.className='actor a-'+kind;
   const id='ac'+(actorSeq++);
-  el.innerHTML=(kind==='mascot'?`<div class="a-body">${mascotSVG(opt.mood||'happy',id)}</div>`:`<div class="a-body a-emoji">${opt.emoji}</div>`)+'<div class="a-say"></div>';
+  el.innerHTML=(kind==='mascot'?`<div class="a-body">${mascotSVG(opt.mood||'happy',id,opt.look)}</div>${opt.look&&opt.look.name?`<div class="a-tag">${esc(opt.look.name)}</div>`:''}`:`<div class="a-body a-emoji">${opt.emoji}</div>`)+'<div class="a-say"></div>';
   const mk=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(ll).addTo(map);
   const a={id,kind,el,mk,ll:ll.slice(),path:[],speed:opt.speed||7,mood:opt.mood,home:opt.home||ll.slice(),busy:false,onArrive:null,wait:0,name:opt.name||''};
   LIFE.actors.push(a); return a;
@@ -1305,12 +1336,81 @@ function scenePipe(){
     setTimeout(()=>goTo(van,st.ll,()=>{ removeActor(van); dropProp(st.p); LIFE.busy=false; }),3800); });
   return true;
 }
+/* ================= story engine: ~30 storylines x places x moods x crews x lines = 1000s of scenarios ================= */
+const pick=a=>a[(Math.random()*a.length)|0];
+const STORIES=[
+ // id, where, prop, crew (vehicle + station), who reacts, lines
+ {id:'fire',      at:'low',    prop:'<div class="fire">🔥<i>🔥</i><i>🔥</i></div>', crew:{e:'🚒',st:'🚒',lb:'Fire Co.',sp:65,fx:['💦💦💦','🧯 Spraying!','💦 Hose up!']}, react:['😱 FIRE!','🔥 Call 911!','😨 Is that smoke?!'], done:['👍 All clear','🚒 Fire’s out','✅ Safe now'], cheer:['👏 Heroes!','🥹 Thank you!','🙌 Phew!']},
+ {id:'pipe',      at:'street', prop:'<div class="geyser"><i>💧</i><i>💧</i><i>💧</i><i>💧</i></div>', crew:{e:'🚐',st:'🛠️',lb:'Plumbing',sp:55,fx:['🔧 On it!','🪠 Wrench time','🔩 Tightening…']}, react:['😲 Whoa!','💦 Geyser!','🌊 Free car wash?'], done:['✅ Fixed','🔧 Good as new','💧 Sealed up'], cheer:['🙌 Nice!','😅 My shoes…','👏']},
+ {id:'power',     at:'street', prop:'<div class="spark">⚡<i>⚡</i></div>', crew:{e:'🚚',st:'⚡',lb:'Electric Co.',sp:55,fx:['🔌 Rewiring…','🪜 Up the pole!','⚡ Hold on…']}, react:['😮 Lights out!','🕯️ Who turned off the town?','😬 Sparks!'], done:['💡 Power’s back','⚡ All set','✅ Lights on'], cheer:['💡 Yay!','🙌','😌 Finally']},
+ {id:'pothole',   at:'street', prop:'<div class="big">🕳️</div>', crew:{e:'🚜',st:'🚧',lb:'Road Crew',sp:40,fx:['🚧 Patching…','🧱 Filling it in','🛞 Rolling it flat']}, react:['😖 Ouch, pothole!','🕳️ That’s a crater','😤 My ankle!'], done:['✅ Smooth road','🚧 Done!','🛣️ Fixed'], cheer:['👍','🙌 Smooth!','😎']},
+ {id:'fender',    at:'street', prop:'<div class="big">🚗💥🚙</div>', crew:{e:'🚓',st:'🚓',lb:'Police',sp:60,fx:['🚨 Everyone ok?','📝 Writing it up','🚦 Directing traffic'], tow:true}, react:['😳 Crash!','😬 Fender bender!','📸 Did you see that?'], done:['✅ Road clear','🛻 Towed away','👮 All good'], cheer:['😮‍💨 Phew','🙏','👍']},
+ {id:'raccoon',   at:'unvisited', prop:'<div class="big">🗑️🦝</div>', crew:{e:'🚐',st:'🐾',lb:'Animal Control',sp:50,fx:['🦝 Come here, buddy','🥫 Bait set','🧤 Gotcha!']}, react:['😱 Trash panda!','🦝 It’s in the dumpster!','😂 Look at him go'], done:['🌲 Released in the woods','🦝 Safe & sound','✅ Critter caught'], cheer:['🥹 Bye buddy','👋','😂']},
+ {id:'bees',      at:'top',    prop:'<div class="big swarm">🐝<i>🐝</i><i>🐝</i></div>', crew:{e:'🚐',st:'🍯',lb:'Beekeeper',sp:50,fx:['🍯 Easy, girls…','🧑‍🌾 Collecting the queen','🐝 Shhh…']}, react:['😱 BEES!','🏃 Run!','🐝 Buzzzz!'], done:['🍯 Free honey!','🐝 Hive relocated','✅ Bee-gone'], cheer:['🍯 Yum','👏','😅']},
+ {id:'ambulance', at:'low',    prop:'<div class="big">🤢</div>', crew:{e:'🚑',st:'🏥',lb:'Hospital',sp:65,fx:['🩺 Let’s check you','💊 Antacid time','🧃 Sip slowly']}, react:['🤢 Ugh, that food…','😵 I don’t feel great','🚽 Never again'], done:['💪 Feeling better','🩹 Patched up','✅ Discharged'], cheer:['🥹 Thanks doc','🙏','😮‍💨']},
+ {id:'tow',       at:'top',    prop:'<div class="big">🚙🅿️</div>', crew:{e:'🛻',st:'🛻',lb:'Towing',sp:55,fx:['🪝 Hooking up','🛻 Off we go','🚫 No parking!']}, react:['😤 Someone blocked the door!','🙄 Double parked…','😠 Who parks like that?'], done:['✅ Door’s clear','🛻 Towed','🅿️ Problem solved'], cheer:['🙌','😂 Bye car','👍']},
+ {id:'goose',     at:'street', prop:'<div class="big">🦢</div>', crew:{e:'🚓',st:'🚓',lb:'Police',sp:55,fx:['🦢 Shoo, goose!','🚦 Halting traffic','👮 Easy, sir']}, react:['😂 A goose is blocking traffic','🦢 HONK!','😳 It’s chasing me!'], done:['🦢 Goose escorted out','✅ Traffic moving','👮 Goose: 1, town: 0'], cheer:['😂','👏','🫡']},
+ {id:'icecream',  at:'top',    prop:'<div class="big">🍦</div>', crew:{e:'🚚',st:'🍦',lb:'Ice Cream',sp:40,fx:['🎶 Ding-a-ling!','🍦 Who wants one?','🍨 Sprinkles?']}, react:['🤩 ICE CREAM!','🎶 I hear the truck!','🍦 Me me me!'], done:['🍦 Everyone got one','😋 Brain freeze!','🍨 Sold out!'], cheer:['😋','🥰','🍦']},
+ {id:'foodtruck', at:'street', prop:'<div class="big">🌮</div>', crew:{e:'🚚',st:'🌮',lb:'Taco Truck',sp:40,fx:['🌮 Tacos up!','🌶️ Extra spicy?','🔥 Fresh off the grill']}, react:['🤤 Food truck!','🌮 Taco Tuesday?!','👀 Is that birria?'], done:['🌮 Line served','😋 10/10','🚚 Off to the next stop'], cheer:['😋','🔥','🤤']},
+ {id:'pizza',     at:'street', prop:'<div class="big">🍕</div>', crew:{e:'🛵',st:'🍕',lb:'Delivery',sp:70,fx:['🍕 Hot & fresh!','🛵 Delivery!','📦 Large pepperoni']}, react:['🍕 Did someone order?','😋 Pizza time','👀 Smells good'], done:['🍕 Delivered','💸 Tip received','✅ Enjoy!'], cheer:['😋','🍕','🙌']},
+ {id:'critic',    at:'top',    prop:'<div class="big">🧐📝</div>', crew:{e:'🚕',st:'⭐',lb:'Food Critic',sp:50,fx:['📝 Hmm…','🧐 Interesting…','🍷 Exquisite']}, react:['😮 The critic is here!','🤫 Act natural!','😬 Big review day'], done:['⭐⭐⭐⭐⭐ Rave review!','🏆 Award winner!','📰 Front page!'], cheer:['🎉','🥳','🏆']},
+ {id:'ribbon',    at:'unvisited', prop:'<div class="big">🎀✂️</div>', crew:{e:'🚐',st:'📰',lb:'News Van',sp:50,fx:['📸 Say cheese!','🎤 Live from Conshy!','📰 Breaking news']}, react:['🎉 Grand re-opening!','👀 Should we try it?','🎀 Ribbon cutting!'], done:['✂️ It’s open!','🎊 Welcome!','📰 Made the news'], cheer:['🥳','🎉','👏']},
+ {id:'fireworks', at:'top',    prop:'<div class="big fireworks">🎆<i>🎇</i><i>✨</i></div>', crew:null, react:['🎆 Fireworks!','😍 So pretty','🎇 Ooooh'], done:[], cheer:['🎆','🥳','😍']},
+ {id:'party',     at:'top',    prop:'<div class="big">🎂🎈</div>', crew:null, gather:true, react:['🎂 Surprise party!','🎈 Happy birthday!','🥳 Party time!'], done:[], cheer:['🎉','🎂','🥳','🎈']},
+ {id:'concert',   at:'street', prop:'<div class="big">🎸🎶</div>', crew:null, gather:true, react:['🎸 Street concert!','🕺 Let’s dance','🎶 Encore!'], done:[], cheer:['🕺','💃','🎶','🤘']},
+ {id:'wedding',   at:'top',    prop:'<div class="big">💒💐</div>', crew:{e:'🚙',st:'💐',lb:'Florist',sp:45,fx:['💐 Flowers!','🌹 Special delivery','🎀 For the couple']}, gather:true, react:['💒 A wedding!','🥹 So cute','💍 They said yes!'], done:['💐 Delivered','🥂 Cheers!','💞'], cheer:['🥂','💞','🥹']},
+ {id:'rain',      at:'street', prop:'<div class="big rain">🌧️</div>', crew:null, react:['☔ It’s pouring!','🌧️ Umbrella time','💦 Splash!'], done:[], cheer:['☂️','🌈','😅']},
+ {id:'rainbow',   at:'street', prop:'<div class="big">🌈</div>', crew:null, react:['🌈 Look up!','😍 A rainbow!','🍀 Lucky day'], done:[], cheer:['🌈','🍀','😊']},
+ {id:'lostdog',   at:'street', prop:'<div class="big">🐶</div>', crew:null, rescue:true, react:['🐶 A lost pup!','🥺 Where’s your owner?','🐕 Here boy!'], done:['🏡 Reunited!','🐶❤️','🦴 Good boy'], cheer:['🥹','🐶','❤️']},
+ {id:'balloon',   at:'street', prop:'<div class="big floaty">🎈</div>', crew:null, rescue:true, react:['🎈 My balloon!','😭 It’s flying away','🏃 I got it!'], done:['🎈 Caught it!','😊 Here you go','✅ Saved!'], cheer:['🥹','🎈','👏']},
+ {id:'duck',      at:'street', prop:'<div class="big">🦆<i>🐥</i><i>🐥</i></div>', crew:{e:'🚓',st:'🚓',lb:'Police',sp:40,fx:['🚦 Ducklings crossing!','👮 Take your time','🛑 Everybody stop']}, react:['🥺 Ducklings!','🦆 Make way!','😍 So tiny'], done:['🦆 Safely across','✅ Family reunited','🐥 Quack!'], cheer:['🥹','🐥','❤️']},
+ {id:'lottery',   at:'top',    prop:'<div class="big">🎟️💰</div>', crew:null, react:['💰 I WON!','🤑 Jackpot!','🎟️ Winning ticket!'], done:[], cheer:['🤑','🥳','💸']},
+ {id:'snow',      at:'street', prop:'<div class="big">⛄</div>', crew:{e:'🚜',st:'❄️',lb:'Snow Plow',sp:40,fx:['❄️ Plowing!','🧂 Salting the road','🚜 Clearing a path']}, react:['❄️ Snow day!','⛄ Build a snowman!','🥶 Brrr'], done:['🛣️ Roads clear','✅ Plowed','❄️ All set'], cheer:['⛄','😄','🥶']},
+ {id:'mail',      at:'unvisited', prop:'<div class="big">📦</div>', crew:{e:'🚚',st:'📮',lb:'Post Office',sp:55,fx:['📦 Package!','✍️ Sign here','📬 Special delivery']}, react:['📦 Is that mine?','👀 Mystery box!','🤔 Who ordered this?'], done:['📦 Delivered','📬 Signed for','✅ Wrong address, fixed'], cheer:['🙌','📦','😄']},
+ {id:'trash',     at:'low',    prop:'<div class="big">🗑️💨</div>', crew:{e:'🚛',st:'♻️',lb:'Sanitation',sp:45,fx:['♻️ Pickup!','🚛 Compacting…','🧤 Hauling it out']}, react:['🤢 What’s that smell?!','😷 Phew!','🙄 Take out the trash!'], done:['♻️ All clean','✅ Smells fresh','🚛 Gone'], cheer:['😌','🙌','👃']},
+ {id:'cat',       at:'street', prop:'<div class="tree">🌳<span class="kit">🐱</span></div>', crew:{e:'🚒',st:'🚒',lb:'Fire Co.',sp:65,fx:['🪜 Ladder up!','🐱 Gotcha, kitty','🧑‍🚒 Easy now']}, react:['😮 A kitten in the tree!','🐱 Meow!','🥺 It’s stuck!'], done:['🐱💕 Saved!','🪜 Down safe','✅ Kitty rescued'], cheer:['🥹','🐱','❤️']},
+];
+function storyPlace(kind){
+  const live=PLACES.filter(p=>!p.hidden&&markers[p.id]);
+  let pool=live;
+  if(kind==='low') pool=live.filter(p=>p.sc.combined!=null&&p.sc.combined<6.5);
+  if(kind==='top') pool=live.filter(p=>p.sc.combined!=null&&p.sc.combined>=7.5);
+  if(kind==='unvisited') pool=live.filter(p=>!p.visits.length);
+  if(!pool.length) pool=live;
+  if(kind==='street'||!pool.length) return {ll:randomNodeNear(map.getCenter().toArray(),350),name:''};
+  const p=pick(pool); return {ll:[p.lng,p.lat],name:p.name};
+}
+function playStory(st){
+  const at=storyPlace(st.at); const ll=st.at==='street'?at.ll:randomNodeNear(at.ll,40);
+  const prp=prop(ll,st.prop,'pop');
+  const crowd=anyMascot([]).sort((x,y)=>mDist(x.ll,ll)-mDist(y.ll,ll));
+  const lead=(st.rescue?happyOnes()[0]:null)||crowd[0]; if(!lead){ dropProp(prp,4000); return true; }
+  const fans=(st.gather?crowd.slice(0,4):[lead]).filter(Boolean);
+  fans.forEach((m,i)=>{ m.busy=true; rush(m); setTimeout(()=>say(m,pick(st.react)),i*350); });
+  if(at.name && Math.random()<.5) setTimeout(()=>toast('📍 '+at.name+': '+st.react[0].replace(/^\S+\s/,'')),600);
+  const end=()=>{ fans.forEach((m,i)=>setTimeout(()=>say(m,pick(st.cheer)),i*250)); dropProp(prp,600);
+    setTimeout(()=>{ fans.forEach(m=>{ calm(m); m.busy=false; m.wait=0; }); LIFE.busy=false; },2600); };
+  fans.forEach(m=>goTo(m,randomNodeNear(ll,25)));
+  if(st.crew){
+    const s=station(st.crew.st,st.crew.lb); const v=makeActor('vehicle',s.ll,{emoji:st.crew.e,speed:st.crew.sp}); v.busy=true;
+    if(['🚒','🚓','🚑'].includes(st.crew.e)) v.el.classList.add('siren');
+    goTo(v,randomNodeNear(ll,30),()=>{ say(v,pick(st.crew.fx),2600); prp.el.classList.add('douse');
+      setTimeout(()=>{ say(v,pick(st.done)); end(); },2700);
+      setTimeout(()=>goTo(v,s.ll,()=>{ removeActor(v); dropProp(s.p); }),4200); });
+  } else if(st.rescue){
+    goTo(lead,ll,()=>{ lead.el.classList.add('climb'); setTimeout(()=>{ lead.el.classList.remove('climb'); say(lead,pick(st.done),2600); end(); },1500); });
+  } else { setTimeout(end,5200); }
+  return true;
+}
+
 function director(now){
   if(LIFE.busy || now<LIFE.nextScene) return;
-  const scenes=[sceneShove,sceneKitten,sceneFire,scenePipe].sort(()=>Math.random()-.5);
-  if(angryOnes().length && Math.random()<.55) scenes.unshift(sceneShove);
-  for(const s of scenes){ if(s()){ LIFE.busy=true; break; } }
-  LIFE.nextScene=now+16000+Math.random()*12000;
+  let ok=false;
+  if(angryOnes().length && Math.random()<.3) ok=sceneShove();
+  if(!ok && Math.random()<.08) ok=sceneKitten();
+  for(let i=0;!ok&&i<4;i++){ try{ ok=playStory(pick(STORIES)); }catch(e){ ok=false; } }
+  if(ok) LIFE.busy=true;
+  LIFE.nextScene=now+12000+Math.random()*10000;
   setTimeout(()=>{ LIFE.busy=false; },45000); // safety valve
 }
 function populate(){
@@ -1318,13 +1418,14 @@ function populate(){
   for(const p of LIFE.props.slice()) dropProp(p);
   if(!LIFE.graph) return;
   const logged=PLACES.filter(p=>!p.hidden&&p.visits.length).slice(0,10);
-  for(const p of logged){ const s=p.sc.combined??p.sc.food??p.sc.exp; const mood=moodFor(s).key; makeActor('mascot',randomNodeNear([p.lng,p.lat],120),{mood,home:[p.lng,p.lat],speed:6+Math.random()*3,name:p.name}); }
-  const extra=Math.max(3,6-logged.length);
-  for(let i=0;i<extra;i++) makeActor('mascot',randomNodeNear(map.getCenter().toArray(),400),{mood:['happy','curious','love','meh'][i%4],speed:5+Math.random()*3});
+  for(const p of logged){ const s=p.sc.combined??p.sc.food??p.sc.exp; const mood=moodFor(s).key; makeActor('mascot',randomNodeNear([p.lng,p.lat],120),{mood,home:[p.lng,p.lat],speed:6+Math.random()*3,name:p.name,look:companyLook(p)}); }
+  const extra=Math.max(6,12-logged.length);
+  const c=map.getCenter().toArray(); const nearby=PLACES.filter(p=>!p.hidden&&!p.visits.length).sort((a,b)=>mDist([a.lng,a.lat],c)-mDist([b.lng,b.lat],c)).slice(0,24).sort(()=>Math.random()-.5);
+  for(let i=0;i<extra;i++){ const p=nearby[i]; makeActor('mascot',p?randomNodeNear([p.lng,p.lat],120):randomNodeNear(c,400),{mood:'curious',home:p?[p.lng,p.lat]:c,speed:5+Math.random()*3,name:p?p.name:'',look:companyLook(p)}); }
   LIFE.nextScene=performance.now()+7000;
 }
 function lifeTick(ts){
-  const dt=LIFE.last?Math.min(200,ts-LIFE.last):16; LIFE.last=ts;
+  const dt=LIFE.last?Math.min(1500,ts-LIFE.last):16; LIFE.last=ts;
   const show=LIFE.on && !RM && map.getZoom()>=14.4 && !document.hidden;
   document.body.classList.toggle('life-off',!show);
   if(show){
