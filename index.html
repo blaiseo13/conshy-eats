@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#F97316">
-<link rel="manifest" href="manifest.webmanifest?v=7">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=7">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=7">
+<link rel="manifest" href="manifest.webmanifest?v=8">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=8">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=7"></script>
-<script src="places.js?v=7"></script>
-<script src="map-data.js?v=7"></script>
+<script src="firebase-config.js?v=8"></script>
+<script src="places.js?v=8"></script>
+<script src="map-data.js?v=8"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -188,6 +188,15 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.12)}
 .rvcard{display:flex;align-items:center;gap:12px}
 .rvstars{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.vseg{margin:0 0 2px}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.quick button{border:1px solid rgba(124,58,237,.25);background:rgba(245,243,255,.9);color:#5B21B6;border-radius:999px;padding:6px 11px;font-size:12.5px;font-weight:600}
+.mi.drink.on{background:rgba(245,243,255,.95);border-color:rgba(124,58,237,.35)}
+.mi.drink.on .mi-c{background:#7C3AED;border-color:#7C3AED}
+.mi.drink .mi-s .slider input{accent-color:#7C3AED}
+.vchip.drink{background:rgba(124,58,237,.1);color:#5B21B6}
+.drinkline{display:flex;align-items:baseline;gap:8px;justify-content:center;margin-top:8px;font-size:13px}
+.drinkline span{font-weight:700;color:#7C3AED}.drinkline b{font-size:17px}.drinkline small{color:var(--ink3)}
 .models{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px}
 .models button{border:1px solid var(--glass-line);background:rgba(255,255,255,.75);border-radius:12px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px}
 .models button span{font-size:20px}
@@ -489,13 +498,15 @@ function allPlaces(){
 function spotState(id){ return S.spots[id] || (S.spots[id]={visits:[]}); }
 function scores(p){
   if(preview && preview[p.id]) return preview[p.id];
-  const dishes=[], exps=[];
-  for(const v of p.visits){ for(const d of v.dishes||[]) if(typeof d.score==='number') dishes.push(d); if(typeof v.experience==='number') exps.push(v.experience); }
+  const dishes=[], exps=[], drinks=[];
+  for(const v of p.visits){ for(const d of v.dishes||[]) if(typeof d.score==='number') (d.kind==='drink'?drinks:dishes).push(d); if(typeof v.experience==='number') exps.push(v.experience); }
   const food=mean(dishes.map(d=>d.score)), exp=mean(exps);
   const combined=(food!=null && exp!=null)?(food+exp)/2:null;
   const agg={}; for(const d of dishes){ const k=d.name.trim().toLowerCase(); (agg[k]=agg[k]||{name:d.name.trim(),s:[]}).s.push(d.score); }
   const dishList=Object.values(agg).map(a=>({name:a.name,score:mean(a.s),n:a.s.length})).sort((a,b)=>b.score-a.score);
-  return {food,exp,combined,dishCount:dishes.length,dishList,best:dishList[0]||null,visits:p.visits.length};
+  const dagg={}; for(const d of drinks){ const k=d.name.trim().toLowerCase(); (dagg[k]=dagg[k]||{name:d.name.trim(),s:[]}).s.push(d.score); }
+  const drinkList=Object.values(dagg).map(a=>({name:a.name,score:mean(a.s),n:a.s.length})).sort((a,b)=>b.score-a.score);
+  return {food,exp,combined,dishCount:dishes.length,dishList,best:dishList[0]||null,visits:p.visits.length,drink:mean(drinks.map(d=>d.score)),drinkCount:drinks.length,drinkList};
 }
 let PLACES=[], RANKED=[];
 function recompute(){
@@ -697,7 +708,7 @@ function positionMarkers(){
 
 /* ================= list / KPIs ================= */
 let tab='rated', searchTerm='', selectedId=null;
-function matchesSearch(p){ const q=searchTerm; if(!q) return true; return (p.name+' '+(p.cuisine||'')+' '+(p.address||'')+' '+MODELS[p.mkey].name+' '+p.sc.dishList.map(d=>d.name).join(' ')).toLowerCase().includes(q); }
+function matchesSearch(p){ const q=searchTerm; if(!q) return true; return (p.name+' '+(p.cuisine||'')+' '+(p.address||'')+' '+MODELS[p.mkey].name+' '+p.sc.dishList.map(d=>d.name).join(' ')+' '+(p.sc.drinkList||[]).map(d=>d.name).join(' ')).toLowerCase().includes(q); }
 function renderKPIs(){
   const rated=RANKED.length, dishes=PLACES.reduce((s,p)=>s+(p.hidden?0:p.sc.dishCount),0), avg=mean(RANKED.map(p=>p.ds));
   const been=PLACES.filter(p=>!p.hidden&&p.visits.length).length;
@@ -800,17 +811,19 @@ function renderDrawer(){
       <div class="half"><div class="top"><span class="label" style="color:var(--food)">Food</span><b class="tnum">${fmt(s.food)}</b></div><div class="bar"><i style="width:0;background:var(--food)" data-w="${(s.food||0)*10}%"></i></div><small>avg of ${s.dishCount} dish score${s.dishCount===1?'':'s'}</small></div>
       <div class="half"><div class="top"><span class="label" style="color:var(--exp)">Experience</span><b class="tnum">${fmt(s.exp)}</b></div><div class="bar"><i style="width:0;background:var(--exp)" data-w="${(s.exp||0)*10}%"></i></div><small>avg of ${expN} visit score${expN===1?'':'s'}</small></div>
     </div></div>
-    <div class="formula tnum">Combined = 50% Food + 50% Experience${s.combined!=null?` = ${fmt(s.food)} × 0.5 + ${fmt(s.exp)} × 0.5`:''}</div></div>`;
+    <div class="formula tnum">Combined = 50% Food + 50% Experience${s.combined!=null?` = ${fmt(s.food)} × 0.5 + ${fmt(s.exp)} × 0.5`:''}</div>
+    ${s.drinkCount?`<div class="drinkline"><span>🍹 Drinks</span><b class="tnum" style="color:${scoreColor(s.drink)}">${fmt(s.drink)}</b><small>avg of ${s.drinkCount} · not in combined</small></div>`:''}</div>`;
   { const rv=reviewOf(p.id); h+= rv?`<div class="card rvcard" style="margin-top:10px;padding:12px 16px"><div class="rvstars" style="color:${scoreColor(rv.rating*2)}">★${rv.rating.toFixed(1)}</div><div style="min-width:0"><div style="font-weight:700">${rv.count?rv.count.toLocaleString()+' ':''}${esc(rv.site)} reviews</div><div class="hint" style="margin:0">${s.combined!=null?`You: ${fmt(s.combined)} vs crowd ${fmt(rv.rating*2)} · `:''}<a href="${esc(rv.source)}" target="_blank" rel="noopener">source</a>${MENUS[p.id]&&MENUS[p.id].asOf?' · as of '+esc(MENUS[p.id].asOf):''}</div></div></div>`:''; }
   if(preview) h+=`<div class="note-y">Preview mode shows sample scores. Exit preview to rate and edit for real.</div>`;
   else{
     h+=`<div class="btnrow"><button class="btn p grow" id="logV">${p.visits.length?'＋ Log another visit':'✓ I’ve been here'}</button>${s.combined==null?`<button class="btn g" id="wantB">${p.want?'★ On my list':'☆ Want to try'}</button>`:''}</div>`;
     if(s.dishList.length) h+=`<div class="sec"><span class="label">Dishes ranked</span><div class="card" style="padding:6px 14px">`+s.dishList.map((d,i)=>`<div class="dish"><span style="width:20px;color:var(--ink3);font-weight:700;font-size:12px">${i===0?'🏆':i+1}</span><span class="nm">${esc(d.name)}${d.n>1?`<small>tried ${d.n}× · avg</small>`:''}</span><span class="pill tnum" style="background:${scoreColor(d.score)}">${fmt(d.score)}</span></div>`).join('')+`</div></div>`;
+    if(s.drinkList&&s.drinkList.length) h+=`<div class="sec"><span class="label">Drinks ranked</span><div class="card" style="padding:6px 14px">`+s.drinkList.map((d,i)=>`<div class="dish"><span style="width:20px;color:var(--ink3);font-weight:700;font-size:12px">${i===0?'🍹':i+1}</span><span class="nm">${esc(d.name)}${d.n>1?`<small>had ${d.n}× · avg</small>`:''}</span><span class="pill tnum" style="background:${scoreColor(d.score)}">${fmt(d.score)}</span></div>`).join('')+`</div></div>`;
     h+=`<div class="sec"><span class="label">Visits</span>`;
     if(!vs.length) h+=`<div class="empty" style="padding:6px 0;text-align:left">No visits yet. Log one and watch this place balloon into a giant.</div>`;
     for(const v of vs){
       h+=`<div class="card visit"><div class="vh"><b class="tnum">${isoToMDY(v.date)}</b>${typeof v.experience==='number'?`<span class="chip i tnum">Experience ${fmt(v.experience)}</span>`:''}<span class="sp"></span><button class="ib" data-ev="${v.id}" aria-label="Edit visit">✎</button><button class="ib" data-dv="${v.id}" aria-label="Delete visit">🗑</button></div>
-        ${(v.dishes||[]).length?`<div class="vd">${v.dishes.map(d=>`<span class="vchip">${esc(d.name)}<b class="tnum">${fmt(d.score)}</b></span>`).join('')}</div>`:''}
+        ${(v.dishes||[]).length?`<div class="vd">${v.dishes.map(d=>`<span class="vchip${d.kind==='drink'?' drink':''}">${d.kind==='drink'?'🍹 ':''}${esc(d.name)}<b class="tnum">${fmt(d.score)}</b></span>`).join('')}</div>`:''}
         ${v.notes?`<div class="vnote">“${esc(v.notes)}”</div>`:''}
         ${confirmDel===v.id?`<div class="confirm">Delete this visit?<button class="btn d sm" data-cdv="${v.id}">Delete</button><button class="btn g sm" data-ndv>Keep</button></div>`:''}</div>`;
     }
@@ -838,13 +851,17 @@ function bindSliders(root,cb){ root.querySelectorAll('[data-nudge]').forEach(b=>
 function renderVisitForm(p){
   const v=editVisitId?p.visits.find(x=>x.id===editVisitId):null;
   const menu=MENUS[p.id];
-  const picked=new Map(); // lowercased name -> {name,score}
-  if(v) (v.dishes||[]).forEach(d=>picked.set(d.name.trim().toLowerCase(),{name:d.name,score:d.score}));
+  const picked=new Map(); // lowercased name -> {name,score,kind}
+  if(v) (v.dishes||[]).forEach(d=>picked.set(d.name.trim().toLowerCase(),{name:d.name,score:d.score,kind:d.kind||'food'}));
+  let mode='food';
+  const DRINK_RE=/drink|beverage|beer|wine|cocktail|margarita|sangria|spirit|whisk|bourbon|tequila|bar\b|draft|bottle|coffee|espresso|latte|tea\b|soda|juice|lemonade|shake|smoothie|mocktail|frozen/i;
+  const isDrinkItem=it=>DRINK_RE.test(it.section||'')||/^(beer|wine|margarita|mojito|sangria|latte|coffee|soda)\b/i.test(it.name);
+  const QUICK=[['🍺','Beer'],['🍷','Red wine'],['🥂','White wine'],['🍹','Margarita'],['🍸','Cocktail'],['🥃','Whiskey'],['🍾','Prosecco'],['☕','Coffee']];
   const menuNames=new Set(((menu&&menu.items)||[]).map(i=>i.name.trim().toLowerCase()));
   // dishes rated here before that aren't on the menu
   const past=[]; const seenPast=new Set();
-  for(const vv of p.visits) for(const d of vv.dishes||[]){ const k=d.name.trim().toLowerCase(); if(!menuNames.has(k)&&!seenPast.has(k)){ seenPast.add(k); past.push({name:d.name.trim()}); } }
-  for(const [k,d] of picked) if(!menuNames.has(k)&&!seenPast.has(k)){ seenPast.add(k); past.push({name:d.name}); }
+  for(const vv of p.visits) for(const d of vv.dishes||[]){ const k=d.name.trim().toLowerCase(); if(!menuNames.has(k)&&!seenPast.has(k)){ seenPast.add(k); past.push({name:d.name.trim(),kind:d.kind||'food'}); } }
+  for(const [k,d] of picked) if(!menuNames.has(k)&&!seenPast.has(k)){ seenPast.add(k); past.push({name:d.name,kind:d.kind||'food'}); }
   let expVal=v?(typeof v.experience==='number'?v.experience:null):null;
   let filter='';
   const srcLine = menu&&menu.status==='ok'&&menu.items&&menu.items.length
@@ -853,11 +870,13 @@ function renderVisitForm(p){
     : menu ? 'No menu found online for this spot. Add what you had below.' : (DB?'Menu still loading. Add what you had below.':'Menus load in the claude.ai version. Add what you had below.');
   $('#dbody').innerHTML=`<div class="f up">
     <div class="vf-top"><span class="label">${v?'Edit visit':'✓ I’ve been here'}</span><div class="vf-date"><label class="l" for="vDate" style="margin:0">Date</label><input type="text" id="vDate" inputmode="numeric" value="${v?isoToMDY(v.date):todayMDY()}" placeholder="MM/DD/YY"></div></div>
-    <div><span class="l" style="color:var(--food)">What did you get? Tap it, then rate it</span>
+    <div class="seg vseg" id="vseg"><button class="on" data-m="food">🍴 Food</button><button data-m="drink">🍹 Drinks</button></div>
+    <div><span class="l" id="vfHead" style="color:var(--food)">What did you get? Tap it, then rate it</span>
       <div class="hint" style="margin:0 0 8px">${srcLine}</div>
       <div id="pickedBar" class="pickedbar"></div>
       ${menu&&menu.items&&menu.items.length>8?'<div class="search" style="margin:0 0 8px"><span>⌕</span><input id="mq" type="search" placeholder="Find on the menu…" autocomplete="off"></div>':''}
       <div id="menuList" class="menulist"></div>
+      <div class="quick" id="quick" hidden>${QUICK.map(([e,n])=>`<button type="button" data-q="${esc(n)}">${e} ${esc(n)}</button>`).join('')}</div>
       <div class="addown"><input type="text" id="ownDish" placeholder="Something not on the menu?"><button class="btn g sm" id="ownAdd">Add</button></div>
     </div>
     <div class="card" style="padding:14px"><span class="l" style="color:var(--exp)">Overall experience: service, vibe, wait, value</span>${sliderHTML('exp',expVal,expVal==null)}<div class="hint">Leave at — to skip. The spot gets a combined score once it has both.</div></div>
@@ -866,30 +885,36 @@ function renderVisitForm(p){
   const list=$('#menuList');
   function itemRow(name,price,i){
     const k=name.trim().toLowerCase(), on=picked.get(k);
-    return `<div class="mi ${on?'on':''}" data-k="${esc(k)}" data-n="${esc(name)}"><button class="mi-h" type="button"><span class="mi-c">${on?'✓':''}</span><span class="mi-n">${esc(name)}</span>${price?`<span class="mi-p tnum">${esc(price)}</span>`:''}${on?`<span class="pill tnum" style="background:${scoreColor(on.score)}">${fmt(on.score)}</span>`:''}</button>${on?`<div class="mi-s">${sliderHTML('m'+i,on.score,false)}</div>`:''}</div>`;
+    return `<div class="mi ${on?'on':''}${mode==='drink'?' drink':''}" data-k="${esc(k)}" data-n="${esc(name)}"><button class="mi-h" type="button"><span class="mi-c">${on?'✓':''}</span><span class="mi-n">${esc(name)}</span>${price?`<span class="mi-p tnum">${esc(price)}</span>`:''}${on?`<span class="pill tnum" style="background:${scoreColor(on.score)}">${fmt(on.score)}</span>`:''}</button>${on?`<div class="mi-s">${sliderHTML('m'+i,on.score,false)}</div>`:''}</div>`;
   }
   function draw(){
     let h='', i=0;
-    if(past.length){ const rows=past.filter(d=>!filter||d.name.toLowerCase().includes(filter)); if(rows.length){ h+=`<div class="msec">Had here before</div>`; rows.forEach(d=>h+=itemRow(d.name,'',i++)); } }
-    if(menu&&menu.items){ let last=null; for(const it of menu.items){ if(filter&&!it.name.toLowerCase().includes(filter)&&!(it.section||'').toLowerCase().includes(filter)) continue; if(it.section!==last){ last=it.section; h+=`<div class="msec">${esc(it.section||'Menu')}</div>`; } h+=itemRow(it.name,it.price,i++); } }
-    if(!h) h=`<div class="hint" style="padding:8px 2px">${filter?'Nothing on the menu matches. Add it below.':'Add what you had below.'}</div>`;
+    if(past.length){ const rows=past.filter(d=>(d.kind||'food')===mode&&(!filter||d.name.toLowerCase().includes(filter))); if(rows.length){ h+=`<div class="msec">${mode==='drink'?'Had here before':'Had here before'}</div>`; rows.forEach(d=>h+=itemRow(d.name,'',i++)); } }
+    if(menu&&menu.items){ let last=null; for(const it of menu.items){ if((mode==='drink')!==isDrinkItem(it)) continue; if(filter&&!it.name.toLowerCase().includes(filter)&&!(it.section||'').toLowerCase().includes(filter)) continue; if(it.section!==last){ last=it.section; h+=`<div class="msec">${esc(it.section||'Menu')}</div>`; } h+=itemRow(it.name,it.price,i++); } }
+    if(!h) h=`<div class="hint" style="padding:8px 2px">${filter?'Nothing on the menu matches. Add it below.':(mode==='drink'?'No drink list online for this spot. Tap a quick pick or type it below.':'Add what you had below.')}</div>`;
     list.innerHTML=h;
-    list.querySelectorAll('.mi-h').forEach(b=>b.onclick=()=>{ const row=b.parentElement, k=row.dataset.k; if(picked.has(k)) picked.delete(k); else picked.set(k,{name:row.dataset.n,score:7}); draw(); drawBar(); });
+    list.querySelectorAll('.mi-h').forEach(b=>b.onclick=()=>{ const row=b.parentElement, k=row.dataset.k; if(picked.has(k)) picked.delete(k); else picked.set(k,{name:row.dataset.n,score:7,kind:mode}); draw(); drawBar(); });
     list.querySelectorAll('.mi').forEach(row=>{ const k=row.dataset.k; bindSliders(row,(name,val)=>{ const d=picked.get(k); if(d){ d.score=val; const pill=row.querySelector('.mi-h .pill'); if(pill){ pill.textContent=fmt(val); pill.style.background=scoreColor(val); } drawBar(); } }); });
   }
   function drawBar(){
     const ds=[...picked.values()];
-    $('#pickedBar').innerHTML=ds.length?`<span class="label" style="color:var(--ink2)">${ds.length} dish${ds.length>1?'es':''} · food ${fmt(mean(ds.map(d=>d.score)))}</span>`:'';
+    const f=ds.filter(d=>d.kind!=='drink'), dr=ds.filter(d=>d.kind==='drink');
+    $('#pickedBar').innerHTML=ds.length?`<span class="label" style="color:var(--ink2)">${f.length?`${f.length} dish${f.length>1?'es':''} · food ${fmt(mean(f.map(d=>d.score)))}`:''}${f.length&&dr.length?' &nbsp;·&nbsp; ':''}${dr.length?`🍹 ${dr.length} drink${dr.length>1?'s':''} · ${fmt(mean(dr.map(d=>d.score)))}`:''}</span>`:'';
   }
   draw(); drawBar();
   bindSliders($('#dbody').querySelector('.card'),(name,val)=>{ if(name==='exp') expVal=val; });
   const mq=$('#mq'); if(mq) mq.oninput=()=>{ filter=mq.value.trim().toLowerCase(); draw(); };
-  const addOwn=()=>{ const n=$('#ownDish').value.trim(); if(!n) return; const k=n.toLowerCase(); if(!past.find(d=>d.name.toLowerCase()===k)&&!menuNames.has(k)) past.unshift({name:n}); if(!picked.has(k)) picked.set(k,{name:n,score:7}); $('#ownDish').value=''; filter=''; if(mq) mq.value=''; draw(); drawBar(); };
+  const addNamed=n=>{ const k=n.toLowerCase(); if(!past.find(d=>d.name.toLowerCase()===k)&&!menuNames.has(k)) past.unshift({name:n,kind:mode}); if(!picked.has(k)) picked.set(k,{name:n,score:7,kind:mode}); filter=''; if(mq) mq.value=''; draw(); drawBar(); };
+  const addOwn=()=>{ const n=$('#ownDish').value.trim(); if(!n) return; $('#ownDish').value=''; addNamed(n); };
+  document.querySelectorAll('#quick [data-q]').forEach(b=>b.onclick=()=>addNamed(b.dataset.q));
+  document.querySelectorAll('#vseg button').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; document.querySelectorAll('#vseg button').forEach(x=>x.classList.toggle('on',x===b));
+    $('#quick').hidden=mode!=='drink'; $('#vfHead').textContent=mode==='drink'?'What did you drink? Tap it, then rate it':'What did you get? Tap it, then rate it'; $('#vfHead').style.color=mode==='drink'?'#7C3AED':'var(--food)';
+    $('#ownDish').placeholder=mode==='drink'?'Drink not listed? (e.g. Pinot noir)':'Something not on the menu?'; filter=''; if(mq) mq.value=''; draw(); });
   $('#ownAdd').onclick=addOwn; $('#ownDish').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); addOwn(); } };
   $('#cancelV').onclick=()=>{ drawerMode='view'; renderDrawer(); };
   $('#saveV').onclick=()=>{
     const iso=parseMDY($('#vDate').value); if(!iso){ $('#vDate').classList.add('bad'); toast('Type the date as MM/DD/YY'); return; }
-    const clean=[...picked.values()].map(d=>({name:d.name.trim(),score:d.score}));
+    const clean=[...picked.values()].map(d=>({name:d.name.trim(),score:d.score,...(d.kind==='drink'?{kind:'drink'}:{})}));
     const st=spotState(p.id), before=p.sc.combined;
     const rec={id:v?.id||uid(),date:iso,experience:expVal,dishes:clean,notes:$('#vNotes').value.trim()};
     if(v) st.visits=st.visits.map(x=>x.id===v.id?rec:x); else st.visits.push(rec);
