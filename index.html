@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=20">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=20">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=20">
+<link rel="manifest" href="manifest.webmanifest?v=21">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=21">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=21">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20"></script>
-<script src="places.js?v=20"></script>
-<script src="places-philly.js?v=20"></script>
+<script src="firebase-config.js?v=21"></script>
+<script src="places.js?v=21"></script>
+<script src="places-philly.js?v=21"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -318,6 +318,10 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 .actor.era-walker .a-body{font-size:30px}
 .actor.quester .a-body{filter:drop-shadow(0 0 8px #FDE047)}
 .prop .big.era{font-size:40px}
+#cap{position:fixed;z-index:6;left:50%;bottom:calc(max(18px,env(safe-area-inset-bottom,0px)) + 64px);transform:translate(-50%,10px);opacity:0;background:rgba(15,23,42,.86);backdrop-filter:blur(10px);color:#fff;padding:9px 16px;border-radius:14px;font-weight:700;font-size:14px;white-space:nowrap;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis;transition:all .3s;pointer-events:none}
+#cap.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:760px){#cap{bottom:calc(var(--sheet,232px) + 14px)}}
+.life-off #cap{display:none}
 .models{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px}
 .models button{border:1px solid var(--glass-line);background:rgba(255,255,255,.75);border-radius:12px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px}
 .models button span{font-size:20px}
@@ -444,6 +448,7 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 <div id="react" aria-live="polite"></div>
 <div id="fx"></div>
 <div id="arc" class="glass" hidden></div>
+<div id="cap"></div>
 <div id="quest" class="glass" hidden></div>
 
 <script>
@@ -807,7 +812,7 @@ map.on('load',()=>{
   initCloud();
 });
 map.on('move',positionMarkers);
-map.on('moveend',()=>{ const before=VIS.size+':'+[...VIS].slice(0,3).join(); computeVisible(); syncMarkers(); startAnim(); updateCityChip(); if(tab==='all') renderList(); });
+let moveT=null; map.on('moveend',()=>{ clearTimeout(moveT); moveT=setTimeout(()=>{ computeVisible(); syncMarkers(); startAnim(); updateCityChip(); if(tab==='all') renderList(); },300); });
 map.on('click',e=>{ if(addMode) finishAdd(e.lngLat); });
 function pulseLoop(ts){
   if(map.getLayer('pulse') && !document.hidden){
@@ -1245,7 +1250,8 @@ function finishAdd(ll){
 /* ================= camera ================= */
 let orbitOn=false, orbitRaf;
 function orbitStep(){ if(!orbitOn) return; const now=performance.now();
-  // no spinning, no timed hops: hold on the nearest viewpoint until the next event
+  // no spinning, no timed hops: hold on the nearest viewpoint until the next event; during an event, follow the action
+  if(CAM.focused && CAM.track && now>CAM.pauseUntil){ const f=frameFor(CAM.track()); if(f){ const c=map.getCenter(), z=map.getZoom(); const k=.045; const nc=[c.lng+(f.c[0]-c.lng)*k, c.lat+(f.c[1]-c.lat)*k], nz=z+(f.z-z)*k*.7; if(Math.abs(nc[0]-c.lng)>1e-7||Math.abs(nz-z)>.002) map.jumpTo({center:nc,zoom:nz}); } }
   camTick(now); orbitRaf=requestAnimationFrame(orbitStep); }
 function startOrbit(){ orbitOn=true; $('#bOrbit').classList.add('on'); CAM.focused=false; { const c=map.getCenter(), vp=closestViewpoint([c.lng,c.lat]); CAM.pauseUntil=performance.now()+3000; map.flyTo({center:vp.c,zoom:vp.z,pitch:60,bearing:vp.b,duration:2800,curve:1.3,essential:true}); } if(typeof LIFE!=='undefined' && !LIFE.busy) LIFE.nextScene=Math.min(LIFE.nextScene,performance.now()+3000); orbitStep(); }
 function stopOrbit(){ orbitOn=false; cancelAnimationFrame(orbitRaf); $('#bOrbit').classList.remove('on'); }
@@ -1383,9 +1389,9 @@ function station(emoji,label){ const ll=randomNodeNear(edgeLL(),250); const p=pr
 function sceneShove(){
   const bully=angryOnes()[0]; if(!bully) return false; const victim=anyMascot([bully]).sort((x,y)=>mDist(x.ll,bully.ll)-mDist(y.ll,bully.ll))[0]; if(!victim) return false;
   bully.busy=victim.busy=true; victim.path=[]; victim.wait=1e9; say(bully,'😠 Grr!'); rush(bully);
-  cue(victim.ll,null);
-  goTo(bully,victim.ll,()=>{ say(bully,'💢 Hmph!'); victim.el.classList.add('fallen'); say(victim,'😵',3000); shake('boom');
-    const st=station('🚓','Police'); const cop=makeActor('vehicle',st.ll,{emoji:'🚓',speed:60}); cop.el.classList.add('siren'); cop.busy=true;
+  let copA=null; cue(victim.ll,null,()=>[bully.ll,victim.ll,copA&&copA.ll]); caption('😠 '+(bully.look?bully.look.name:'A grumpy mascot')+' is looking for trouble…',5000);
+  goTo(bully,victim.ll,()=>{ caption('💢 Shove! '+(victim.look?victim.look.name:'Someone')+' got knocked over',4000); say(bully,'💢 Hmph!'); victim.el.classList.add('fallen'); say(victim,'😵',3000); shake('boom');
+    const st=station('🚓','Police'); const cop=makeActor('vehicle',st.ll,{emoji:'🚓',speed:60}); cop.el.classList.add('siren'); cop.busy=true; copA=cop; setTimeout(()=>caption('🚓 Police on the way',4000),1500);
     goTo(cop,victim.ll,()=>{ say(cop,'🚨 Break it up!'); say(bully,'😳 Sorry…',2500); });
     const helper=happyOnes().filter(h=>h!==bully&&h!==victim)[0];
     const finish=()=>{ victim.el.classList.remove('fallen'); say(victim,'🥹 Thanks!'); setTimeout(()=>{ say(bully,'🤝'); say(victim,'❤️'); if(helper) say(helper,'❤️'); },1600);
@@ -1395,7 +1401,7 @@ function sceneShove(){
 }
 function sceneKitten(){
   const hero=happyOnes()[0]||anyMascot([])[0]; if(!hero) return false; hero.busy=true; rush(hero);
-  const spot=randomNodeNear(hero.ll,220); const tree=prop(spot,'<div class="tree">🌳<span class="kit">🐱</span></div>','pop'); cue(spot,null);
+  const spot=randomNodeNear(hero.ll,220); const tree=prop(spot,'<div class="tree">🌳<span class="kit">🐱</span></div>','pop'); cue(spot,null,()=>[spot,hero.ll]); caption('🐱 A kitten is stuck in a tree!',5000);
   setTimeout(()=>say(hero,'😮 A kitten!'),400);
   goTo(hero,spot,()=>{ hero.el.classList.add('climb'); say(hero,'🧗 Hold on!');
     setTimeout(()=>{ hero.el.classList.remove('climb'); tree.el.classList.add('saved'); say(hero,'🐱💕 Saved!',2600); },1600);
@@ -1432,16 +1438,20 @@ function shake(kind){
   if(kind==='boom'){ CAM.pauseUntil=performance.now()+1100; const z=map.getZoom(); map.easeTo({zoom:z+.55,duration:260,essential:true}); setTimeout(()=>map.easeTo({zoom:z,duration:700,essential:true}),300); }
   if(navigator.vibrate && kind!=='jitter'){ try{ navigator.vibrate(kind==='boom'?[90,50,140]:kind==='rumble'?[30,30,30,30,30]:[50]); }catch(e){} }
 }
-function cue(ll,fx){
+function caption(txt,ms=4000){ const el=document.getElementById('cap'); if(!el) return; if(!txt){ el.classList.remove('on'); return; } el.textContent=txt; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),ms); }
+function frameFor(pts){ const ok=pts.filter(Boolean); if(!ok.length) return null; let w=1e9,e=-1e9,so=1e9,n=-1e9; for(const p of ok){ w=Math.min(w,p[0]); e=Math.max(e,p[0]); so=Math.min(so,p[1]); n=Math.max(n,p[1]); }
+  const c=[(w+e)/2,(so+n)/2], span=Math.max(mDist([w,so],[e,so]),mDist([w,so],[w,n]),60); const z=Math.max(14.6,Math.min(17.6,17.6-Math.log2(span/110))); return {c,z}; }
+function cue(ll,fx,track){
   if(fx) setTimeout(()=>shake(fx), fx==='boom'?1400:700);
+  CAM.track=track||(()=>[ll]);
   if(!orbitOn) return;
   CAM.focused=true; CAM.pauseUntil=performance.now()+2700;
-  map.flyTo({center:ll,zoom:17.5,pitch:66,bearing:map.getBearing()+20,duration:2600,curve:1.2,essential:true});
+  const f=frameFor(CAM.track())||{c:ll,z:17}; map.flyTo({center:f.c,zoom:f.z,pitch:64,bearing:map.getBearing()+15,duration:2400,curve:1.2,essential:true});
 }
 function camTick(now){
   if(!orbitOn){ CAM.focused=false; return; }
   if(CAM.focused && !LIFE.busy && now>CAM.pauseUntil+2500){
-    CAM.focused=false; CAM.pauseUntil=now+3400; const cc=map.getCenter(); const vp=closestViewpoint([cc.lng,cc.lat]);
+    CAM.focused=false; CAM.track=null; CAM.pauseUntil=now+3400; const cc=map.getCenter(); const vp=closestViewpoint([cc.lng,cc.lat]);
     map.flyTo({center:vp.c,zoom:vp.z,pitch:60,bearing:vp.b,duration:3300,curve:1.4,essential:true});
   }
 }
@@ -1480,7 +1490,7 @@ function fly(a,ll,cb){ a.path=[ll]; a.onArrive=cb||null; a.el.classList.add('wal
 function mascotsSay(lines,n=4){ anyMascot([]).slice(0,n).forEach((m,i)=>setTimeout(()=>say(m,pick(lines),2400),i*300)); }
 function allFall(on){ LIFE.actors.filter(a=>a.kind==='mascot').forEach(a=>a.el.classList.toggle('fallen',on)); }
 function townCenter(){ const c=map.getCenter(); return [c.lng,c.lat]; }
-function wide(){ if(orbitOn){ CAM.focused=true; CAM.pauseUntil=performance.now()+2600; map.flyTo({center:townCenter(),zoom:15.1,pitch:55,bearing:map.getBearing(),duration:2500,essential:true}); } }
+function wide(){ CAM.track=()=>[townCenter()]; if(orbitOn){ CAM.focused=true; CAM.pauseUntil=performance.now()+2600; map.flyTo({center:townCenter(),zoom:15.1,pitch:55,bearing:map.getBearing(),duration:2500,essential:true}); } }
 
 const ARCS={
   storm:{tick:'⛈️ Storm brewing',fore:['🌥️ Clouds rolling in…','🌬️ Getting windy','☁️ Smells like rain','🌂 Grab an umbrella']},
@@ -1495,7 +1505,7 @@ function foreshadow(){ const a=ARCS[ARC.type]; setTimeout(()=>mascotsSay(a.fore,
 
 /* climaxes */
 function climax(){
-  const t=ARC.type; LIFE.busy=true; arcTicker(({storm:'⛈️ MEGA STORM!',quake:'🫨 EARTHQUAKE!',aliens:'🛸 ALIEN VISIT!',golden:'✨ GOLDEN AGE!'})[t]);
+  const t=ARC.type; LIFE.busy=true; caption(({storm:'⛈️ A mega storm hits town!',quake:'🫨 EARTHQUAKE!',aliens:'🛸 Aliens have arrived!',golden:'✨ The Golden Age begins!'})[t]||'',7000); arcTicker(({storm:'⛈️ MEGA STORM!',quake:'🫨 EARTHQUAKE!',aliens:'🛸 ALIEN VISIT!',golden:'✨ GOLDEN AGE!'})[t]);
   const done=(ms)=>setTimeout(()=>{ townLook('normal'); setMult(1); allFall(false); arcTicker(''); LIFE.busy=false; LIFE.nextScene=performance.now()+6000; newArc(); },ms);
   wide();
   if(t==='storm'){
@@ -1549,7 +1559,7 @@ const ERAS={
 let ERA_ACTORS=[], ERA_PROPS=[];
 function warpFX(){ const fx=document.getElementById('fx'); fx.classList.remove('warp'); void fx.offsetWidth; fx.classList.add('warp'); shake('boom'); }
 function enterEra(k){
-  const e=ERAS[k]; warpFX(); arcTicker(e.label);
+  const e=ERAS[k]; warpFX(); arcTicker(e.label); caption('🌀 Time warp → '+e.label.replace('⏳ ',''),6000);
   setTimeout(()=>{ document.getElementById('map').style.filter=e.filter; if(e.look) townLook(e.look);
     const vs=viewpoints();
     e.props.forEach((em,i)=>{ const ll=randomNodeNear(vs[i%vs.length].c,120); ERA_PROPS.push(prop(ll,`<div class="big era">${em}</div>`,'pop')); });
@@ -1662,6 +1672,7 @@ const STORIES=[
  {id:'trash',     at:'low',    prop:'<div class="big">🗑️💨</div>', crew:{e:'🚛',st:'♻️',lb:'Sanitation',sp:45,fx:['♻️ Pickup!','🚛 Compacting…','🧤 Hauling it out']}, react:['🤢 What’s that smell?!','😷 Phew!','🙄 Take out the trash!'], done:['♻️ All clean','✅ Smells fresh','🚛 Gone'], cheer:['😌','🙌','👃']},
  {id:'cat',       at:'street', prop:'<div class="tree">🌳<span class="kit">🐱</span></div>', crew:{e:'🚒',st:'🚒',lb:'Fire Co.',sp:65,fx:['🪜 Ladder up!','🐱 Gotcha, kitty','🧑‍🚒 Easy now']}, react:['😮 A kitten in the tree!','🐱 Meow!','🥺 It’s stuck!'], done:['🐱💕 Saved!','🪜 Down safe','✅ Kitty rescued'], cheer:['🥹','🐱','❤️']},
 ];
+const STORY_TITLE={fire:'Fire',pipe:'Burst pipe',power:'Power outage',pothole:'Pothole',fender:'Fender bender',raccoon:'Raccoon in the trash',bees:'Bee swarm',ambulance:'Bad stomach',tow:'Double-parked car',goose:'Goose blocking traffic',icecream:'Ice cream truck',foodtruck:'Taco truck',pizza:'Pizza delivery',critic:'Food critic visit',ribbon:'Grand re-opening',fireworks:'Fireworks',party:'Surprise party',concert:'Street concert',wedding:'Wedding',rain:'Rain shower',rainbow:'Rainbow',lostdog:'Lost dog',balloon:'Runaway balloon',duck:'Ducklings crossing',lottery:'Lottery winner',snow:'Snow day',mail:'Mystery package',trash:'Stinky trash',cat:'Kitten in a tree'};
 function storyPlace(kind){
   const live=PLACES.filter(p=>!p.hidden&&markers[p.id]);
   let pool=live;
@@ -1674,20 +1685,23 @@ function storyPlace(kind){
 }
 function playStory(st){
   const at=storyPlace(st.at); const ll=st.at==='street'?at.ll:randomNodeNear(at.ll,40);
-  const prp=prop(ll,st.prop,'pop'); cue(ll,STORY_FX[st.id]);
+  const prp=prop(ll,st.prop,'pop'); let crewActor=null;
   const crowd=anyMascot([]).sort((x,y)=>mDist(x.ll,ll)-mDist(y.ll,ll));
   const lead=(st.rescue?happyOnes()[0]:null)||crowd[0]; if(!lead){ dropProp(prp,4000); return true; }
   const fans=(st.gather?crowd.slice(0,4):[lead]).filter(Boolean);
+  cue(ll,STORY_FX[st.id],()=>[ll,crewActor&&crewActor.ll,...fans.slice(0,2).map(m=>m.ll)]);
+  caption(`${(st.prop.match(/>([^<\s]+)/)||[,''])[1]} ${STORY_TITLE[st.id]||'Something’s happening'}${at.name?' at '+at.name:''}`,6000);
   fans.forEach((m,i)=>{ m.busy=true; rush(m); setTimeout(()=>say(m,pick(st.react)),i*350); });
   if(at.name && Math.random()<.5) setTimeout(()=>toast('📍 '+at.name+': '+st.react[0].replace(/^\S+\s/,'')),600);
   const end=()=>{ fans.forEach((m,i)=>setTimeout(()=>say(m,pick(st.cheer)),i*250)); dropProp(prp,600);
     setTimeout(()=>{ fans.forEach(m=>{ calm(m); m.busy=false; m.wait=0; }); LIFE.busy=false; },2600); };
   fans.forEach(m=>goTo(m,randomNodeNear(ll,25)));
   if(st.crew){
-    const s=station(st.crew.st,st.crew.lb); const v=makeActor('vehicle',s.ll,{emoji:st.crew.e,speed:st.crew.sp}); v.busy=true;
+    const s=station(st.crew.st,st.crew.lb); const v=makeActor('vehicle',s.ll,{emoji:st.crew.e,speed:st.crew.sp}); v.busy=true; crewActor=v;
+    setTimeout(()=>caption(`${st.crew.e} ${st.crew.lb} on the way`,6000),1800);
     if(['🚒','🚓','🚑'].includes(st.crew.e)) v.el.classList.add('siren');
-    goTo(v,randomNodeNear(ll,30),()=>{ if(v.el.classList.contains('siren')) shake('rumble'); say(v,pick(st.crew.fx),2600); prp.el.classList.add('douse');
-      setTimeout(()=>{ say(v,pick(st.done)); end(); },2700);
+    goTo(v,randomNodeNear(ll,30),()=>{ if(v.el.classList.contains('siren')) shake('rumble'); const fxl=pick(st.crew.fx); say(v,fxl,2600); caption(fxl,3000); prp.el.classList.add('douse');
+      setTimeout(()=>{ const dl=pick(st.done); say(v,dl); caption(dl,3000); crewActor=null; end(); },2700);
       setTimeout(()=>goTo(v,s.ll,()=>{ removeActor(v); dropProp(s.p); }),4200); });
   } else if(st.rescue){
     goTo(lead,ll,()=>{ lead.el.classList.add('climb'); setTimeout(()=>{ lead.el.classList.remove('climb'); say(lead,pick(st.done),2600); end(); },1500); });
