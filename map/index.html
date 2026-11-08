@@ -34,7 +34,7 @@
 .sheet.on{transform:none;opacity:1;pointer-events:auto}
 .sh-hd{position:relative;padding:16px 18px 10px;border-bottom:1px solid var(--line)}
 .sh-hd h2{margin:0;padding-right:96px;font:800 24px/1.15 "Shippori Mincho B1",serif}.sh-hd .addr{color:var(--ink2);font-size:12.5px}
-.tierseal{position:absolute;right:16px;top:14px;width:62px;height:62px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;text-align:center;font:800 9px/1.1 "Shippori Mincho B1",serif;letter-spacing:0;transform:rotate(-8deg);background:#fff6}
+.tierseal{position:absolute;right:16px;top:14px;width:62px;height:62px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;text-align:center;font:800 7.5px/1.1 "Shippori Mincho B1",serif;letter-spacing:0;overflow:hidden;transform:rotate(-8deg);background:#fff6}
 .x{position:absolute;left:auto;right:86px;top:12px;border:0;background:none;font-size:22px;cursor:pointer;color:var(--ink2)}
 .portrait{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;padding:12px 18px;background:linear-gradient(180deg,#EFE6CF,#F5EFDF)}
 .portrait canvas{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#FFFBEF,#E3D5B2);border:1.5px solid var(--ink)}
@@ -99,12 +99,24 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .qbar input{flex:1;min-width:0;border:0;outline:0;background:none;font:500 16px "Zen Maru Gothic";padding:10px 0;color:var(--ink)}
 .qbar input::-webkit-search-cancel-button{display:none}.qbar .qx{border:0;background:none;font-size:22px;line-height:1;color:var(--ink2);cursor:pointer;visibility:hidden;width:36px;height:36px}.qbar.has .qx{visibility:visible}
 @media (min-width:701px){.drawer{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));left:50%;width:min(560px,calc(100% - 12px));transform:translate(-50%,20px);max-height:calc(100% - 250px)}.drawer.on{transform:translate(-50%,0)}}
-@media (max-width:700px){.nav{display:none!important}.sheet,.drawer{bottom:calc(132px + env(safe-area-inset-bottom))!important}.dock{left:6px;right:6px;width:auto;transform:none}}
+@media (max-width:700px){.nav{display:none!important}.drawer{bottom:calc(132px + env(safe-area-inset-bottom))!important}.dock{left:6px;right:6px;width:auto;transform:none}}
 .lbl.lm{font:600 11px "Zen Maru Gothic";background:#F5EFDFd9;border-width:1.5px;color:#4A443D;padding:0 7px}
 .qbar .qx{position:static;transform:none;margin:0;flex:none}
 .vacts{display:none;gap:8px;margin-bottom:10px}body.editor .vacts{display:flex}
 .vacts button{flex:1;min-height:44px;border:1.5px solid var(--ink);background:var(--paper2);border-radius:3px;font:800 15px "Zen Maru Gothic";color:var(--ink);cursor:pointer}.vacts button:first-child{background:var(--red);color:var(--paper);border-color:var(--red)}
 .vn{display:block;width:100%;margin-top:6px;font:500 16px "Zen Maru Gothic";border:1px solid var(--line);border-radius:3px;padding:8px;background:#fff;color:var(--ink);resize:vertical;min-height:44px}
+.quick{padding:10px 18px 12px;border-bottom:1px solid var(--line)}.qscore{display:flex;align-items:center;gap:12px;margin-bottom:10px}.qscore .combined{margin:0;flex:none;display:grid}.qscore .combined b{font-size:44px}
+.qscore .scores{flex:1;grid-template-columns:repeat(3,1fr)}.qscore .scores div{padding:4px}.qscore .scores b{font-size:19px}.quick .vacts{display:none;margin:0}body.editor .quick .vacts{display:flex}
+.dish{display:block}.drow1{display:grid;grid-template-columns:44px 1fr 44px;gap:6px;align-items:center}.drow1 .dn{width:100%}.drow2{display:flex;gap:8px;align-items:center;margin:6px 0 4px}.drow2 .num{width:80px;flex:none}
+.rate{flex:1;display:flex;align-items:center;gap:10px;touch-action:pan-y;user-select:none;-webkit-user-select:none}.rate .rtrack{position:relative;flex:1;height:44px;cursor:pointer}
+.rate .rtrack::before{content:"";position:absolute;left:0;right:0;top:18px;height:8px;border-radius:4px;background:linear-gradient(90deg,#E3D8BE,var(--gold),var(--red))}
+.rate .rfill{display:none}.rate .rthumb{position:absolute;top:8px;width:28px;height:28px;margin-left:-14px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.rate .rv{flex:none;width:44px;text-align:right;font:800 22px "Shippori Mincho B1",serif;color:var(--red)}.rate.unset .rthumb{display:none}.rate.unset .rv{color:var(--ink2)}
+.rate .rtap{display:none;position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--ink);color:var(--paper);font:800 12px "Zen Maru Gothic";border-radius:999px;padding:4px 12px;pointer-events:none;white-space:nowrap}.rate.unset .rtap{display:block}
+.rate.ro{pointer-events:none}.rate.ro .rtap{display:none}
+.mchips{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden;max-height:none!important;padding-bottom:8px;scrollbar-width:none}.mchips::-webkit-scrollbar{display:none}.mchip{flex:none;white-space:nowrap}
+.lbl.un{background:#F5EFDFb3;border-color:#B9AE9C;color:#6B6052;font-weight:600}.lbl.lm{font-size:10px;padding:0 6px;border-width:1px}
+.dock [data-d].on{background:var(--paper2);box-shadow:inset 0 -3px 0 var(--red)}.dr-hd{position:relative}.dclose{margin-left:auto;width:40px;height:40px;border:1.5px solid var(--ink);border-radius:50%;background:var(--paper);font-size:22px;line-height:1;cursor:pointer;color:var(--ink)}
 /* floating labels */
 #labels{position:fixed;inset:0;pointer-events:none;z-index:3}
 .lbl{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:700 12px "Zen Maru Gothic";color:var(--ink);background:#F5EFDFee;border:1px solid var(--ink);border-radius:999px;padding:1px 9px;transition:opacity .3s}
@@ -117,8 +129,13 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   .sheet.full,.drawer.full{max-height:calc(100% - 100px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
   .grab{display:block;width:48px;height:5px;border-radius:3px;background:#C3B593;margin:-4px auto 10px}.sh-hd{padding:12px 14px 10px;touch-action:none}
   .sh-hd h2{font-size:21px;padding-right:118px}.x{right:10px;top:16px;width:44px;height:44px;border:1.5px solid var(--ink);background:var(--paper);font-size:24px;color:var(--ink)}
-  .tierseal{right:62px;top:16px;width:50px;height:50px;font-size:7px;letter-spacing:0}.dish{grid-template-columns:42px 1fr 64px 42px}.sec{padding:12px 14px}.strip{padding:12px 14px 4px}
+  .tierseal{right:62px;top:16px;width:50px;height:50px;font-size:6px;letter-spacing:-.02em;overflow:hidden}.dish{grid-template-columns:42px 1fr 64px 42px}.sec{padding:12px 14px}.strip{padding:12px 14px 4px}
   .sheet.on,.drawer.on{transform:none}
+  .sheet{bottom:calc(6px + env(safe-area-inset-bottom))!important;max-height:46%}
+  .sheet.full{max-height:calc(100% - 14px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+  .dock{transition:transform .35s var(--ease),opacity .25s}body.sheet-open .dock{transform:translateY(130%);opacity:0;pointer-events:none}
+  .brand{padding:4px 10px 4px 5px;gap:7px}.brand .seal{width:26px;height:26px;font-size:12px}.brand b{font-size:16px}.brand small{display:none}
+  .num{display:none}
   .dock button{padding:6px 7px}.dock button span{font-size:10.5px}.asof{display:none}
   .portrait{grid-template-columns:110px 1fr}.portrait canvas{width:110px;height:110px}
 }
@@ -372,7 +389,7 @@ function buildTotem(s) {
   const ring = new THREE.Mesh(new THREE.TorusGeometry(8.5, .55, 10, 64), new THREE.MeshBasicMaterial({ color: TIER[s.tier] })); ring.position.y = 28; ring.rotation.x = Math.PI / 2.3; inner.add(ring);
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, 420, 24, 1, true), beamMat(TIER[s.tier])); beam.position.y = 28 + 210; inner.add(beam);
   const mist = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, color: '#F4F1EA', transparent: true, depthWrite: false, opacity: .9 })); mist.scale.set(40, 30, 1); mist.position.y = 24; inner.add(mist);
-  const hit = new THREE.Mesh(new THREE.CylinderGeometry(16, 16, 40, 8), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = 20; hit.userData.spot = s; inner.add(hit); hits.push(hit);
+  const hit = new THREE.Mesh(MOBILE ? new THREE.CylinderGeometry(26, 26, 64, 8) : new THREE.CylinderGeometry(16, 16, 40, 8), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = MOBILE ? 26 : 20; hit.userData.spot = s; inner.add(hit); hits.push(hit);
   const t = { s, T, inner, orb, orbM, halo, ring, beam, mist, bar, post, mascot: null, lit: 0, target: 0, walk: rng(hash(s.id))() * 6 };
   totems.set(s.id, t); return t;
 }
@@ -482,19 +499,19 @@ addEventListener('keydown', e => { if (e.target.tagName === 'INPUT') return; if 
 addEventListener('keyup', e => { if (e.key === 'Shift') controls.mouseButtons.LEFT = THREE.MOUSE.PAN; });
 /* ---------------- labels (only lit spots + the hovered one, so the map stays calm) ---------------- */
 const labels = $('#labels'), lblEls = new Map();
-function syncLabels(hoverId) { totems.forEach((t, id) => { const show = t.target > 0 || id === hoverId; let el = lblEls.get(id);
-  if (show && !el) { el = document.createElement('div'); el.className = 'lbl'; el.innerHTML = esc(t.s.n) + (LIVE[id] && LIVE[id].combined != null ? ` <b class="sc">${LIVE[id].combined.toFixed(1)}</b>` : ''); labels.appendChild(el); lblEls.set(id, el); }
+function syncLabels(hoverId) { totems.forEach((t, id) => { const show = t.s.tier !== 'Closed'; let el = lblEls.get(id);
+  if (el) el.classList.toggle('un', !(t.target > 0)); if (show && !el) { el = document.createElement('div'); el.className = 'lbl' + (t.target > 0 ? '' : ' un'); el.innerHTML = esc(t.s.n) + (LIVE[id] && LIVE[id].combined != null ? ` <b class="sc">${LIVE[id].combined.toFixed(1)}</b>` : ''); labels.appendChild(el); lblEls.set(id, el); }
   if (!show && el) { el.remove(); lblEls.delete(id); } }); }
 const v3 = new THREE.Vector3();
 const mkEls = MARKS.map(m => { const el = document.createElement('div'); el.className = 'lbl lm'; el.textContent = m.n; el.style.borderColor = MK[m.c][1]; return el; });
 setTimeout(() => mkEls.forEach(el => labels.appendChild(el)), 0);
-function placeLabels() { const placed = []; lblEls.forEach((el, id) => { const t = totems.get(id); v3.set(t.s.x, 135, t.s.z).project(camera); const vis = v3.z < 1 && Math.abs(v3.x) < 1.1 && Math.abs(v3.y) < 1.1;
-  const sx = (v3.x + 1) / 2 * innerWidth, sy = (1 - v3.y) / 2 * innerHeight, clash = placed.some(([x, y]) => Math.abs(x - sx) < 120 && Math.abs(y - sy) < 24) && id !== hover;
-  el.style.opacity = vis && !clash && camera.position.distanceTo(t.T.position) < 2600 ? 1 : 0; if (vis && !clash) placed.push([sx, sy]); el.style.left = sx + 'px'; el.style.top = sy + 'px'; });
-  const far = camera.position.distanceTo(controls.target);
+function placeLabels() { const placed = [], far = camera.position.distanceTo(controls.target), order = [...lblEls.entries()].sort((a, b) => (totems.get(b[0]).target > 0) - (totems.get(a[0]).target > 0));
+  order.forEach(([id, el]) => { const t = totems.get(id), lit = t.target > 0; v3.set(t.s.x, 135, t.s.z).project(camera); const vis = v3.z < 1 && Math.abs(v3.x) < 1.1 && Math.abs(v3.y) < 1.1 && (lit ? camera.position.distanceTo(t.T.position) < 2600 : far < 1900);
+  const sx = (v3.x + 1) / 2 * innerWidth, sy = (1 - v3.y) / 2 * innerHeight, w = el.offsetWidth || 100, clash = placed.some(([x, y, pw]) => Math.abs(x - sx) < (w + pw) / 2 + 4 && Math.abs(y - sy) < 22) && id !== hover;
+  el.style.opacity = vis && !clash ? 1 : 0; if (vis && !clash) placed.push([sx, sy, w]); el.style.left = sx + 'px'; el.style.top = sy + 'px'; });
   MARKS.forEach((m, i) => { const el = mkEls[i]; v3.set(m.x, m.y, m.z).project(camera); const sx = (v3.x + 1) / 2 * innerWidth, sy = (1 - v3.y) / 2 * innerHeight;
-    const vis = v3.z < 1 && Math.abs(v3.x) < 1.05 && Math.abs(v3.y) < 1.05 && far < 1900 && !placed.some(([x, y]) => Math.abs(x - sx) < 110 && Math.abs(y - sy) < 22);
-    el.style.opacity = vis ? 1 : 0; if (vis) placed.push([sx, sy]); el.style.left = sx + 'px'; el.style.top = sy + 'px'; }); }
+    const w = el.offsetWidth || 90, vis = v3.z < 1 && Math.abs(v3.x) < 1.05 && Math.abs(v3.y) < 1.05 && far < 600 && !placed.some(([x, y, pw]) => Math.abs(x - sx) < (w + pw) / 2 + 4 && Math.abs(y - sy) < 20);
+    el.style.opacity = vis ? 1 : 0; if (vis) placed.push([sx, sy, w]); el.style.left = sx + 'px'; el.style.top = sy + 'px'; }); }
 
 /* ---------------- portrait renderer (sheet + crew thumbnails) ---------------- */
 const pr3 = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); pr3.setPixelRatio(2); pr3.setSize(150, 150, false); pr3.outputColorSpace = THREE.SRGBColorSpace;
@@ -509,15 +526,15 @@ function thumb(s) { if (!thumbs.has(s.id)) { portrait(s, -.4); thumbs.set(s.id, 
 const sheet = $('#sheet'); let cur = null;
 const ENT = { trivia: '🧠 Trivia', 'live-music': '🎸 Live music', karaoke: '🎤 Karaoke', dj: '🎧 DJ', cornhole: '🎯 Cornhole', games: '🎳 Games', sports: '🏈 Sports', outdoor: '🌿 Patio', other: '✨ Events', comedy: '😂 Comedy', bingo: '🎱 Bingo' };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-function scoresHTML(s) { const L = LIVE[s.id] || {}, f = x => x == null ? '–' : x.toFixed(1); return `<div class="combined"><b>${f(L.combined)}</b><small>Overall</small></div><div class="scores"><div><b>${f(L.food)}</b><small>Food${L.dishN ? ' · ' + L.dishN + ' dish' + (L.dishN > 1 ? 'es' : '') : ''}</small></div><div><b>${f(L.exp)}</b><small>Experience</small></div><div><b>${f(L.drink)}</b><small>Drinks${L.drinkN ? ' · ' + L.drinkN : ''}</small></div></div>${(L.dishes || []).length ? `<div style="margin-top:8px">${L.dishes.map(d => `<div class="row"><span>${d.kind === 'drink' ? '🍹' : '🍽️'} ${esc(d.name)}</span><b>${d.score.toFixed(1)}</b></div>`).join('')}</div>` : ''}`;  }
-function openSheet(s) { if (innerWidth < 700 && dOpen) { drawer.classList.remove('on'); dOpen = null; const qq = document.getElementById('q'); qq && qq.blur(); }
+function scoresHTML(s) { const L = LIVE[s.id] || {}, f = x => x == null ? '–' : x.toFixed(1); return `<div class="qscore"><div class="combined"><b>${f(L.combined)}</b><small>Overall</small></div><div class="scores"><div><b>${f(L.food)}</b><small>Food</small></div><div><b>${f(L.exp)}</b><small>Exp.</small></div><div><b>${f(L.drink)}</b><small>Drinks</small></div></div></div>`; }
+function openSheet(s) { if (innerWidth < 700 && dOpen) { drawer.classList.remove('on'); dOpen = null; const qq = document.getElementById('q'); if (qq) { qq.blur(); qq.value = ''; qq.parentNode.classList.remove('has'); } }
   cur = s; const v = VISITS[s.id] || 0, lv = level(v), ab = abilityOf(s), c = TIER[s.tier];
   sheet.innerHTML = `<div class="sh-hd"><div class="grab" aria-hidden="true"></div><h2>${esc(s.n)}</h2><div class="addr">${esc(s.a || s.k)} · ${'$'.repeat(s.price)}</div>
-      <div class="tierseal" style="color:${c}">${TIER_JP[s.tier]}<br>${s.tier === 'Closed' ? '' : '★'.repeat(Math.max(1, ['Common', 'Uncommon', 'Rare', 'Unique', 'Legendary'].indexOf(s.tier) + 1))}</div><button class="x" aria-label="Close">×</button></div><div id="newBox"></div>
+      <div class="tierseal" style="color:${c}">${TIER_JP[s.tier]}<br>${s.tier === 'Closed' ? '' : '★'.repeat(Math.max(1, ['Common', 'Uncommon', 'Rare', 'Unique', 'Legendary'].indexOf(s.tier) + 1))}</div><button class="x" aria-label="Close">×</button></div><div class="quick"><div id="scoresBox">${scoresHTML(s)}</div><div class="vacts"><button data-act="meal">＋ Add a meal</button><button data-act="note">💬 Comment</button></div></div><div id="newBox"></div>
+    <div class="sec"><h3>Your visits</h3><div id="visitsBox"></div><div class="vstat" id="vstat"></div></div>
+    ${(window.PHOTOS && PHOTOS[s.id] || []).length ? `<div class="strip">${PHOTOS[s.id].map(ph => `<figure><img src="${esc(ph.u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${esc(ph.from)}</figcaption></figure>`).join('')}</div>` : ''}
     ${s.tier === 'Closed' ? '' : `<div class="portrait"><div id="pslot"></div><div><div class="mn">${esc(s.n)} crew</div><div class="mt">${v ? nameOf(s) : '🔒'}</div>
       <div class="ab">${v ? `<b>⚡ ${ab.n} · Lv ${lv}</b>${(() => { const T = [1, 3, 6, 10, 15], nx = T[lv], pv = T[lv - 1]; return nx ? `<div class="lvbar"><span style="width:${Math.round((v - pv) / (nx - pv) * 100)}%"></span></div><small>${v}/${nx}</small>` : '<div class="lvbar"><span style="width:100%"></span></div>'; })()}` : '<b>⚡ ???</b>'}</div></div></div>`}
-    ${(window.PHOTOS && PHOTOS[s.id] || []).length ? `<div class="strip">${PHOTOS[s.id].map(ph => `<figure><img src="${esc(ph.u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${esc(ph.from)}</figcaption></figure>`).join('')}</div>` : ''}
-    <div class="sec"><h3>Your scores</h3><div id="scoresBox">${scoresHTML(s)}</div></div><div class="sec"><h3>Your visits</h3><div class="vacts"><button data-act="meal">＋ Add a meal</button><button data-act="note">💬 Comment</button></div><div id="visitsBox"></div><div class="vstat" id="vstat"></div></div>
     ${s.f ? `<div class="sec"><h3>Fun fact</h3><div class="fact">${esc(s.f)}</div>${s.src ? `<div class="src">Source: ${esc(new URL(s.src).hostname.replace('www.', ''))}</div>` : ''}</div>` : ''}
     ${s.hh.length ? `<div class="sec"><h3>Happy hour</h3>${s.hh.map(h => `<div class="row"><span>${esc(h.deal)}</span><b>${esc(h.days)}${h.time ? ' · ' + esc(h.time) : ''}</b></div>`).join('')}</div>` : ''}
     ${s.ent.length ? `<div class="sec"><h3>Entertainment</h3>${s.ent.map(e => `<div class="row"><span>${ENT[e.type] || '✨'} ${esc(e.detail)}</span><b>${esc(e.when || '')}</b></div>`).join('')}</div>` : ''}
@@ -526,9 +543,9 @@ function openSheet(s) { if (innerWidth < 700 && dOpen) { drawer.classList.remove
   const slot = sheet.querySelector('#pslot'); if (slot) slot.appendChild(portrait(s));
   sheet.classList.toggle('full', !!(MOBILE && NEWV && NEWV.spot === s.id)); sheet.scrollTop = 0;
   if (MOBILE) { drawer.classList.remove('on', 'full'); dOpen = null; }
-  sheet.classList.add('on'); sheet.querySelector('.x').onclick = closeSheet; renderVisits(s);
+  sheet.classList.add('on'); document.body.classList.add('sheet-open'); sheet.querySelector('.x').onclick = closeSheet; renderVisits(s);
 }
-function closeSheet() { if (cur) { if (noteT) { clearTimeout(noteT); saveNotes(cur); } if (saveT) { clearTimeout(saveT); saveT = null; saveSpot(cur); } if (NEWV && NEWV.spot === cur.id) NEWV = null; delete EDIT[cur.id]; } sheet.classList.remove('on', 'full'); cur = null; }
+function closeSheet() { if (cur) { if (noteT) { clearTimeout(noteT); saveNotes(cur); } if (saveT) { clearTimeout(saveT); saveT = null; saveSpot(cur); } if (NEWV && NEWV.spot === cur.id) NEWV = null; delete EDIT[cur.id]; } sheet.classList.remove('on', 'full'); document.body.classList.remove('sheet-open'); cur = null; }
 const toast = (h) => { const t = $('#toast'); t.innerHTML = h; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 2600); };
 function logVisit(s) { // preview only: the real app opens the rating form here, then saves to Firebase
   const first = !VISITS[s.id]; const before = level(VISITS[s.id] || 0); VISITS[s.id] = (VISITS[s.id] || 0) + 1; const t = totems.get(s.id);
@@ -562,12 +579,12 @@ function openDrawer(kind) {
   if (kind === 'gallery') { const g = open.filter(s => window.PHOTOS && (PHOTOS[s.id] || []).length);
     h = `<div class="dr-hd"><h2>Gallery</h2></div><div class="gal">${g.map(s => `<div class="gi" data-id="${s.id}"><img src="${esc(PHOTOS[s.id][0].u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><span>${esc(s.n)}</span></div>`).join('') || '<div class="mt" style="padding:16px">No photos yet.</div>'}</div>`; }
   if (kind === 'log') { h = `<div class="dr-hd"><h2>Log a visit</h2></div><div style="padding:10px 16px;font-size:13px;color:var(--ink2)">Where did you go? (In the real app this opens your rating form: dishes, experience, drinks.)</div>` + open.map(s => item(s, VISITS[s.id] ? `${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : 'Not visited yet')).join(''); }
-  drawer.innerHTML = h; drawer.classList.add('on');
+  drawer.innerHTML = h; drawer.classList.add('on'); const dh = drawer.querySelector('.dr-hd'); if (dh) dh.insertAdjacentHTML('beforeend', '<button class="dclose" aria-label="Close">×</button>');
   const q = kind === 'search' ? document.getElementById('q') : null; if (q) { const run = () => { const v = q.value.trim().toLowerCase(); drawer.querySelector('#qres').innerHTML = open.filter(s => !v || (s.n + ' ' + s.c + ' ' + s.k + ' ' + s.a).toLowerCase().includes(v)).slice(0, 25).map(s => item(s, esc(s.c || s.k) + (VISITS[s.id] ? ` · ${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : '') + (LIVE[s.id] && LIVE[s.id].combined != null ? ` · <b class="qs">${LIVE[s.id].combined.toFixed(1)}</b>` : '')).replace('</div></div>', `</div><button class="lg" data-log="${s.id}">＋ Log visit</button></div>`)).join(''); q.parentNode.classList.toggle('has', !!q.value); if (!drawer.querySelector('#qres .item')) drawer.querySelector('#qres').innerHTML = q.value ? '<div class="item" style="cursor:default">–</div>' : ''; };
     q.oninput = run; run(); q.onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); const it = drawer.querySelectorAll('#qres .item'); if (it.length === 1) it[0].click(); else q.blur(); };
     }
 }
-drawer.addEventListener('click', e => { const lg = e.target.closest('[data-log]'); if (lg) { const s = SPOTS.find(x => x.id === lg.dataset.log); flyToSpot(s); startVisit(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } return; } const el = e.target.closest('[data-id]'); if (!el) return; const s = SPOTS.find(x => x.id === el.dataset.id); flyToSpot(s); if (dOpen === 'log') { logVisit(s); } else openSheet(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } });
+drawer.addEventListener('click', e => { if (e.target.closest('.dclose')) { drawer.classList.remove('on'); dOpen = null; return; } const lg = e.target.closest('[data-log]'); if (lg) { const s = SPOTS.find(x => x.id === lg.dataset.log); flyToSpot(s); startVisit(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } return; } const el = e.target.closest('[data-id]'); if (!el) return; const s = SPOTS.find(x => x.id === el.dataset.id); flyToSpot(s); if (dOpen === 'log') { logVisit(s); } else openSheet(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } });
 { const q = document.getElementById('q'), show = () => { if (dOpen !== 'search') openDrawer('search'); };
   q.addEventListener('focus', show); q.addEventListener('input', () => { if (dOpen !== 'search') openDrawer('search'); });
   document.querySelector('.qbar .qx').addEventListener('click', () => { q.value = ''; q.parentNode.classList.remove('has'); if (dOpen === 'search') { drawer.classList.remove('on'); dOpen = null; } q.blur(); }); }
@@ -578,7 +595,7 @@ const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let hover = null
 function pick(e) { mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); const h = ray.intersectObjects(hits, false)[0]; return h ? h.object.userData.spot : null; }
 canvas.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const s = pick(e); const id = s ? s.id : null; if (id !== hover) { hover = id; canvas.style.cursor = s ? 'pointer' : ''; syncLabels(hover); } });
 canvas.addEventListener('pointerdown', e => downAt = [e.clientX, e.clientY]);
-canvas.addEventListener('pointerup', e => { if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return; const s = pick(e); if (s) { flyToSpot(s); openSheet(s); } else { closeSheet(); } });
+canvas.addEventListener('pointerup', e => { if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return; const s = pick(e); if (s) { flyToSpot(s); openSheet(s); } else { closeSheet(); if (dOpen) { drawer.classList.remove('on'); dOpen = null; document.getElementById('q').blur(); } } });
 
 /* ---------------- live data: his real visits and scores (read-only) ---------------- */
 const decode = v => v == null ? null : 'stringValue' in v ? v.stringValue : 'integerValue' in v ? +v.integerValue : 'doubleValue' in v ? v.doubleValue : 'booleanValue' in v ? v.booleanValue : 'arrayValue' in v ? (v.arrayValue.values || []).map(decode) : 'mapValue' in v ? Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k, x]) => [k, decode(x)])) : null;
@@ -621,12 +638,28 @@ if (FBC && fbase && fbase.firestore) {
 async function menuFor(id) { if (id in MENU) return MENU[id]; MENU[id] = []; if (!fdb) return []; try { const d = await fdb.doc('menus/' + id).get(); const it = d.exists ? (d.data().items || []) : []; MENU[id] = it.filter(x => x && x.name).map(x => ({ n: String(x.name), drink: x.kind === 'drink' || /drink|beer|wine|cocktail|margarita|sangria|tequila|mezcal|bourbon|whiskey|spirit|draft|bottle/i.test(x.section || '') })); } catch (e) {} return MENU[id]; }
 const vstat = t => sheet.querySelectorAll('.vstat').forEach(el => { el.textContent = t; el.classList.toggle('ok', /Saved/.test(t)); });
 function editsOf(s) { if (firstSnap && !DRY) return ((RAW[s.id] || {}).visits || []).slice(); if (!EDIT[s.id]) EDIT[s.id] = JSON.parse(JSON.stringify(((RAW[s.id] || {}).visits) || [])); return EDIT[s.id]; }
-function dishRows(v, ro) { const num = x => x == null ? '' : x; return (v.dishes || []).map((d, i) => `<div class="dish" data-i="${i}"><button class="dk" title="Food or drink" ${ro ? 'disabled' : ''}>${d.kind === 'drink' ? '🍹' : '🍽️'}</button><input class="dn" list="ml-${d.kind === 'drink' ? 'drink' : 'food'}" value="${esc(d.name)}" placeholder="${d.kind === 'drink' ? 'Drink' : 'Dish'}" ${ro ? 'disabled' : ''}><input class="ds" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(d.score)}" placeholder="0-10" ${ro ? 'disabled' : ''}>${ro ? '' : '<button class="dx" title="Remove">×</button>'}</div>`).join(''); }
+/* ---------------- slider scores: drag or tap anywhere on the bar, no keyboard ---------------- */
+const rateHTML = (k, val, ro, i) => `<div class="rate${val == null ? ' unset' : ''}${ro ? ' ro' : ''}" data-k="${k}"${i != null ? ` data-i="${i}"` : ''}><div class="rtrack"><div class="rfill" style="width:${val == null ? 0 : val * 10}%"></div><div class="rthumb" style="left:${val == null ? 0 : val * 10}%"></div><span class="rtap">Tap to rate</span></div><b class="rv">${val == null ? '–' : val.toFixed(1)}</b></div>`;
+function paintRate(el, val) { el.classList.toggle('unset', val == null); el.querySelector('.rfill').style.width = (val == null ? 0 : val * 10) + '%'; el.querySelector('.rthumb').style.left = (val == null ? 0 : val * 10) + '%'; el.querySelector('.rv').textContent = val == null ? '–' : val.toFixed(1); }
+function rateAt(el, x) { const r = el.querySelector('.rtrack').getBoundingClientRect(); return Math.round(Math.max(0, Math.min(1, (x - r.left) / r.width)) * 100) / 10; }
+function applyRate(el, val) { if (!EDITOR || !cur) return; const vEl = el.closest('.visit'); if (!vEl) return; const v = editsOf(cur).find(x => x.id === vEl.dataset.v); if (!v) return;
+  if (el.dataset.k === 'x') { v.experience = val; const n = vEl.querySelector('.vx'); if (n) n.value = val; }
+  else { const d = v.dishes[+el.dataset.i]; if (!d) return; d.score = val; const n = el.closest('.dish') && el.closest('.dish').querySelector('.ds'); if (n) n.value = val; }
+  paintRate(el, val); delete v._touched; queueSave(cur); }
+{ let act = null;
+  sheet.addEventListener('pointerdown', e => { const el = e.target.closest('.rate'); if (!el || el.classList.contains('ro') || !EDITOR) return; act = { el, id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false }; });
+  sheet.addEventListener('pointermove', e => { if (!act || e.pointerId !== act.id) return; if (!act.moved && Math.abs(e.clientX - act.x0) > 6 && Math.abs(e.clientX - act.x0) > Math.abs(e.clientY - act.y0)) { act.moved = true; try { act.el.setPointerCapture(e.pointerId); } catch (er) {} }
+    if (act.moved) { e.preventDefault(); applyRate(act.el, rateAt(act.el, e.clientX)); } });
+  const end = e => { if (!act || e.pointerId !== act.id) return; if (!act.moved && e.type === 'pointerup' && Math.abs(e.clientY - act.y0) < 10) applyRate(act.el, rateAt(act.el, e.clientX)); act = null; };
+  sheet.addEventListener('pointerup', end); sheet.addEventListener('pointercancel', () => act = null); }
+// desktop number boxes keep the sliders in step
+sheet.addEventListener('input', e => { if (!e.target.classList.contains('vx') && !e.target.classList.contains('ds')) return; const n = e.target.value === '' ? null : Math.max(0, Math.min(10, Math.round(parseFloat(e.target.value) * 10) / 10));
+  const host = e.target.classList.contains('vx') ? e.target.closest('.visit').querySelector('.rate[data-k="x"]') : e.target.closest('.dish').querySelector('.rate'); if (host) paintRate(host, isNaN(n) ? null : n); });
+function dishRows(v, ro) { const num = x => x == null ? '' : x; return (v.dishes || []).map((d, i) => `<div class="dish" data-i="${i}"><div class="drow1"><button class="dk" title="Food or drink" ${ro ? 'disabled' : ''}>${d.kind === 'drink' ? '🍹' : '🍽️'}</button><input class="dn" list="ml-${d.kind === 'drink' ? 'drink' : 'food'}" value="${esc(d.name)}" placeholder="${d.kind === 'drink' ? 'Drink' : 'Dish'}" ${ro ? 'disabled' : ''}>${ro ? '' : '<button class="dx" title="Remove">×</button>'}</div><div class="drow2">${rateHTML('d', typeof d.score === 'number' ? d.score : null, ro, i)}<input class="ds num" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(d.score)}" placeholder="0-10" ${ro ? 'disabled' : ''}></div></div>`).join(''); }
 function newVisitHTML(v) { const x = v.experience;
   return `<div class="visit nv" data-v="${esc(v.id)}"><div class="nvh"><b>New visit</b><input class="vd" value="${esc(mdy(v.date))}" placeholder="MM/DD/YY"></div>
-    <div class="xrow"><span>Experience</span><b class="xread">${x == null ? '–' : x.toFixed(1)}</b></div>
-    <input class="vxr${x == null ? ' unset' : ''}" type="range" min="0" max="10" step="0.1" value="${x == null ? 7 : x}" aria-label="Experience score">
-    <div class="xhint"><input class="vx" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${x == null ? '' : x}" placeholder="0-10"></div>
+    <div class="xrow"><span>Experience</span></div>
+    <div class="drow2">${rateHTML('x', x)}<input class="vx num" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${x == null ? '' : x}" placeholder="0-10"></div>
     <div class="mtabs"><button class="mtab${MTAB === 'food' ? ' on' : ''}" data-t="food">🍽️ Food</button><button class="mtab${MTAB === 'drink' ? ' on' : ''}" data-t="drink">🍹 Drinks</button></div>
     <div class="mchips"><span class="mt">Loading the menu…</span></div>
     ${dishRows(v, false)}
@@ -646,7 +679,8 @@ function renderVisits(s) { const box = $('#visitsBox'); if (!box || !cur || cur.
   const ro = !EDITOR, num = (v) => v == null ? '' : v;
   box.innerHTML = `<datalist id="ml-food"></datalist><datalist id="ml-drink"></datalist>` + vis.map(v => `<div class="visit" data-v="${esc(v.id)}">
     <div class="vh"><span>📅 <input class="vd" value="${esc(mdy(v.date))}" placeholder="MM/DD/YY" ${ro ? 'disabled' : ''}></span>
-      <label>Experience <input class="vx" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(v.experience)}" ${ro ? 'disabled' : ''}></label></div>
+</div>
+    <div class="xrow"><span>Experience</span></div><div class="drow2">${rateHTML('x', typeof v.experience === 'number' ? v.experience : null, ro)}<input class="vx num" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(v.experience)}" ${ro ? 'disabled' : ''}></div>
     ${dishRows(v, ro)}
     ${ro ? '' : `<textarea class="vn" rows="2" placeholder="Comment">${esc(noteOf(v))}</textarea>`}
     ${ro ? '' : `<div class="vadd"><button data-add="food">＋ Food</button><button data-add="drink">＋ Drink</button><button class="vdel">Delete visit</button></div>`}</div>`).join('');
@@ -693,13 +727,14 @@ sheet.addEventListener('input', e => { if (!EDITOR || !cur) return; const vEl = 
   delete v._touched; queueSave(cur); });
 sheet.addEventListener('click', e => { if (!EDITOR || !cur) return; const vEl = e.target.closest('.visit'); if (!vEl) return; const ed = editsOf(cur), v = ed.find(x => x.id === vEl.dataset.v); if (!v) return;
   const tab = e.target.closest('.mtab'); if (tab) { MTAB = tab.dataset.t; vEl.querySelectorAll('.mtab').forEach(b => b.classList.toggle('on', b === tab)); fillChips(cur, v); return; }
-  const chip = e.target.closest('.mchip'); if (chip) { v.dishes.push({ name: chip.dataset.name, score: null, ...(MTAB === 'drink' ? { kind: 'drink' } : {}) }); renderVisits(cur); const sc = sheet.querySelectorAll(`.visit[data-v="${v.id}"] .ds`); const last = sc[sc.length - 1]; if (last) { last.scrollIntoView({ block: 'center', behavior: 'smooth' }); last.focus({ preventScroll: true }); } return; }
+  const chip = e.target.closest('.mchip'); if (chip) { v.dishes.push({ name: chip.dataset.name, score: null, ...(MTAB === 'drink' ? { kind: 'drink' } : {}) }); renderVisits(cur); const sc = sheet.querySelectorAll(`.visit[data-v="${v.id}"] .dish`); const last = sc[sc.length - 1]; if (last) last.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
   if (e.target.closest('.vdone')) { if (v._touched === false) { EDIT[cur.id] = ed.filter(x => x !== v); } else if (saveT) { clearTimeout(saveT); saveT = null; saveSpot(cur); } NEWV = null; sheet.classList.remove('full'); renderVisits(cur); sheet.scrollTo({ top: 0, behavior: 'smooth' }); if (v._touched !== false) toast('Visit saved'); return; }
   const add = e.target.closest('[data-add]'); if (add) { v.dishes.push({ name: '', score: null, ...(add.dataset.add === 'drink' ? { kind: 'drink' } : {}) }); renderVisits(cur); const rows = sheet.querySelectorAll(`.visit[data-v="${v.id}"] .dn`); rows[rows.length - 1].focus(); return; }
   if (e.target.closest('.dk')) { const d = v.dishes[+e.target.closest('.dish').dataset.i]; if (d.kind === 'drink') delete d.kind; else d.kind = 'drink'; delete v._touched; renderVisits(cur); queueSave(cur); return; }
   if (e.target.closest('.dx')) { v.dishes.splice(+e.target.closest('.dish').dataset.i, 1); delete v._touched; renderVisits(cur); queueSave(cur); return; }
   if (e.target.closest('.vdel')) { if (!confirm('Delete this visit and its scores?')) return; if (NEWV && NEWV.id === v.id) NEWV = null; DELETED.add(v.id); EDIT[cur.id] = ed.filter(x => x !== v); renderVisits(cur); queueSave(cur); } });
 /* ---------------- loop ---------------- */
+let dockSeen; function syncDock() { if (dockSeen === dOpen) return; dockSeen = dOpen; document.querySelectorAll('.dock [data-d]').forEach(b => b.classList.toggle('on', b.dataset.d === dOpen)); }
 const clock = new THREE.Clock(); let introT = 0;
 let SEEN = false; try { SEEN = !!sessionStorage.getItem('ce3d.intro'); sessionStorage.setItem('ce3d.intro', '1'); } catch (e) {}
 const INTRO_DUR = SEEN ? 1.1 : 3.2;
@@ -729,7 +764,7 @@ function frame(now = performance.now()) {
   const pa = pollen.geometry.attributes.position; for (let i = 0; i < PN; i++) { let y = pa.getY(i) + dt * 4; if (y > 170) y = 0; pa.setY(i, y); pa.setX(i, pa.getX(i) + Math.sin(T * .5 + i) * dt * 2); } pa.needsUpdate = true;
   for (let i = bursts.length - 1; i >= 0; i--) { const b = bursts[i]; b.t += dt; const p = b.m.geometry.attributes.position; for (let k = 0; k < p.count; k++) { p.setXYZ(k, p.getX(k) + b.v[k * 3] * dt, p.getY(k) + (b.v[k * 3 + 1] - b.t * 60) * dt, p.getZ(k) + b.v[k * 3 + 2] * dt); } p.needsUpdate = true; b.m.material.opacity = 1 - b.t / 1.6; if (b.t > 1.6) { scene.remove(b.m); bursts.splice(i, 1); } }
   if (cur && pMascot && sheet.classList.contains('on')) { pMascot.rotation.y = -.25 + Math.sin(T * .8) * .55; pMascot.children[0].position.y = Math.abs(Math.sin(T * 3)) * 1.2; pr3.render(ps, pc); }
-  composer.render(); placeLabels(); requestAnimationFrame(frame);
+  syncDock(); composer.render(); placeLabels(); requestAnimationFrame(frame);
 }
 addEventListener('resize', () => { poke(); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); });
 requestAnimationFrame(frame);
