@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=17">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=17">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=17">
+<link rel="manifest" href="manifest.webmanifest?v=18">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=18">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=18">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=17"></script>
-<script src="places.js?v=17"></script>
-<script src="places-philly.js?v=17"></script>
+<script src="firebase-config.js?v=18"></script>
+<script src="places.js?v=18"></script>
+<script src="places-philly.js?v=18"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -802,6 +802,7 @@ map.on('load',()=>{
   refreshAll(true);
   setTimeout(()=>$('#intro').classList.add('gone'),1700); setTimeout(()=>$('#intro')?.remove(),2700);
   map.flyTo({...HOME(),duration:4200,curve:1.3,essential:true});
+  setTimeout(()=>{ if(!orbitOn && !$('#drawer').classList.contains('open')) startOrbit(); },4500);
   requestAnimationFrame(pulseLoop); requestAnimationFrame(spinLoop); requestAnimationFrame(lifeTick);
   initCloud();
 });
@@ -1213,6 +1214,10 @@ document.getElementById('bLife').onclick=()=>{ LIFE.on=!LIFE.on; document.getEle
 let cityLock=0;
 function updateCityChip(){ if(Date.now()<cityLock) return; const c=map.getCenter(); const k=nearestCity([c.lng,c.lat]); if(k!==CITY){ CITY=k; renderKPIs(); } document.querySelectorAll('#cities button').forEach(b=>b.classList.toggle('on',b.dataset.c===CITY)); }
 document.querySelectorAll('#cities button').forEach(b=>b.onclick=()=>{ if(!LIVE && b.dataset.c!=='con'){ toast('Philly needs the website version'); return; } CITY=b.dataset.c; cityLock=Date.now()+4000; document.querySelectorAll('#cities button').forEach(x=>x.classList.toggle('on',x===b)); closeDrawer(); stopOrbit(); map.flyTo({...HOME(),duration:3200,curve:1.6,essential:true}); renderKPIs(); renderList(); });
+/* orbit is the default: resume after 45 s of no interaction */
+let lastTouch=performance.now();
+['pointerdown','keydown','wheel','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{ lastTouch=performance.now(); },{passive:true,capture:true}));
+setInterval(()=>{ if(orbitOn||tourOn||addMode||document.hidden) return; if($('#drawer').classList.contains('open')) return; if($('#left').classList.contains('full')) return; if(performance.now()-lastTouch>45000) startOrbit(); },5000);
 /* ================= confetti ================= */
 function burst(p,emojis,n){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
