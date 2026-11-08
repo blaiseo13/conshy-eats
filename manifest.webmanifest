@@ -1,0 +1,13 @@
+{
+  "name": "Conshy Eats",
+  "short_name": "Conshy Eats",
+  "description": "A 3D food map of Conshohocken where every spot grows with its rating.",
+  "display": "standalone",
+  "background_color": "#E9EDF2",
+  "theme_color": "#F97316",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
