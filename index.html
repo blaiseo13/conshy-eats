@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=12">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=12">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=12">
+<link rel="manifest" href="manifest.webmanifest?v=15">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=15">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=15">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=12"></script>
-<script src="places.js?v=12"></script>
-<script src="map-data.js?v=12"></script>
+<script src="firebase-config.js?v=15"></script>
+<script src="places.js?v=15"></script>
+<script src="places-philly.js?v=15"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -287,6 +287,11 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 .prop .rain{animation:floaty 3s ease-in-out infinite}
 .prop .douse{opacity:.45;transition:opacity 2.4s}
 .a-tag{position:absolute;left:50%;top:100%;transform:translate(-50%,1px);font-size:8.5px;font-weight:800;color:#334155;background:rgba(255,255,255,.85);border-radius:6px;padding:0 4px;white-space:nowrap;letter-spacing:.02em}
+.cities{display:flex;gap:6px;margin:12px 16px 0;overflow-x:auto}
+.cities button{flex:none;border:1px solid var(--glass-line);background:var(--glass-strong);border-radius:999px;padding:6px 12px;font-weight:700;font-size:12.5px;color:var(--ink2)}
+.cities button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.actor.a-boat .a-body{font-size:22px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,60,120,.35));animation:bobble 1.6s ease-in-out infinite}
+@keyframes bobble{0%,100%{translate:0 0;rotate:-3deg}50%{translate:0 -2px;rotate:3deg}}
 .models{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px}
 .models button{border:1px solid var(--glass-line);background:rgba(255,255,255,.75);border-radius:12px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px}
 .models button span{font-size:20px}
@@ -378,6 +383,7 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 <aside id="left" class="glass up">
   <button class="handle" id="handle" aria-label="Expand list"><i></i></button>
   <div class="brand"><span class="logo"><svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><circle cx="50" cy="50" r="31" fill="none" stroke="#F472B6" stroke-width="6"/><g stroke="#67E8F9" stroke-width="5.5" stroke-linecap="round" fill="none"><path d="M39 33v9M42.5 33v9M46 33v9M39 42q3.5 4 7 0M42.5 45v22"/><path d="M58 33q6 6 3 17h-3M58 33v34"/></g></svg></span><div><h1>Conshy Eats</h1></div></div>
+  <div class="cities" id="cities"><button class="on" data-c="con">📍 Conshohocken</button><button data-c="phl">📍 Philadelphia</button></div>
   <div class="seg" id="seg" role="tablist"><button class="on" data-v="mine">My scores</button><button data-v="reviews">⭐ Reviews</button></div>
   <div class="kpis" id="kpis"></div>
   <div id="champ"></div>
@@ -606,8 +612,8 @@ $('#sbtn').onclick=async()=>{
 
 /* ================= model ================= */
 function allPlaces(){
-  const base=(window.SEED_PLACES||[]).map(p=>({...p,custom:false}));
-  const cust=(S.custom||[]).map(p=>({...p,custom:true}));
+  const base=(window.SEED_PLACES||[]).map(p=>({...p,city:p.city||'con',custom:false})).concat((window.SEED_PHILLY||[]).map(p=>({...p,city:'phl',custom:false})));
+  const cust=(S.custom||[]).map(p=>({...p,city:nearestCity([p.lng,p.lat]),custom:true}));
   return base.concat(cust).map(p=>{ const st=S.spots[p.id]||{}; return {...p,...(st.edit||{}),id:p.id,lat:p.lat,lng:p.lng,visits:st.visits||[],want:!!st.want,hidden:!!st.hidden}; });
 }
 function spotState(id){ return S.spots[id] || (S.spots[id]={visits:[]}); }
@@ -661,8 +667,18 @@ function modelFeatures(p,cur,angle,out){
 const anim={};
 let spinAngle=0;
 function spinIds(){ return new Set(RANKED.slice(0,3).map(p=>p.id)); }
+/* only build what's on screen (Philly has ~3,000 spots) */
+let VIS=new Set();
+function computeVisible(){
+  if(!map||!map.getBounds) return; const b=map.getBounds(), z=map.getZoom(), c=map.getCenter();
+  const px=(b.getEast()-b.getWest())*.25, py=(b.getNorth()-b.getSouth())*.25;
+  const inside=p=>p.lng>b.getWest()-px&&p.lng<b.getEast()+px&&p.lat>b.getSouth()-py&&p.lat<b.getNorth()+py;
+  let list=PLACES.filter(p=>!p.hidden&&(p.visits.length||p.id===selectedId||(z>=12.8&&inside(p))));
+  if(list.length>420){ const k=Math.cos(c.lat*Math.PI/180); const d=p=>Math.hypot((p.lng-c.lng)*k,p.lat-c.lat); const keep=list.filter(p=>p.visits.length||p.id===selectedId); list=keep.concat(list.filter(p=>!p.visits.length&&p.id!==selectedId).sort((a,b)=>d(a)-d(b)).slice(0,420-keep.length)); }
+  VIS=new Set(list.map(p=>p.id));
+}
 function buildStatic(){ const feats=[], glows=[]; const spin=spinIds();
-  for(const p of PLACES){ const cur=anim[p.id]; if(!cur) continue;
+  for(const p of PLACES){ if(!VIS.has(p.id)) continue; const cur=anim[p.id]; if(!cur) continue;
     if(!spin.has(p.id)) modelFeatures(p,cur,hashAngle(p.id),feats);
     if(p.ds!=null && cur.S>.3) glows.push({type:'Feature',properties:{id:p.id,c:p.rank===1?'#F2B705':scoreColor(p.ds),g:cur.S*1.6},geometry:{type:'Point',coordinates:[p.lng,p.lat]}});
   }
@@ -676,6 +692,7 @@ function step(ts){
   let moving=false; const dt=lastFrame?Math.min(1000,ts-lastFrame):16; lastFrame=ts;
   const h=Math.min(dt,50)/1000, steps=Math.max(1,Math.round(dt/50));
   for(const p of PLACES){
+    if(!VIS.has(p.id)) continue;
     const tg=sizeFor(p); const cur=anim[p.id]||(anim[p.id]={S:0,P:0,vS:0,vP:0,delay:p._delay||0});
     if(cur.delay>0){ cur.delay-=dt; moving=true; continue; }
     for(let i=0;i<steps;i++){ cur.vS+=((tg.S-cur.S)*90-cur.vS*11)*h; cur.vP+=((tg.P-cur.P)*90-cur.vP*11)*h; cur.S=Math.max(0,cur.S+cur.vS*h); cur.P=Math.max(0,cur.P+cur.vP*h); }
@@ -704,8 +721,9 @@ maplibregl.addProtocol('local', async (params)=>{
   return {data:new ArrayBuffer(0)};
 });
 const roadW=(a,b)=>['interpolate',['exponential',1.6],['zoom'],12,a,18,b];
-const STYLE={version:8,glyphs:'local://fonts/{fontstack}/{range}',
-  sources:{omt:{type:'vector',tiles:['local://tiles/{z}/{x}/{y}'],minzoom:10,maxzoom:14,attribution:'© OpenStreetMap contributors · OpenFreeMap'}},
+const LIVE=!window.MAP_TILES;
+const STYLE={version:8,glyphs:LIVE?'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf':'local://fonts/{fontstack}/{range}',
+  sources:{omt:LIVE?{type:'vector',url:'https://tiles.openfreemap.org/planet',attribution:'© OpenStreetMap contributors · OpenFreeMap'}:{type:'vector',tiles:['local://tiles/{z}/{x}/{y}'],minzoom:10,maxzoom:14,attribution:'© OpenStreetMap contributors · OpenFreeMap'}},
   layers:[
     {id:'bg',type:'background',paint:{'background-color':'#E9EDF2'}},
     {id:'landuse-res',type:'fill',source:'omt','source-layer':'landuse',filter:['in',['get','class'],['literal',['residential','suburb','neighbourhood']]],paint:{'fill-color':'#E4E8EE'}},
@@ -728,9 +746,12 @@ const STYLE={version:8,glyphs:'local://fonts/{fontstack}/{range}',
   ]};
 const sheetH=()=>isPhone()?Math.min(250,Math.round(window.innerHeight*.34)):0;
 const homePad=()=>isPhone()?{left:0,right:0,top:20,bottom:sheetH()}:{left:370,right:0,top:0,bottom:0};
-const HOME=()=>({center:isPhone()?[-75.3056,40.0752]:[-75.3032,40.0768],zoom:isPhone()?14.6:15.35,pitch:58,bearing:-28,padding:homePad()});
-const map=new maplibregl.Map({container:'map',style:STYLE,center:[-75.2985,40.0820],zoom:12.6,pitch:0,bearing:0,maxPitch:78,minZoom:11.5,
-  maxBounds:[[-75.46,40.0],[-75.14,40.16]],attributionControl:{compact:true}});
+const CITIES={con:{name:'Conshohocken',short:'Conshy',ll:[-75.3032,40.0768],phone:[-75.3056,40.0752],z:15.35},phl:{name:'Philadelphia',short:'Philly',ll:[-75.1640,39.9505],phone:[-75.1652,39.9490],z:15.2}};
+let CITY='con';
+function nearestCity(ll){ let best='con',bd=1e9; for(const [k,c] of Object.entries(CITIES)){ const d=Math.hypot(c.ll[0]-ll[0],c.ll[1]-ll[1]); if(d<bd){ bd=d; best=k; } } return best; }
+const HOME=()=>({center:isPhone()?CITIES[CITY].phone:CITIES[CITY].ll,zoom:(isPhone()?-.75:0)+CITIES[CITY].z,pitch:58,bearing:-28,padding:homePad()});
+const map=new maplibregl.Map({container:'map',style:STYLE,center:[-75.2985,40.0820],zoom:12.6,pitch:0,bearing:0,maxPitch:78,minZoom:LIVE?9:11.5,
+  ...(LIVE?{}:{maxBounds:[[-75.46,40.0],[-75.14,40.16]]}),attributionControl:{compact:true}});
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
 map.on('load',()=>{
   try{ map.setSky({'sky-color':'#BFD8F6','horizon-color':'#EEF2F7','fog-color':'#EEF2F7','sky-horizon-blend':.6,'horizon-fog-blend':.7,'fog-ground-blend':.85,'atmosphere-blend':0}); }catch(e){}
@@ -755,6 +776,7 @@ map.on('load',()=>{
   initCloud();
 });
 map.on('move',positionMarkers);
+map.on('moveend',()=>{ const before=VIS.size+':'+[...VIS].slice(0,3).join(); computeVisible(); syncMarkers(); startAnim(); updateCityChip(); if(tab==='all') renderList(); });
 map.on('click',e=>{ if(addMode) finishAdd(e.lngLat); });
 function pulseLoop(ts){
   if(map.getLayer('pulse') && !document.hidden){
@@ -779,7 +801,7 @@ function labelHTML(p){
 function syncMarkers(){
   const seen=new Set();
   for(const p of PLACES){
-    if(p.hidden) continue; seen.add(p.id);
+    if(p.hidden||!VIS.has(p.id)) continue; seen.add(p.id);
     let m=markers[p.id];
     if(!m){ const el=document.createElement('div'); el.className='mk'; const pid=p.id;
       el.addEventListener('click',ev=>{ if(ev.target.closest('.flag')){ ev.stopPropagation(); if(!addMode) select(pid,true); } });
@@ -796,8 +818,8 @@ function syncMarkers(){
 function positionMarkers(){
   const z=map.getZoom(), pitch=map.getPitch()*Math.PI/180, br=map.getBearing()*Math.PI/180;
   const cands=[];
-  for(const p of PLACES){
-    const m=markers[p.id]; if(!m) continue;
+  for(const id in markers){
+    const m=markers[id], p=m.p; if(!p) continue;
     const cur=anim[p.id]||{S:0,P:0};
     const dm=20, dLng=dm/(111320*Math.cos(p.lat*Math.PI/180))*Math.cos(br), dLat=-dm/111320*Math.sin(br);
     const a=map.project([p.lng,p.lat]), b=map.project([p.lng+dLng,p.lat+dLat]);
@@ -825,19 +847,20 @@ function positionMarkers(){
 let tab='rated', searchTerm='', selectedId=null;
 function matchesSearch(p){ const q=searchTerm; if(!q) return true; return (p.name+' '+(p.cuisine||'')+' '+(p.address||'')+' '+MODELS[p.mkey].name+' '+p.sc.dishList.map(d=>d.name).join(' ')+' '+(p.sc.drinkList||[]).map(d=>d.name).join(' ')).toLowerCase().includes(q); }
 function renderKPIs(){
-  const rated=RANKED.length, dishes=PLACES.reduce((s,p)=>s+(p.hidden?0:p.sc.dishCount),0), avg=mean(RANKED.map(p=>p.ds));
-  const been=PLACES.filter(p=>!p.hidden&&p.visits.length).length;
+  const inCity=PLACES.filter(p=>!p.hidden&&p.city===CITY), rk=RANKED.filter(p=>p.city===CITY);
+  const rated=rk.length, dishes=inCity.reduce((s,p)=>s+p.sc.dishCount,0), avg=mean(rk.map(p=>p.ds));
+  const been=inCity.filter(p=>p.visits.length).length;
   $('#kpis').innerHTML=VIEW==='reviews'
-   ?`<div class="kpi"><div class="v tnum">${rated}<small>/${PLACES.filter(p=>!p.hidden).length}</small></div><div class="k">Reviewed</div></div>
+   ?`<div class="kpi"><div class="v tnum">${rated}<small>/${inCity.length}</small></div><div class="k">Reviewed</div></div>
     <div class="kpi"><div class="v tnum" style="color:${avg!=null?scoreColor(avg):'var(--ink3)'}">${dfmt(avg)}</div><div class="k">Avg stars</div></div>
     <div class="kpi"><div class="v tnum">${been}</div><div class="k">You've been</div></div>`
-   :`<div class="kpi"><div class="v tnum">${rated}<small>/${PLACES.filter(p=>!p.hidden).length}</small></div><div class="k">Rated</div></div>
+   :`<div class="kpi"><div class="v tnum">${rated}<small>/${inCity.length}</small></div><div class="k">Rated</div></div>
     <div class="kpi"><div class="v tnum" style="color:${avg!=null?scoreColor(avg):'var(--ink3)'}">${fmt(avg)}</div><div class="k">Avg score</div></div>
     <div class="kpi"><div class="v tnum">${dishes}</div><div class="k">Dishes</div></div>`;
   const c=RANKED[0], cr=c&&reviewOf(c.id);
   $('#champ').innerHTML=c?`<div class="champ" id="champBtn"><span class="cr">${VIEW==='reviews'?'⭐':'👑'}</span><div style="min-width:0"><div class="label" style="color:#8A6100">${VIEW==='reviews'?'Crowd favorite':'Conshy champion'}</div><div class="n">${esc(c.name)}</div><div class="s">${VIEW==='reviews'?(cr?(cr.count?cr.count.toLocaleString()+' ':'')+esc(cr.site)+' reviews':''):(c.sc.best?'Best dish: '+esc(c.sc.best.name)+' · '+fmt(c.sc.best.score):esc(c.cuisine||''))}</div></div><div class="big tnum">${dfmt(c.ds)}</div></div>`:'';
   const cb=$('#champBtn'); if(cb) cb.onclick=()=>select(c.id,true);
-  $('#c-rated').textContent=rated; $('#c-want').textContent=PLACES.filter(p=>p.want&&!p.hidden&&p.sc.combined==null).length; $('#c-all').textContent=PLACES.filter(p=>!p.hidden).length;
+  $('#c-rated').textContent=RANKED.length; $('#c-want').textContent=PLACES.filter(p=>p.want&&!p.hidden&&p.sc.combined==null).length; $('#c-all').textContent=inCity.length;
 }
 function rowHTML(p,i){
   const s=p.sc, col=p.rank===1?'#E9A800':scoreColor(p.ds), rv=reviewOf(p.id);
@@ -854,8 +877,8 @@ function renderList(){
   let items;
   if(tab==='rated') items=RANKED.slice();
   else if(tab==='want') items=PLACES.filter(p=>p.want&&!p.hidden&&p.sc.combined==null);
-  else items=PLACES.filter(p=>!p.hidden).sort((a,b)=>(a.rank||999)-(b.rank||999)||a.name.localeCompare(b.name));
-  if(searchTerm) items=PLACES.filter(p=>!p.hidden).sort((a,b)=>(a.rank||999)-(b.rank||999)||a.name.localeCompare(b.name));
+  else { const c=map.getCenter(), k=Math.cos(c.lat*Math.PI/180), d=p=>Math.hypot((p.lng-c.lng)*k,p.lat-c.lat); items=PLACES.filter(p=>!p.hidden&&p.city===CITY).sort((a,b)=>(a.rank||999)-(b.rank||999)||d(a)-d(b)).slice(0,150); }
+  if(searchTerm) items=PLACES.filter(p=>!p.hidden&&matchesSearch(p)).sort((a,b)=>(a.rank||999)-(b.rank||999)||(a.city===CITY?0:1)-(b.city===CITY?0:1)||a.name.localeCompare(b.name)).slice(0,120);
   const partial=tab==='rated'&&!searchTerm?PLACES.filter(p=>!p.hidden&&p.sc.combined==null&&p.visits.length).filter(matchesSearch):[];
   items=items.filter(matchesSearch);
   const hiddenN=PLACES.filter(p=>p.hidden).length;
@@ -1156,6 +1179,10 @@ function react(p){
 
 /* town life toggle */
 document.getElementById('bLife').onclick=()=>{ LIFE.on=!LIFE.on; document.getElementById('bLife').classList.toggle('on',LIFE.on); toast(LIFE.on?'Town life on: zoom in to see the mascots':'Town life off'); };
+/* city switcher */
+let cityLock=0;
+function updateCityChip(){ if(Date.now()<cityLock) return; const c=map.getCenter(); const k=nearestCity([c.lng,c.lat]); if(k!==CITY){ CITY=k; renderKPIs(); } document.querySelectorAll('#cities button').forEach(b=>b.classList.toggle('on',b.dataset.c===CITY)); }
+document.querySelectorAll('#cities button').forEach(b=>b.onclick=()=>{ if(!LIVE && b.dataset.c!=='con'){ toast('Philly needs the website version'); return; } CITY=b.dataset.c; cityLock=Date.now()+4000; document.querySelectorAll('#cities button').forEach(x=>x.classList.toggle('on',x===b)); closeDrawer(); stopOrbit(); map.flyTo({...HOME(),duration:3200,curve:1.6,essential:true}); renderKPIs(); renderList(); });
 /* ================= confetti ================= */
 function burst(p,emojis,n){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -1240,11 +1267,17 @@ function buildGraph(){
   // stitch near-duplicate nodes (tile edges) with a 2 m grid
   const grid=new Map(); for(const [k,c] of nodes){ const gk=Math.round(c[0]/2.5e-5)+':'+Math.round(c[1]/2e-5); if(grid.has(gk)){ const o=grid.get(gk); adj.get(k).add(o); adj.get(o).add(k); } else grid.set(gk,k); }
   if(nodes.size<40) return;
+  const comp=new Map(); let cid=0, big=-1, bigN=0;
+  for(const k of nodes.keys()){ if(comp.has(k)) continue; let n=0; const st=[k]; comp.set(k,cid); while(st.length){ const x=st.pop(); n++; for(const y of adj.get(x)) if(!comp.has(y)){ comp.set(y,cid); st.push(y); } } if(n>bigN){ bigN=n; big=cid; } cid++; }
+  // keep only the main connected road network: every trip stays on real roads (and bridges)
+  for(const k of [...nodes.keys()]) if(comp.get(k)!==big){ nodes.delete(k); adj.delete(k); }
+  for(const [k,set] of adj) for(const y of [...set]) if(!nodes.has(y)) set.delete(y);
   LIFE.graph={nodes,adj,keys:[...nodes.keys()]}; const c=map.getCenter(); LIFE.gCenter=[c.lng,c.lat];
+  buildWater();
 }
 function nearestNode(ll){ let best=null,bd=1e9; for(const [k,c] of LIFE.graph.nodes){ const d=Math.abs(c[0]-ll[0])*.77+Math.abs(c[1]-ll[1]); if(d<bd){ bd=d; best=k; } } return best; }
 function route(fromLL,toLL){
-  if(!LIFE.graph) return [fromLL,toLL];
+  if(!LIFE.graph) return [];
   const G=LIFE.graph, s=nearestNode(fromLL), t=nearestNode(toLL); if(!s||!t) return [fromLL,toLL];
   const g=new Map([[s,0]]), came=new Map(), open=[[0,s]], tc=G.nodes.get(t), closed=new Set();
   const push=(f,k)=>{ open.push([f,k]); let i=open.length-1; while(i>0){ const p=(i-1)>>1; if(open[p][0]<=open[i][0]) break; [open[p],open[i]]=[open[i],open[p]]; i=p; } };
@@ -1252,11 +1285,25 @@ function route(fromLL,toLL){
   let n=0;
   while(open.length && n++<20000){ const [,k]=pop(); if(k===t) break; if(closed.has(k)) continue; closed.add(k); const kc=G.nodes.get(k);
     for(const nb of G.adj.get(k)){ const ng=g.get(k)+mDist(kc,G.nodes.get(nb)); if(ng<(g.get(nb)??1e12)){ g.set(nb,ng); came.set(nb,k); push(ng+mDist(G.nodes.get(nb),tc),nb); } } }
-  if(!came.has(t)&&s!==t) return [fromLL,toLL];
+  if(!came.has(t)&&s!==t) return [G.nodes.get(s)];
   const path=[]; let k=t; while(k){ path.push(G.nodes.get(k)); if(k===s) break; k=came.get(k); } path.reverse();
-  return [fromLL,...path,toLL];
+  const last=path[path.length-1]; return (last && mDist(last,toLL)<70) ? [fromLL,...path,toLL] : [fromLL,...path];
 }
 function randomNodeNear(ll,maxM){ const G=LIFE.graph; if(!G) return ll; const a=Math.random()*Math.PI*2, r=Math.sqrt(Math.random())*maxM; const k=Math.cos(ll[1]*Math.PI/180); const t=[ll[0]+Math.cos(a)*r/(111320*k), ll[1]+Math.sin(a)*r/110540]; return G.nodes.get(nearestNode(t)); }
+/* water: boats, kayaks, paddleboarders follow the river */
+LIFE.water=[]; LIFE.boats=[];
+function buildWater(){
+  for(const b of LIFE.boats) b.mk.remove(); LIFE.boats=[]; LIFE.water=[];
+  const feats=map.querySourceFeatures('omt',{sourceLayer:'waterway'});
+  for(const f of feats){ const g=f.geometry; const lines=g.type==='LineString'?[g.coordinates]:g.type==='MultiLineString'?g.coordinates:[]; for(const ln of lines){ let len=0; for(let i=1;i<ln.length;i++) len+=mDist(ln[i-1],ln[i]); if(len>400 && (f.properties.class==='river'||len>1500)) LIFE.water.push({ln,len}); } }
+  LIFE.water.sort((a,b)=>b.len-a.len); LIFE.water=LIFE.water.slice(0,4);
+  const kinds=['⛵','🛶','🚤','🏄','🛥️','🚣'];
+  LIFE.water.forEach((w,wi)=>{ for(let i=0;i<3;i++){ const el=document.createElement('div'); el.className='actor a-boat'; el.innerHTML=`<div class="a-body a-emoji">${kinds[(wi*3+i)%kinds.length]}</div><div class="a-say"></div>`;
+    const b={w,pos:Math.random()*w.len,dir:Math.random()<.5?1:-1,speed:kinds[(wi*3+i)%kinds.length]==='🚤'?18:6+Math.random()*4,el,mk:new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(w.ln[0]).addTo(map)}; LIFE.boats.push(b); } });
+}
+function pointAlong(ln,d){ for(let i=1;i<ln.length;i++){ const s=mDist(ln[i-1],ln[i]); if(d<=s){ const t=s?d/s:0; return [[ln[i-1][0]+(ln[i][0]-ln[i-1][0])*t, ln[i-1][1]+(ln[i][1]-ln[i-1][1])*t], ln[i][0]<ln[i-1][0]]; } d-=s; } return [ln[ln.length-1],false]; }
+function stepBoats(dt){ for(const b of LIFE.boats){ b.pos+=b.dir*b.speed*dt/1000; if(b.pos<0){ b.pos=0; b.dir=1; } if(b.pos>b.w.len){ b.pos=b.w.len; b.dir=-1; } const [ll,west]=pointAlong(b.w.ln,b.pos); b.mk.setLngLat(ll); b.el.classList.toggle('flip',(b.dir>0)===west); if(Math.random()<.0008*dt){ const say=['🎣 Fish on!','☀️ Nice day','🦆 Hi ducks','🌊 Wheee!','🚣 Row row row']; const t=b.el.querySelector('.a-say'); t.textContent=say[(Math.random()*say.length)|0]; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2000); } } }
+
 /* actors */
 let actorSeq=0;
 function makeActor(kind,ll,opt={}){
@@ -1271,7 +1318,7 @@ function removeActor(a){ a.mk.remove(); LIFE.actors=LIFE.actors.filter(x=>x!==a)
 function say(a,txt,ms=2200){ const b=a.el.querySelector('.a-say'); b.textContent=txt; b.classList.add('on'); clearTimeout(a._st); a._st=setTimeout(()=>b.classList.remove('on'),ms); }
 function rush(...as){ as.forEach(a=>{ if(a&&a.kind==='mascot'){ a._sp=a._sp||a.speed; a.speed=24; } }); }
 function calm(...as){ as.forEach(a=>{ if(a&&a._sp){ a.speed=a._sp; a._sp=0; } }); }
-function goTo(a,ll,cb){ a.path=route(a.ll,ll); a.onArrive=cb||null; a.el.classList.add('walking'); }
+function goTo(a,ll,cb){ a.path=route(a.ll,ll); a.onArrive=cb||null; if(!a.path.length){ a.onArrive=null; if(cb) setTimeout(cb,300); return; } a.el.classList.add('walking'); }
 function prop(ll,html,cls=''){ const el=document.createElement('div'); el.className='prop '+cls; el.innerHTML=html; const mk=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(ll).addTo(map); const p={el,mk}; LIFE.props.push(p); return p; }
 function dropProp(p,ms=0){ setTimeout(()=>{ p.el.classList.add('bye'); setTimeout(()=>{ p.mk.remove(); LIFE.props=LIFE.props.filter(x=>x!==p); },500); },ms); }
 function stepActors(dt){
@@ -1295,7 +1342,7 @@ const angryOnes=()=>LIFE.actors.filter(a=>a.kind==='mascot'&&!a.busy&&(a.mood===
 const happyOnes=()=>LIFE.actors.filter(a=>a.kind==='mascot'&&!a.busy&&['obsessed','love','happy'].includes(a.mood));
 const anyMascot=(ex)=>LIFE.actors.filter(a=>a.kind==='mascot'&&!a.busy&&!ex.includes(a));
 function edgeLL(){ const b=map.getBounds(); const r=Math.random(); return r<.5?[b.getWest()+(b.getEast()-b.getWest())*.08, b.getSouth()+(b.getNorth()-b.getSouth())*(.2+Math.random()*.6)]:[b.getEast()-(b.getEast()-b.getWest())*.08, b.getSouth()+(b.getNorth()-b.getSouth())*(.2+Math.random()*.6)]; }
-function station(emoji,label){ const ll=randomNodeNear(edgeLL(),400); const p=prop(ll,`<div class="station"><span>${emoji}</span><b>${label}</b></div>`,'pop'); return {ll,p}; }
+function station(emoji,label){ const ll=randomNodeNear(edgeLL(),250); const p=prop(ll,`<div class="station"><span>${emoji}</span><b>${label}</b></div>`,'pop'); return {ll,p}; }
 function sceneShove(){
   const bully=angryOnes()[0]; if(!bully) return false; const victim=anyMascot([bully]).sort((x,y)=>mDist(x.ll,bully.ll)-mDist(y.ll,bully.ll))[0]; if(!victim) return false;
   bully.busy=victim.busy=true; victim.path=[]; victim.wait=1e9; say(bully,'😠 Grr!'); rush(bully);
@@ -1417,7 +1464,7 @@ function populate(){
   for(const a of LIFE.actors.slice()) removeActor(a);
   for(const p of LIFE.props.slice()) dropProp(p);
   if(!LIFE.graph) return;
-  const logged=PLACES.filter(p=>!p.hidden&&p.visits.length).slice(0,10);
+  const cc=map.getCenter().toArray(); const logged=PLACES.filter(p=>!p.hidden&&p.visits.length&&mDist([p.lng,p.lat],cc)<3500).slice(0,10);
   for(const p of logged){ const s=p.sc.combined??p.sc.food??p.sc.exp; const mood=moodFor(s).key; makeActor('mascot',randomNodeNear([p.lng,p.lat],120),{mood,home:[p.lng,p.lat],speed:6+Math.random()*3,name:p.name,look:companyLook(p)}); }
   const extra=Math.max(6,12-logged.length);
   const c=map.getCenter().toArray(); const nearby=PLACES.filter(p=>!p.hidden&&!p.visits.length).sort((a,b)=>mDist([a.lng,a.lat],c)-mDist([b.lng,b.lat],c)).slice(0,24).sort(()=>Math.random()-.5);
@@ -1431,7 +1478,7 @@ function lifeTick(ts){
   if(show){
     if(!LIFE.graph){ buildGraph(); if(LIFE.graph) populate(); }
     else if(LIFE.gCenter && mDist(LIFE.gCenter,map.getCenter().toArray())>900){ buildGraph(); populate(); }
-    stepActors(dt); director(ts);
+    stepActors(dt); stepBoats(dt); director(ts);
   }
   requestAnimationFrame(lifeTick);
 }
@@ -1442,7 +1489,7 @@ function lifeRefresh(){ const sig=PLACES.filter(p=>p.visits.length).map(p=>p.id+
 function refreshAll(intro){
   recompute();
   if(intro){ PLACES.slice().sort((a,b)=>(a.sc.combined??-1)-(b.sc.combined??-1)).forEach((p,i)=>{ p._delay=1500+i*30; }); }
-  renderKPIs(); renderList(); syncMarkers(); try{ lifeRefresh(); }catch(e){}
+  computeVisible(); renderKPIs(); renderList(); syncMarkers(); try{ lifeRefresh(); }catch(e){}
   if($('#drawer').classList.contains('open') && selectedId && drawerMode==='view') renderDrawer();
   startAnim();
 }
