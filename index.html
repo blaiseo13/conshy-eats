@@ -12,9 +12,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=3"></script>
-<script src="places.js?v=3"></script>
-<script src="map-data.js?v=3"></script>
+<script src="firebase-config.js?v=4"></script>
+<script src="places.js?v=4"></script>
+<script src="map-data.js?v=4"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -358,6 +358,7 @@ const SYNC=window.CONSHY_SYNC||null;
 const FB=window.FIREBASE_CONFIG && window.firebase ? window.FIREBASE_CONFIG : null;
 let FB_EDITOR=false;
 let READONLY=!!(SYNC||FB) && !(window.claude && typeof window.claude.use==='function');
+if(FB){ let k=null; try{ k=localStorage.getItem('conshyEats.editKey'); }catch(e){} if(k || /^#edit-[A-Za-z0-9_-]{10,}$/.test(location.hash)) READONLY=false; }
 if(READONLY && SYNC){ S=Object.assign(blank(),{spots:SYNC.spots||{},custom:SYNC.custom||[]}); Object.assign(MENUS,SYNC.menus||{}); }
 if(READONLY) document.documentElement.classList.add('ro');
 const dfmt=v=>v==null?'—':(VIEW==='reviews'?'★'+(v/2).toFixed(1):fmt(v));
@@ -368,6 +369,7 @@ const dirty=new Set(); let flushT=null, flushing=false;
 function setSaveUI(){
   const dot=$('#sdot'), t=$('#stext');
   const m={ local:['','Saved on this device'], loading:['','Loading your scores…'], saving:['','Saving…'], saved:['ok',FB?'Saved · live on every device':'Saved · syncs to your phone'], unreachable:['','Can’t reach your saved scores yet. Changes stay here and sync later.'], denied:['','View only: you can look, not edit'] };
+  if(FB && !READONLY && !DB){ dot.className='dot'; t.textContent='Connecting your edit link…'; return; }
   if(READONLY){ dot.className='dot ok'; t.textContent=FB?(cloudReady?'Live ratings · view only':'Loading ratings…'):'As of '+((SYNC&&SYNC.asOf)||''); return; }
   const [cls,txt]=m[saveState]||m.local; dot.className='dot '+cls; t.textContent=txt;
 }
@@ -375,7 +377,7 @@ function cacheLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }ca
 function save(id){
   if(preview||READONLY) return;
   S.savedAt=new Date().toISOString(); cacheLocal();
-  if(DB){ if(id) dirty.add(id); saveState='saving'; setSaveUI(); clearTimeout(flushT); flushT=setTimeout(flush,350); }
+  if(DB||FB){ if(id) dirty.add(id); saveState='saving'; setSaveUI(); clearTimeout(flushT); if(DB) flushT=setTimeout(flush,350); }
   else { saveState='local'; setSaveUI(); }
 }
 async function flush(){
@@ -413,7 +415,8 @@ async function initFirebase(){
   // private edit link: #edit-<key> -> remember on this device, then clean the address bar
   let key=null; try{ key=localStorage.getItem('conshyEats.editKey'); }catch(e){}
   const m=/^#edit-([A-Za-z0-9_-]{10,})$/.exec(location.hash);
-  if(m){ key=m[1]; try{ localStorage.setItem('conshyEats.editKey',key); }catch(e){} history.replaceState(null,'',location.pathname+location.search); }
+  if(m){ key=m[1]; try{ localStorage.setItem('conshyEats.editKey',key); }catch(e){} }
+  else if(key && !location.hash){ history.replaceState(null,'',location.pathname+location.search+'#edit-'+key); }
   if(key){
     try{
       const cred=firebase.auth().currentUser || (await firebase.auth().signInAnonymously()).user;
@@ -430,7 +433,7 @@ async function initFirebase(){
 async function initCloud(){
   if(FB){
     const fdb=await initFirebase();
-    DB=fdb; saveState='loading'; setSaveUI();
+    DB=fdb; saveState=dirty.size?'saving':'loading'; setSaveUI(); if(dirty.size) flush();
     const timer=setTimeout(()=>{ if(!cloudReady){ saveState='unreachable'; setSaveUI(); } },10000);
     fdb.collection('menus').onSnapshot(snap=>{ snap.docs.forEach(d=>{ MENUS[d.id]=d.data(); }); if(PLACES.length) refreshAll(); },()=>{});
     let lastSpots=[], NOTES={};
