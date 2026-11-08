@@ -93,6 +93,18 @@
 .vdone{width:100%;margin-top:8px;min-height:46px;border:0;background:var(--red);color:var(--paper);font:900 16px "Zen Maru Gothic";border-radius:3px;cursor:pointer}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield}.dish .ds,.vx{text-align:center}
 #newBox:empty{display:none}#newBox{padding:12px 14px;border-bottom:1px solid var(--line)}
+.dock{flex-direction:column;gap:5px;width:min(560px,calc(100% - 12px))}
+.dbtns{display:flex;justify-content:space-around;gap:2px}
+.qbar{display:flex;align-items:center;gap:6px;border:1.5px solid var(--ink);border-radius:999px;background:#fff;padding:0 6px 0 12px}
+.qbar input{flex:1;min-width:0;border:0;outline:0;background:none;font:500 16px "Zen Maru Gothic";padding:10px 0;color:var(--ink)}
+.qbar input::-webkit-search-cancel-button{display:none}.qbar .qx{border:0;background:none;font-size:22px;line-height:1;color:var(--ink2);cursor:pointer;visibility:hidden;width:36px;height:36px}.qbar.has .qx{visibility:visible}
+@media (min-width:701px){.drawer{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));left:50%;width:min(560px,calc(100% - 12px));transform:translate(-50%,20px);max-height:calc(100% - 250px)}.drawer.on{transform:translate(-50%,0)}}
+@media (max-width:700px){.nav{display:none!important}.sheet,.drawer{bottom:calc(132px + env(safe-area-inset-bottom))!important}.dock{left:6px;right:6px;width:auto;transform:none}}
+.lbl.lm{font:600 11px "Zen Maru Gothic";background:#F5EFDFd9;border-width:1.5px;color:#4A443D;padding:0 7px}
+.qbar .qx{position:static;transform:none;margin:0;flex:none}
+.vacts{display:none;gap:8px;margin-bottom:10px}body.editor .vacts{display:flex}
+.vacts button{flex:1;min-height:44px;border:1.5px solid var(--ink);background:var(--paper2);border-radius:3px;font:800 15px "Zen Maru Gothic";color:var(--ink);cursor:pointer}.vacts button:first-child{background:var(--red);color:var(--paper);border-color:var(--red)}
+.vn{display:block;width:100%;margin-top:6px;font:500 16px "Zen Maru Gothic";border:1px solid var(--line);border-radius:3px;padding:8px;background:#fff;color:var(--ink);resize:vertical;min-height:44px}
 /* floating labels */
 #labels{position:fixed;inset:0;pointer-events:none;z-index:3}
 .lbl{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:700 12px "Zen Maru Gothic";color:var(--ink);background:#F5EFDFee;border:1px solid var(--ink);border-radius:999px;padding:1px 9px;transition:opacity .3s}
@@ -115,12 +127,14 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <div class="intro" id="intro"><div>CONSHY EATS<small>CONSHOHOCKEN</small></div></div>
 <div class="top"><div class="brand panel"><div class="seal">食</div><div><b>Conshy Eats</b><small>Conshohocken</small></div></div><span class="asof">Facts as of 11/08/26</span></div>
 <div class="dock panel">
-  <button class="main" data-d="search"><i>🔎</i><span>Search / add</span></button>
+  <div class="qbar"><span>🔎</span><input id="q" type="search" enterkeyhint="search" placeholder="Search" autocomplete="off" aria-label="Search"><button class="qx" aria-label="Clear">×</button></div>
+  <div class="dbtns">
   <button data-d="next"><i>🧭</i><span>Try next</span></button>
   <button data-d="scores"><i>🏆</i><span>Scores</span></button>
   <button data-d="week"><i>📅</i><span>This week</span></button>
   <button data-d="crew"><i>🐾</i><span>Crew</span></button>
   <button data-d="gallery"><i>📷</i><span>Gallery</span></button>
+  </div>
 </div>
 <div class="nav panel" id="nav"><button data-n="rl" title="Turn left (Q)">⟲</button><button data-n="up" title="Look down">▲</button><button data-n="rr" title="Turn right (E)">⟳</button><button data-n="in" title="Zoom in">＋</button><button data-n="dn" title="Look across">▼</button><button data-n="out" title="Zoom out">－</button><button data-n="home" class="w">⌖ Reset view</button></div>
 <aside class="sheet panel" id="sheet"></aside>
@@ -165,7 +179,7 @@ const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 5, 3000
 
 // sky dome: soft teal overhead fading to warm cream at the horizon
 const sky = new THREE.Mesh(new THREE.SphereGeometry(20000, 32, 16), new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, fog: false,
-  uniforms: { top: { value: new THREE.Color('#7FAFC2') }, mid: { value: new THREE.Color('#C9DCD8') }, bot: { value: HORIZON } },
+  uniforms: { top: { value: new THREE.Color('#7FA2CC') }, mid: { value: new THREE.Color('#D8D3EA') }, bot: { value: HORIZON } },
   vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
   fragmentShader: 'uniform vec3 top,mid,bot; varying vec3 vP; void main(){ float h = vP.y; vec3 c = mix(bot, mid, smoothstep(0.0,0.12,h)); c = mix(c, top, smoothstep(0.12,0.55,h)); gl_FragColor = vec4(c,1.); }' }));
 scene.add(sky);
@@ -179,6 +193,9 @@ scene.add(sun); scene.add(sun.target);
 
 /* ---------------- land, water, roads, buildings from the real map ---------------- */
 const G = window.GEO;
+const MK = { civic: ['🏛️', '#4A6FA5'], library: ['📚', '#7D5BA6'], school: ['🏫', '#D9922E'], worship: ['⛪', '#B5577A'], police: ['🚓', '#2F4E8A'], fire: ['🚒', '#C0392B'], post: ['📮', '#2F8F8A'], hospital: ['🏥', '#D2453F'],
+  museum: ['🖼️', '#8A6D3B'], monument: ['🗿', '#8A6D3B'], art: ['🎨', '#8A6D3B'], station: ['🚉', '#55703A'], sport: ['🏟️', '#3F8F5A'], cemetery: ['🕊️', '#7D7F86'], park: ['🌳', '#4E9A50'] };
+const MARKS = (G.marks || []).filter(m => MK[m.c]), MARKB = new Map(MARKS.filter(m => m.b != null).map(m => [m.b, m]));
 const gtex = (() => { const c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d'); x.fillStyle = '#A9BE84'; x.fillRect(0, 0, 512, 512); const r = rng(3); for (let i = 0; i < 260; i++) { const g = x.createRadialGradient(0, 0, 0, 0, 0, 1); const cx = r() * 512, cy = r() * 512, rad = 20 + r() * 90; x.fillStyle = ['rgba(160,182,110,.35)', 'rgba(190,196,128,.3)', 'rgba(134,164,98,.3)', 'rgba(205,198,150,.22)'][i % 4]; x.beginPath(); x.ellipse(cx, cy, rad, rad * (.5 + r() * .5), r() * 3, 0, 7); x.fill(); } const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(26, 26); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; })();
 const ground = new THREE.Mesh(new THREE.CircleGeometry(16000, 96), new THREE.MeshLambertMaterial({ map: gtex }));
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
@@ -210,13 +227,22 @@ scene.add(new THREE.Mesh(ribbons(G.rail, () => 5, 0.65), new THREE.MeshLambertMa
 // buildings: cream walls, terracotta / slate / ochre roofs (vertex colours, one merged mesh)
 { const ROOF = ['#9A5040', '#5E6E76', '#A87B45', '#7D5A4B', '#6F7F5E'].map(c => new THREE.Color(c)), WALL = new THREE.Color('#EFE5D0'), WALL2 = new THREE.Color('#E2D4B8');
   const gs = []; const r = rng(7);
-  G.buildings.forEach(b => { if (b.pts.length < 4) return; const sh = new THREE.Shape(b.pts.map(p => new THREE.Vector2(p[0], -p[1])));
+  G.buildings.forEach((b, bi) => { if (b.pts.length < 4) return; const lm = MARKB.get(bi); const sh = new THREE.Shape(b.pts.map(p => new THREE.Vector2(p[0], -p[1])));
     const h = Math.max(6, Math.min(70, b.h)) * 1.15; const g = new THREE.ExtrudeGeometry(sh, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2);
-    const ng = g.index ? g.toNonIndexed() : g; ng.deleteAttribute('uv'); ng.computeVertexNormals(); const roof = ROOF[Math.floor(r() * ROOF.length)], wall = r() < .5 ? WALL : WALL2;
+    const ng = g.index ? g.toNonIndexed() : g; ng.deleteAttribute('uv'); ng.computeVertexNormals(); let roof = ROOF[Math.floor(r() * ROOF.length)], wall = r() < .5 ? WALL : WALL2; if (lm) { roof = new THREE.Color(MK[lm.c][1]); wall = new THREE.Color(MK[lm.c][1]).lerp(new THREE.Color('#FFF8EA'), .72); }
     const n = ng.attributes.normal, col = []; for (let i = 0; i < n.count; i++) { const c = n.getY(i) > .5 ? roof : wall; col.push(c.r, c.g, c.b); }
     ng.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); gs.push(ng); g.dispose(); });
   const bm = new THREE.Mesh(mergeGeometries(gs), new THREE.MeshLambertMaterial({ vertexColors: true })); bm.castShadow = bm.receiveShadow = true; scene.add(bm); }
 
+/* ---------------- landmark badges ---------------- */
+const badgeTex = (emo, col) => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+  x.beginPath(); x.arc(64, 64, 56, 0, 7); x.fillStyle = '#F5EFDF'; x.fill(); x.lineWidth = 8; x.strokeStyle = col; x.stroke(); x.lineWidth = 2.5; x.strokeStyle = '#2B2622'; x.beginPath(); x.arc(64, 64, 61, 0, 7); x.stroke();
+  x.font = '64px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(emo, 64, 70);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+const BTEX = {}; MARKS.forEach(m => { const [emo, col] = MK[m.c]; BTEX[m.c] = BTEX[m.c] || badgeTex(emo, col);
+  const h = m.b != null ? Math.max(6, Math.min(70, G.buildings[m.b].h)) * 1.15 : 4;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BTEX[m.c], transparent: true, depthWrite: false })); sp.scale.set(30, 30, 1); sp.position.set(m.x, h + 26, m.z); sp.renderOrder = 2; scene.add(sp);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, 18, 6), new THREE.MeshBasicMaterial({ color: MK[m.c][1] })); pole.position.set(m.x, h + 9, m.z); scene.add(pole); m.y = h + 46; });
 /* ---------------- distant layered hills (atmospheric, Hisui-style) ---------------- */
 [[7000, 520, '#7E9A86'], [9000, 900, '#93ABA6'], [11500, 1400, '#B2C3BE']].forEach(([R, H, c], li) => {
   const seg = 160, pos = [], idx = []; const r = rng(31 + li);
@@ -359,14 +385,72 @@ function applyLit(t) { const k = t.lit, c = new THREE.Color(TIER[t.s.tier]);
   t.mist.material.opacity = .9 * (1 - k); t.mist.visible = k < .98; t.bar.material = k > .5 ? t.bar.material : t.bar.material; t.post.material = k > .5 ? WOOD : GREYW; }
 totems.forEach(applyLit);
 
+/* ---------------- fantasy: dragons + floating sky islands ---------------- */
+function makeDragon(col, belly, horn) {
+  const g = new THREE.Group(), M = c => new THREE.MeshToonMaterial({ color: c, gradientMap: grad }), W = c => new THREE.MeshToonMaterial({ color: c, gradientMap: grad, side: THREE.DoubleSide });
+  const add = (geo, mat, x, y, z, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1, par = g) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); m.scale.set(sx, sy, sz); m.castShadow = true; par.add(m); return m; };
+  add(new THREE.CapsuleGeometry(5, 16, 6, 14), M(col), 0, 0, 0, Math.PI / 2);
+  add(new THREE.CapsuleGeometry(3.7, 14, 6, 12), M(belly), 0, -2, .5, Math.PI / 2);
+  add(new THREE.CylinderGeometry(2.4, 3.8, 12, 10), M(col), 0, 4.5, 12.5, .95);
+  const head = new THREE.Group(); head.position.set(0, 9.5, 17.5); g.add(head);
+  add(new THREE.SphereGeometry(4.2, 18, 14), M(col), 0, 0, 0, 0, 0, 0, 1, .85, 1.2, head);
+  add(new THREE.CapsuleGeometry(2.3, 4, 6, 10), M(col), 0, -1.2, 4.6, Math.PI / 2, 0, 0, 1, 1, .9, head);
+  [-1, 1].forEach(sd => { const e = add(new THREE.SphereGeometry(1.1, 10, 8), new THREE.MeshBasicMaterial({ color: '#FFF8E0' }), sd * 2.3, 1.3, 2.6, 0, 0, 0, 1, 1, 1, head); e.userData.noInk = true;
+    const pu = add(new THREE.SphereGeometry(.55, 8, 6), new THREE.MeshBasicMaterial({ color: '#2B2622' }), sd * 2.45, 1.4, 3.4, 0, 0, 0, 1, 1.4, 1, head); pu.userData.noInk = true;
+    add(new THREE.ConeGeometry(.9, 5, 8), M(horn), sd * 1.8, 3.6, -1.6, -.9, 0, sd * -.2, 1, 1, 1, head);
+    add(new THREE.SphereGeometry(1.3, 8, 6), M(col), sd * 2.2, -7.5, 3, 0, 0, 0, 1, 1.4, 1); add(new THREE.SphereGeometry(1.3, 8, 6), M(col), sd * 2.2, -7, -6, 0, 0, 0, 1, 1.4, 1); });
+  [-1, 1, 0].forEach((sd, i) => add(new THREE.ConeGeometry(1.1, 3, 6), M(horn), 0, 5.4 - i * .3, 4 - i * 6.5, -.5));
+  const wingShape = new THREE.Shape([[0, 0], [14, 9], [30, 5], [26, -1], [33, -9], [20, -6], [22, -14], [9, -8]].map(([x, y]) => new THREE.Vector2(x, y)));
+  const wings = [-1, 1].map(sd => { const piv = new THREE.Group(); piv.position.set(sd * 3.5, 3, 3); g.add(piv);
+    const w = add(new THREE.ExtrudeGeometry(wingShape, { depth: .5, bevelEnabled: false }), W(belly), 0, 0, 0, -Math.PI / 2, 0, 0, sd, 1, 1, piv); w.userData.noInk = true;
+    const bone = add(new THREE.CylinderGeometry(.6, .4, 30, 6), M(col), sd * 15, .3, -3, 0, 0, Math.PI / 2 + sd * -.25, 1, 1, 1, piv); bone.userData.noInk = true; return piv; });
+  const tail = []; let prev = g; for (let i = 0; i < 9; i++) { const seg = new THREE.Group(); seg.position.set(0, 0, i ? -3.6 : -12); prev.add(seg);
+    add(new THREE.SphereGeometry(3.4 - i * .32, 10, 8), M(col), 0, 0, 0, 0, 0, 0, 1, 1, 1, seg); tail.push(seg); prev = seg; }
+  add(new THREE.ConeGeometry(2.2, 4.5, 4), M(horn), 0, 0, -2.6, -Math.PI / 2, 0, 0, 1, 1, .5, prev);
+  addInk(g); g.userData = { wings, tail, head }; g.rotation.order = 'YXZ'; return g;
+}
+const PICKETS = [];
+/* ---------------- picket line at the proposed data center (former steel mill, 900 Conshohocken Rd) ---------------- */
+{ const mill = G.buildings.reduce((best, b, i) => { const pts = b.pts; let a = 0; for (let k = 0, j = pts.length - 1; k < pts.length; j = k++) a += (pts[j][0] + pts[k][0]) * (pts[j][1] - pts[k][1]); a = Math.abs(a / 2);
+    const cx = pts.reduce((t, q) => t + q[0], 0) / pts.length, cz = pts.reduce((t, q) => t + q[1], 0) / pts.length; return cx < -1000 && cz < -800 && cz > -1400 && a > (best ? best.a : 50000) ? { i, a, cx, cz, pts } : best; }, null);
+  if (mill) {
+    // the corner of the mill closest to downtown, pushed a little outside the wall
+    const near = mill.pts.reduce((b, q) => Math.hypot(q[0], q[1]) < Math.hypot(b[0], b[1]) ? q : b), dx = -near[0], dz = -near[1], L = Math.hypot(dx, dz) || 1, ox = near[0] + dx / L * 40, oz = near[1] + dz / L * 40;
+    const signTex = (l1, l2, bg) => { const c = document.createElement('canvas'); c.width = 256; c.height = 160; const x = c.getContext('2d'); x.fillStyle = bg; x.fillRect(0, 0, 256, 160); x.lineWidth = 8; x.strokeStyle = '#2B2622'; x.strokeRect(4, 4, 248, 152);
+      x.fillStyle = '#B8352B'; x.font = '900 44px "Zen Maru Gothic", Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(l1, 128, 58); x.fillStyle = '#2B2622'; x.font = '900 34px "Zen Maru Gothic", Arial, sans-serif'; x.fillText(l2, 128, 112);
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
+    const SIGNS = [['NO DATA', 'CENTER!', '#FFF8EA'], ['SAVE', 'CONSHY', '#FCE7A8'], ['KEEP IT', 'LOCAL', '#E7F2DC']];
+    const face = Math.atan2(dx, dz);
+    SIGNS.forEach(([a, b, bg], k) => { const g = new THREE.Group(); const off = (k - 1) * 34;
+      g.position.set(ox + Math.cos(face) * off, 0, oz - Math.sin(face) * off); g.rotation.y = face + (k - 1) * .18;
+      const stake = new THREE.Mesh(new THREE.BoxGeometry(2.2, 34, 2.2), new THREE.MeshToonMaterial({ color: '#8A5A33', gradientMap: grad })); stake.position.y = 17; stake.castShadow = true; g.add(stake);
+      const board = new THREE.Mesh(new THREE.BoxGeometry(30, 19, 1.4), [0, 0, 0, 0, 1, 0].map(f => f ? new THREE.MeshLambertMaterial({ map: signTex(a, b, bg) }) : new THREE.MeshToonMaterial({ color: '#E8DCC0', gradientMap: grad })));
+      board.position.y = 38; board.castShadow = true; g.add(board); g.userData.k = k; scene.add(g); PICKETS.push(g); });
+    window.MILL_LABEL = { x: ox, z: oz };
+  } }
+const DRAGONS = [];
+{ const LEG = SPOTS.filter(s => s.tier === 'Legendary'), CC = [['#E0B13A', '#FFF1C1', '#B8352B'], ['#C8463D', '#F6D6A8', '#F5CF4A'], ['#3F7FC8', '#DDEBFF', '#F5CF4A']];
+  LEG.forEach((s, i) => { const d = makeDragon(...CC[i % CC.length]); d.scale.setScalar(2.6); scene.add(d); DRAGONS.push({ d, cx: s.x, cz: s.z, R: 210 + i * 30, h: 250 + i * 40, a: i * 2, sp: .16 + i * .02 }); });
+  const big = makeDragon('#3FA672', '#F3E3A0', '#F5CF4A'); big.scale.setScalar(3.2); scene.add(big); DRAGONS.push({ d: big, cx: 0, cz: -700, R: 950, h: 520, a: 1, sp: .055 }); }
+function flyDragons(dt, T) { DRAGONS.forEach((o, i) => { o.a += o.sp * dt; const x = o.cx + Math.cos(o.a) * o.R, z = o.cz + Math.sin(o.a) * o.R, y = o.h + Math.sin(o.a * 3 + i) * 25;
+  o.d.position.set(x, y, z); o.d.rotation.y = Math.atan2(-Math.sin(o.a), Math.cos(o.a)); o.d.rotation.z = -.32; o.d.rotation.x = Math.cos(o.a * 3 + i) * .08;
+  const glide = (Math.sin(T * .35 + i * 2) + 1) / 2, flap = Math.sin(T * 3.2 + i) * (.15 + .55 * glide);
+  o.d.userData.wings[0].rotation.z = flap; o.d.userData.wings[1].rotation.z = -flap; o.d.userData.tail.forEach((sg, k) => sg.rotation.y = Math.sin(T * 1.6 - k * .55 + i) * .16); o.d.userData.head.rotation.x = Math.sin(T * .9 + i) * .08; }); }
+const ISLES = [];
+[[-2700, 720, -2900, 1], [3200, 900, -1700, .8], [600, 1080, -3900, 1.2], [-3600, 820, 900, .7]].forEach(([x, y, z, k], i) => { const g = new THREE.Group(), r = rng(50 + i);
+  const rock = new THREE.Mesh(new THREE.ConeGeometry(120, 230, 7), new THREE.MeshToonMaterial({ color: '#9A8C7A', gradientMap: grad, flatShading: true })); rock.rotation.x = Math.PI; rock.position.y = -115; g.add(rock);
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(126, 121, 18, 7), new THREE.MeshToonMaterial({ color: '#7FAE5C', gradientMap: grad, flatShading: true })); g.add(top);
+  for (let t = 0; t < 9; t++) { const a = r() * 6.28, d = r() * 90, h = 30 + r() * 30; const tr = new THREE.Mesh(new THREE.ConeGeometry(h * .32, h, 7), new THREE.MeshToonMaterial({ color: r() < .2 ? '#EBB4C2' : '#3F6B4E', gradientMap: grad })); tr.position.set(Math.cos(a) * d, 9 + h / 2, Math.sin(a) * d); g.add(tr); }
+  const fall = new THREE.Mesh(new THREE.PlaneGeometry(26, 260), new THREE.MeshBasicMaterial({ color: '#CFEFFF', transparent: true, opacity: .55, depthWrite: false })); fall.position.set(0, -120, 124); g.add(fall);
+  g.position.set(x, y, z); g.scale.setScalar(k); g.userData.y = y; scene.add(g); ISLES.push(g); });
 /* ---------------- drifting clouds + floating pollen ---------------- */
 const clouds = new THREE.Group(); scene.add(clouds);
 for (let i = 0; i < 14; i++) { const r = rng(100 + i), c = new THREE.Group(); for (let k = 0; k < 5; k++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, transparent: true, depthWrite: false, opacity: .85, fog: true })); sp.scale.set(260 + r() * 240, 120 + r() * 80, 1); sp.position.set(k * 140 - 280, r() * 40, r() * 80); c.add(sp); }
   c.position.set(-4000 + r() * 8000, 900 + r() * 300, -4000 + r() * 8000); c.userData.v = 6 + r() * 6; clouds.add(c); }
 const PN = MOBILE ? 150 : 500, pg = new THREE.BufferGeometry(), pp = new Float32Array(PN * 3); const pr = rng(5);
 for (let i = 0; i < PN; i++) { pp[i * 3] = (pr() - .5) * 3200; pp[i * 3 + 1] = pr() * 160; pp[i * 3 + 2] = (pr() - .5) * 3200; }
-pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
-const pollen = new THREE.Points(pg, new THREE.PointsMaterial({ color: '#FFE9A8', size: 3.2, transparent: true, opacity: .75, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(pollen);
+pg.setAttribute('position', new THREE.BufferAttribute(pp, 3)); { const cols = new Float32Array(PN * 3), P4 = ['#FFE9A8', '#B8F2FF', '#FFC7EA', '#D7C8FF'].map(c => new THREE.Color(c)); for (let i = 0; i < PN; i++) { const c = P4[i % 4]; cols.set([c.r, c.g, c.b], i * 3); } pg.setAttribute('color', new THREE.BufferAttribute(cols, 3)); }
+const pollen = new THREE.Points(pg, new THREE.PointsMaterial({ vertexColors: true, size: 4, transparent: true, opacity: .75, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(pollen);
 // unlock burst
 const bursts = [];
 function burst(pos, color) { const n = 90, g = new THREE.BufferGeometry(), p = new Float32Array(n * 3), v = []; for (let i = 0; i < n; i++) { p.set([pos.x, 90, pos.z], i * 3); const a = Math.random() * 6.28, e = Math.random() * 1.2 + .2, s = 40 + Math.random() * 60; v.push(Math.cos(a) * Math.cos(e) * s, Math.sin(e) * s + 20, Math.sin(a) * Math.cos(e) * s); }
@@ -402,9 +486,15 @@ function syncLabels(hoverId) { totems.forEach((t, id) => { const show = t.target
   if (show && !el) { el = document.createElement('div'); el.className = 'lbl'; el.innerHTML = esc(t.s.n) + (LIVE[id] && LIVE[id].combined != null ? ` <b class="sc">${LIVE[id].combined.toFixed(1)}</b>` : ''); labels.appendChild(el); lblEls.set(id, el); }
   if (!show && el) { el.remove(); lblEls.delete(id); } }); }
 const v3 = new THREE.Vector3();
+const mkEls = MARKS.map(m => { const el = document.createElement('div'); el.className = 'lbl lm'; el.textContent = m.n; el.style.borderColor = MK[m.c][1]; return el; });
+setTimeout(() => mkEls.forEach(el => labels.appendChild(el)), 0);
 function placeLabels() { const placed = []; lblEls.forEach((el, id) => { const t = totems.get(id); v3.set(t.s.x, 135, t.s.z).project(camera); const vis = v3.z < 1 && Math.abs(v3.x) < 1.1 && Math.abs(v3.y) < 1.1;
   const sx = (v3.x + 1) / 2 * innerWidth, sy = (1 - v3.y) / 2 * innerHeight, clash = placed.some(([x, y]) => Math.abs(x - sx) < 120 && Math.abs(y - sy) < 24) && id !== hover;
-  el.style.opacity = vis && !clash && camera.position.distanceTo(t.T.position) < 2600 ? 1 : 0; if (vis && !clash) placed.push([sx, sy]); el.style.left = sx + 'px'; el.style.top = sy + 'px'; }); }
+  el.style.opacity = vis && !clash && camera.position.distanceTo(t.T.position) < 2600 ? 1 : 0; if (vis && !clash) placed.push([sx, sy]); el.style.left = sx + 'px'; el.style.top = sy + 'px'; });
+  const far = camera.position.distanceTo(controls.target);
+  MARKS.forEach((m, i) => { const el = mkEls[i]; v3.set(m.x, m.y, m.z).project(camera); const sx = (v3.x + 1) / 2 * innerWidth, sy = (1 - v3.y) / 2 * innerHeight;
+    const vis = v3.z < 1 && Math.abs(v3.x) < 1.05 && Math.abs(v3.y) < 1.05 && far < 1900 && !placed.some(([x, y]) => Math.abs(x - sx) < 110 && Math.abs(y - sy) < 22);
+    el.style.opacity = vis ? 1 : 0; if (vis) placed.push([sx, sy]); el.style.left = sx + 'px'; el.style.top = sy + 'px'; }); }
 
 /* ---------------- portrait renderer (sheet + crew thumbnails) ---------------- */
 const pr3 = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); pr3.setPixelRatio(2); pr3.setSize(150, 150, false); pr3.outputColorSpace = THREE.SRGBColorSpace;
@@ -419,15 +509,15 @@ function thumb(s) { if (!thumbs.has(s.id)) { portrait(s, -.4); thumbs.set(s.id, 
 const sheet = $('#sheet'); let cur = null;
 const ENT = { trivia: '🧠 Trivia', 'live-music': '🎸 Live music', karaoke: '🎤 Karaoke', dj: '🎧 DJ', cornhole: '🎯 Cornhole', games: '🎳 Games', sports: '🏈 Sports', outdoor: '🌿 Patio', other: '✨ Events', comedy: '😂 Comedy', bingo: '🎱 Bingo' };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-function scoresHTML(s) { const L = LIVE[s.id] || {}, f = x => x == null ? '–' : x.toFixed(1); return `<div class="combined"><b>${f(L.combined)}</b><small>${L.combined == null ? 'Not rated yet' : 'Overall · 50% food + 50% experience'}</small></div><div class="scores"><div><b>${f(L.food)}</b><small>Food${L.dishN ? ' · ' + L.dishN + ' dish' + (L.dishN > 1 ? 'es' : '') : ''}</small></div><div><b>${f(L.exp)}</b><small>Experience</small></div><div><b>${f(L.drink)}</b><small>Drinks${L.drinkN ? ' · ' + L.drinkN : ''}</small></div></div>${(L.dishes || []).length ? `<div style="margin-top:8px">${L.dishes.map(d => `<div class="row"><span>${d.kind === 'drink' ? '🍹' : '🍽️'} ${esc(d.name)}</span><b>${d.score.toFixed(1)}</b></div>`).join('')}</div>` : ''}`;  }
-function openSheet(s) {
+function scoresHTML(s) { const L = LIVE[s.id] || {}, f = x => x == null ? '–' : x.toFixed(1); return `<div class="combined"><b>${f(L.combined)}</b><small>Overall</small></div><div class="scores"><div><b>${f(L.food)}</b><small>Food${L.dishN ? ' · ' + L.dishN + ' dish' + (L.dishN > 1 ? 'es' : '') : ''}</small></div><div><b>${f(L.exp)}</b><small>Experience</small></div><div><b>${f(L.drink)}</b><small>Drinks${L.drinkN ? ' · ' + L.drinkN : ''}</small></div></div>${(L.dishes || []).length ? `<div style="margin-top:8px">${L.dishes.map(d => `<div class="row"><span>${d.kind === 'drink' ? '🍹' : '🍽️'} ${esc(d.name)}</span><b>${d.score.toFixed(1)}</b></div>`).join('')}</div>` : ''}`;  }
+function openSheet(s) { if (innerWidth < 700 && dOpen) { drawer.classList.remove('on'); dOpen = null; const qq = document.getElementById('q'); qq && qq.blur(); }
   cur = s; const v = VISITS[s.id] || 0, lv = level(v), ab = abilityOf(s), c = TIER[s.tier];
   sheet.innerHTML = `<div class="sh-hd"><div class="grab" aria-hidden="true"></div><h2>${esc(s.n)}</h2><div class="addr">${esc(s.a || s.k)} · ${'$'.repeat(s.price)}</div>
       <div class="tierseal" style="color:${c}">${TIER_JP[s.tier]}<br>${s.tier === 'Closed' ? '' : '★'.repeat(Math.max(1, ['Common', 'Uncommon', 'Rare', 'Unique', 'Legendary'].indexOf(s.tier) + 1))}</div><button class="x" aria-label="Close">×</button></div><div id="newBox"></div>
-    ${s.tier === 'Closed' ? '' : `<div class="portrait"><div id="pslot"></div><div><div class="mn">${esc(s.n)} crew</div><div class="mt">${v ? nameOf(s) + ' · Lv ' + lv : 'Visit once to unlock'}</div>
-      <div class="ab">${v ? `<b>⚡ ${ab.n} · Lv ${lv}</b>${ab.t}${(() => { const T = [1, 3, 6, 10, 15], nx = T[lv], pv = T[lv - 1]; return nx ? `<div class="lvbar"><span style="width:${Math.round((v - pv) / (nx - pv) * 100)}%"></span></div><small>${v} visit${v > 1 ? 's' : ''} · Lv ${lv + 1} at ${nx} visits</small>` : '<div class="lvbar"><span style="width:100%"></span></div><small>Max level</small>'; })()}` : '<b>⚡ Hidden ability</b>Revealed on your first visit. It gets stronger every time you come back.'}</div></div></div>`}
+    ${s.tier === 'Closed' ? '' : `<div class="portrait"><div id="pslot"></div><div><div class="mn">${esc(s.n)} crew</div><div class="mt">${v ? nameOf(s) : '🔒'}</div>
+      <div class="ab">${v ? `<b>⚡ ${ab.n} · Lv ${lv}</b>${(() => { const T = [1, 3, 6, 10, 15], nx = T[lv], pv = T[lv - 1]; return nx ? `<div class="lvbar"><span style="width:${Math.round((v - pv) / (nx - pv) * 100)}%"></span></div><small>${v}/${nx}</small>` : '<div class="lvbar"><span style="width:100%"></span></div>'; })()}` : '<b>⚡ ???</b>'}</div></div></div>`}
     ${(window.PHOTOS && PHOTOS[s.id] || []).length ? `<div class="strip">${PHOTOS[s.id].map(ph => `<figure><img src="${esc(ph.u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${esc(ph.from)}</figcaption></figure>`).join('')}</div>` : ''}
-    <div class="sec"><h3>Your scores</h3><div id="scoresBox">${scoresHTML(s)}</div></div><div class="sec"><h3>Your visits</h3><div id="visitsBox"></div><div class="vstat" id="vstat"></div></div>
+    <div class="sec"><h3>Your scores</h3><div id="scoresBox">${scoresHTML(s)}</div></div><div class="sec"><h3>Your visits</h3><div class="vacts"><button data-act="meal">＋ Add a meal</button><button data-act="note">💬 Comment</button></div><div id="visitsBox"></div><div class="vstat" id="vstat"></div></div>
     ${s.f ? `<div class="sec"><h3>Fun fact</h3><div class="fact">${esc(s.f)}</div>${s.src ? `<div class="src">Source: ${esc(new URL(s.src).hostname.replace('www.', ''))}</div>` : ''}</div>` : ''}
     ${s.hh.length ? `<div class="sec"><h3>Happy hour</h3>${s.hh.map(h => `<div class="row"><span>${esc(h.deal)}</span><b>${esc(h.days)}${h.time ? ' · ' + esc(h.time) : ''}</b></div>`).join('')}</div>` : ''}
     ${s.ent.length ? `<div class="sec"><h3>Entertainment</h3>${s.ent.map(e => `<div class="row"><span>${ENT[e.type] || '✨'} ${esc(e.detail)}</span><b>${esc(e.when || '')}</b></div>`).join('')}</div>` : ''}
@@ -438,11 +528,11 @@ function openSheet(s) {
   if (MOBILE) { drawer.classList.remove('on', 'full'); dOpen = null; }
   sheet.classList.add('on'); sheet.querySelector('.x').onclick = closeSheet; renderVisits(s);
 }
-function closeSheet() { if (cur) { if (saveT) { clearTimeout(saveT); saveT = null; saveSpot(cur); } if (NEWV && NEWV.spot === cur.id) NEWV = null; delete EDIT[cur.id]; } sheet.classList.remove('on', 'full'); cur = null; }
+function closeSheet() { if (cur) { if (noteT) { clearTimeout(noteT); saveNotes(cur); } if (saveT) { clearTimeout(saveT); saveT = null; saveSpot(cur); } if (NEWV && NEWV.spot === cur.id) NEWV = null; delete EDIT[cur.id]; } sheet.classList.remove('on', 'full'); cur = null; }
 const toast = (h) => { const t = $('#toast'); t.innerHTML = h; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 2600); };
 function logVisit(s) { // preview only: the real app opens the rating form here, then saves to Firebase
   const first = !VISITS[s.id]; const before = level(VISITS[s.id] || 0); VISITS[s.id] = (VISITS[s.id] || 0) + 1; const t = totems.get(s.id);
-  if (first) { setLit(t, true); burst(t.T.position, TIER[s.tier]); toast(`${esc(s.n)} joined your crew!<br><span style="font-size:13px">Say hi to ${nameOf(s)}</span>`); syncLabels(); }
+  if (first) { setLit(t, true); burst(t.T.position, TIER[s.tier]); toast(`${esc(s.n)} joined your crew!`); syncLabels(); }
   else if (level(VISITS[s.id]) > before) { burst(t.T.position, '#FFE48A'); toast(`${abilityOf(s).n} grew stronger! ${'★'.repeat(level(VISITS[s.id]))}`); }
   else toast('Visit logged'); openSheet(s); }
 
@@ -462,7 +552,7 @@ function item(s, sub) { return `<div class="item" data-id="${s.id}"><span class=
 function openDrawer(kind) {
   if (dOpen === kind) { drawer.classList.remove('on'); dOpen = null; return; } dOpen = kind; let h = ''; if (MOBILE && sheet.classList.contains('on')) closeSheet();
   const open = SPOTS.filter(s => s.tier !== 'Closed');
-  if (kind === 'search') h = `<div class="dr-hd"><h2>Search</h2></div><div class="qwrap"><input class="search" id="q" type="search" enterkeyhint="search" placeholder="Where did you go? Restaurant, bar, cuisine…" autocomplete="off"><button class="qx" aria-label="Clear">×</button></div><div id="qres"></div>`;
+  if (kind === 'search') h = `<div id="qres"></div>`;
   if (kind === 'next') h = `<div class="dr-hd"><h2>Try next</h2></div>` + open.filter(s => !VISITS[s.id]).sort((a, b) => (b.fun + b.price) - (a.fun + a.price)).slice(0, 20).map(s => item(s, `${s.tier} crew · ${s.ent.length ? (ENT[s.ent[0].type] || '✨ Events') : s.hh.length ? '🍻 Happy hour' : esc(s.c || s.k)}`)).join('');
   if (kind === 'week') { h = `<div class="dr-hd"><h2>This week</h2></div>`; DAYS.forEach(d => { const rows = []; open.forEach(s => { s.hh.forEach(x => { if (daysOf(x.days).includes(d)) rows.push(item(s, `🍻 ${esc(x.deal)}${x.time ? ' · ' + esc(x.time) : ''}`)); });
       s.ent.forEach(x => { if (['outdoor', 'sports'].includes(x.type)) return; if (daysOf(x.when).includes(d)) rows.push(item(s, `${ENT[x.type] || '✨'} ${esc(x.when)}`)); }); }); if (rows.length) h += `<div class="day">${d.toUpperCase()}</div>` + rows.join(''); }); }
@@ -473,11 +563,14 @@ function openDrawer(kind) {
     h = `<div class="dr-hd"><h2>Gallery</h2></div><div class="gal">${g.map(s => `<div class="gi" data-id="${s.id}"><img src="${esc(PHOTOS[s.id][0].u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><span>${esc(s.n)}</span></div>`).join('') || '<div class="mt" style="padding:16px">No photos yet.</div>'}</div>`; }
   if (kind === 'log') { h = `<div class="dr-hd"><h2>Log a visit</h2></div><div style="padding:10px 16px;font-size:13px;color:var(--ink2)">Where did you go? (In the real app this opens your rating form: dishes, experience, drinks.)</div>` + open.map(s => item(s, VISITS[s.id] ? `${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : 'Not visited yet')).join(''); }
   drawer.innerHTML = h; drawer.classList.add('on');
-  const q = drawer.querySelector('#q'); if (q) { const run = () => { const v = q.value.trim().toLowerCase(); drawer.querySelector('#qres').innerHTML = open.filter(s => !v || (s.n + ' ' + s.c + ' ' + s.k + ' ' + s.a).toLowerCase().includes(v)).slice(0, 25).map(s => item(s, esc(s.c || s.k) + (VISITS[s.id] ? ` · ${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : '') + (LIVE[s.id] && LIVE[s.id].combined != null ? ` · <b class="qs">${LIVE[s.id].combined.toFixed(1)}</b>` : '')).replace('</div></div>', `</div><button class="lg" data-log="${s.id}">＋ Log visit</button></div>`)).join(''); q.parentNode.classList.toggle('has', !!q.value); };
+  const q = kind === 'search' ? document.getElementById('q') : null; if (q) { const run = () => { const v = q.value.trim().toLowerCase(); drawer.querySelector('#qres').innerHTML = open.filter(s => !v || (s.n + ' ' + s.c + ' ' + s.k + ' ' + s.a).toLowerCase().includes(v)).slice(0, 25).map(s => item(s, esc(s.c || s.k) + (VISITS[s.id] ? ` · ${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : '') + (LIVE[s.id] && LIVE[s.id].combined != null ? ` · <b class="qs">${LIVE[s.id].combined.toFixed(1)}</b>` : '')).replace('</div></div>', `</div><button class="lg" data-log="${s.id}">＋ Log visit</button></div>`)).join(''); q.parentNode.classList.toggle('has', !!q.value); if (!drawer.querySelector('#qres .item')) drawer.querySelector('#qres').innerHTML = q.value ? '<div class="item" style="cursor:default">–</div>' : ''; };
     q.oninput = run; run(); q.onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); const it = drawer.querySelectorAll('#qres .item'); if (it.length === 1) it[0].click(); else q.blur(); };
-    drawer.querySelector('.qx').onclick = () => { q.value = ''; run(); q.focus(); }; if (!MOBILE) setTimeout(() => q.focus(), 300); }
+    }
 }
 drawer.addEventListener('click', e => { const lg = e.target.closest('[data-log]'); if (lg) { const s = SPOTS.find(x => x.id === lg.dataset.log); flyToSpot(s); startVisit(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } return; } const el = e.target.closest('[data-id]'); if (!el) return; const s = SPOTS.find(x => x.id === el.dataset.id); flyToSpot(s); if (dOpen === 'log') { logVisit(s); } else openSheet(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } });
+{ const q = document.getElementById('q'), show = () => { if (dOpen !== 'search') openDrawer('search'); };
+  q.addEventListener('focus', show); q.addEventListener('input', () => { if (dOpen !== 'search') openDrawer('search'); });
+  document.querySelector('.qbar .qx').addEventListener('click', () => { q.value = ''; q.parentNode.classList.remove('has'); if (dOpen === 'search') { drawer.classList.remove('on'); dOpen = null; } q.blur(); }); }
 document.querySelector('.dock').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (!b) return; if (b.dataset.d === 'log' && cur) { logVisit(cur); return; } openDrawer(b.dataset.d); });
 
 /* ---------------- picking ---------------- */
@@ -498,7 +591,7 @@ async function loadLive() { try { const r = await fetch('https://firestore.googl
     VISITS[id] = vis.length; const t = totems.get(id); if (t) setLit(t, true, true); });
   totems.forEach(applyLit); lblEls.forEach(el => el.remove()); lblEls.clear(); syncLabels(); if (cur) openSheet(cur); } catch (e) { console.warn('live data unavailable', e); } }
 /* ---------------- editing: same save path + private edit link as the live app ---------------- */
-const RAW = {}, EDIT = {}, MENU = {}, DELETED = new Set(); let NEWV = null, MTAB = 'food'; const DRY = location.hash === '#dryrun'; let fdb = null, EDITOR = DRY, firstSnap = true; // #dryrun = test the editor without saving
+const RAW = {}, EDIT = {}, MENU = {}, DELETED = new Set(); let NEWV = null, MTAB = 'food'; const DRY = location.hash === '#dryrun'; let fdb = null, EDITOR = DRY, firstSnap = true; if (DRY) document.body.classList.add('editor'); // #dryrun = test the editor without saving
 const todayISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const mdy = iso => iso ? iso.slice(5, 7) + '/' + iso.slice(8, 10) + '/' + iso.slice(2, 4) : '';
 const parseMDY = t => { const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/.exec(String(t).trim()); if (!m) return null; const y = m[3].length === 2 ? '20' + m[3] : m[3]; return `${y}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`; };
@@ -509,7 +602,7 @@ function computeLive(id, f) { const vis = Array.isArray(f.visits) ? f.visits : [
   VISITS[id] = vis.length; }
 function rebuildLive(changed) {
   changed.forEach(id => { const before = VISITS[id] || 0; computeLive(id, RAW[id] || {}); const t = totems.get(id); if (!t) return; const now = VISITS[id] || 0;
-    if (now && !before) { setLit(t, true, firstSnap); if (!firstSnap) { burst(t.T.position, TIER[t.s.tier]); toast(`${esc(t.s.n)} joined your crew!<br><span style="font-size:13px">Say hi to ${nameOf(t.s)}</span>`); } }
+    if (now && !before) { setLit(t, true, firstSnap); if (!firstSnap) { burst(t.T.position, TIER[t.s.tier]); toast(`${esc(t.s.n)} joined your crew!`); } }
     else if (!now && before) { t.target = 0; if (t.mascot) { t.T.remove(t.mascot); t.mascot = null; } }
     else if (!firstSnap && level(now) > level(before)) { burst(t.T.position, '#FFE48A'); toast(`${abilityOf(t.s).n} reached Lv ${level(now)}!`); } });
   totems.forEach(applyLit); lblEls.forEach(el => el.remove()); lblEls.clear(); syncLabels(hover);
@@ -533,27 +626,29 @@ function newVisitHTML(v) { const x = v.experience;
   return `<div class="visit nv" data-v="${esc(v.id)}"><div class="nvh"><b>New visit</b><input class="vd" value="${esc(mdy(v.date))}" placeholder="MM/DD/YY"></div>
     <div class="xrow"><span>Experience</span><b class="xread">${x == null ? '–' : x.toFixed(1)}</b></div>
     <input class="vxr${x == null ? ' unset' : ''}" type="range" min="0" max="10" step="0.1" value="${x == null ? 7 : x}" aria-label="Experience score">
-    <div class="xhint"><input class="vx" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${x == null ? '' : x}" placeholder="0-10"> slide, or type the score</div>
+    <div class="xhint"><input class="vx" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${x == null ? '' : x}" placeholder="0-10"></div>
     <div class="mtabs"><button class="mtab${MTAB === 'food' ? ' on' : ''}" data-t="food">🍽️ Food</button><button class="mtab${MTAB === 'drink' ? ' on' : ''}" data-t="drink">🍹 Drinks</button></div>
     <div class="mchips"><span class="mt">Loading the menu…</span></div>
     ${dishRows(v, false)}
     <div class="vadd"><button data-add="food">＋ Type a food</button><button data-add="drink">＋ Type a drink</button></div>
+    <textarea class="vn" rows="2" placeholder="Comment">${esc(noteOf(v))}</textarea>
     <div class="vstat"></div><button class="vdone">Done</button></div>`; }
 function fillChips(s, v) { const box = sheet.querySelector('.nv .mchips'); if (!box) return;
   menuFor(s.id).then(list => { if (!sheet.contains(box)) return; const have = new Set((v.dishes || []).map(d => (d.name || '').trim().toLowerCase()));
     const items = list.filter(x => (MTAB === 'drink') === x.drink && !have.has(x.n.trim().toLowerCase())).slice(0, 80);
-    box.innerHTML = items.length ? items.map(x => `<button class="mchip" data-name="${esc(x.n)}">${esc(x.n)}</button>`).join('') : `<span class="mt">${list.length ? 'Nothing else on this list.' : 'No menu on file.'} Use ＋ Type a ${MTAB === 'drink' ? 'drink' : 'food'}.</span>`; }); }
-function renderVisits(s) { const box = $('#visitsBox'); if (!box || !cur || cur.id !== s.id) return;
+    box.innerHTML = items.length ? items.map(x => `<button class="mchip" data-name="${esc(x.n)}">${esc(x.n)}</button>`).join('') : ''; }); }
+function renderVisits(s) { const box = $('#visitsBox'); if (!box || !cur || cur.id !== s.id) return; if (EDITOR && !(s.id in NOTES) && !NOTES_FAIL.has(s.id)) loadNotes(s.id).then(() => { if (cur && cur.id === s.id) renderVisits(s); });
   const all = (EDITOR ? editsOf(s) : ((RAW[s.id] || {}).visits || [])).slice().sort((a, b) => (b.date || '') < (a.date || '') ? -1 : 1);
   const nb = $('#newBox'), nv = EDITOR && NEWV && NEWV.spot === s.id ? all.find(v => v.id === NEWV.id) : null;
   if (nb) { nb.innerHTML = nv ? newVisitHTML(nv) : ''; if (nv) fillChips(s, nv); }
   const vis = all.filter(v => v !== nv);
-  if (!vis.length) { box.innerHTML = `<datalist id="ml-food"></datalist><datalist id="ml-drink"></datalist><div class="mt">${nv ? 'Your first visit here.' : EDITOR ? 'No visits yet. Use 🔎 Search / add to log one.' : 'No visits yet.'}</div>`; menuFor(s.id).then(fillLists); return; }
+  if (!vis.length) { box.innerHTML = `<datalist id="ml-food"></datalist><datalist id="ml-drink"></datalist><div class="mt">${nv ? '' : '–'}</div>`; menuFor(s.id).then(fillLists); return; }
   const ro = !EDITOR, num = (v) => v == null ? '' : v;
   box.innerHTML = `<datalist id="ml-food"></datalist><datalist id="ml-drink"></datalist>` + vis.map(v => `<div class="visit" data-v="${esc(v.id)}">
     <div class="vh"><span>📅 <input class="vd" value="${esc(mdy(v.date))}" placeholder="MM/DD/YY" ${ro ? 'disabled' : ''}></span>
       <label>Experience <input class="vx" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(v.experience)}" ${ro ? 'disabled' : ''}></label></div>
     ${dishRows(v, ro)}
+    ${ro ? '' : `<textarea class="vn" rows="2" placeholder="Comment">${esc(noteOf(v))}</textarea>`}
     ${ro ? '' : `<div class="vadd"><button data-add="food">＋ Food</button><button data-add="drink">＋ Drink</button><button class="vdel">Delete visit</button></div>`}</div>`).join('');
   menuFor(s.id).then(fillLists);
 }
@@ -568,11 +663,27 @@ async function saveSpot(s) { if (!EDITOR || (!fdb && !DRY)) return; const base =
   const body = JSON.parse(JSON.stringify({ visits: clean, want: clean.length ? false : !!base.want, hidden: !!base.hidden, edit: base.edit || null, custom: base.custom || null, updatedAt: new Date().toISOString() }));
   if (DRY) { window.__lastBody = body; vstat('Saved ✓ (test mode, nothing written)'); return; }
   try { await fdb.doc('spots/' + s.id).set(body); vstat('Saved ✓ · live on every device'); } catch (e) { vstat(/permission|denied/i.test(String(e.code || e.message)) ? 'This device can\'t save: open your edit link once' : 'Couldn\'t reach the cloud. Try again in a moment.'); } }
+/* ---------------- comments: private notes/<id> {byVisit:{visitId:text}}, editors only (same as the live app) ---------------- */
+const NOTES = {}, NOTES_FAIL = new Set(); let noteT = null;
+const noteOf = v => (cur && NOTES[cur.id] && NOTES[cur.id][v.id]) || '';
+async function loadNotes(id) { if (id in NOTES || !EDITOR) return; if (DRY || !fdb) { NOTES[id] = {}; return; }
+  try { const d = await fdb.doc('notes/' + id).get(); NOTES[id] = d.exists ? Object.assign({}, d.data().byVisit || {}) : {}; } catch (e) { NOTES_FAIL.add(id); } }
+function setNote(s, vid, text) { if (!(s.id in NOTES)) return; NOTES[s.id][vid] = text; const v = editsOf(s).find(x => x.id === vid); if (v && v._touched === false) { delete v._touched; queueSave(s); }
+  vstat('Saving…'); clearTimeout(noteT); noteT = setTimeout(() => saveNotes(s), 800); }
+async function saveNotes(s) { noteT = null; const map = Object.fromEntries(Object.entries(NOTES[s.id] || {}).filter(([, t]) => t && t.trim()));
+  if (DRY) { window.__lastNotes = map; vstat('Saved ✓ (test mode, nothing written)'); return; }
+  try { await fdb.doc('notes/' + s.id).set({ byVisit: map }); vstat('Saved ✓ · live on every device'); } catch (e) { vstat('Couldn\'t save the comment. Try again in a moment.'); } }
+sheet.addEventListener('click', async e => { const b = e.target.closest('[data-act]'); if (!b || !cur) return; const s = cur;
+  if (b.dataset.act === 'meal') { startVisit(s); return; }
+  await loadNotes(s.id); const vis = (EDITOR ? editsOf(s) : []).slice().sort((a, c) => (c.date || '') < (a.date || '') ? -1 : 1);
+  if (!vis.length || (NEWV && NEWV.spot === s.id)) { if (!(NEWV && NEWV.spot === s.id)) startVisit(s); setTimeout(() => { const t = sheet.querySelector('.nv .vn'); t && (t.scrollIntoView({ block: 'center', behavior: 'smooth' }), t.focus()); }, 500); return; }
+  renderVisits(s); const t = sheet.querySelector(`.visit[data-v="${vis[0].id}"] .vn`); if (t) { t.scrollIntoView({ block: 'center', behavior: 'smooth' }); t.focus(); } });
 function startVisit(s) { if (firstSnap && !DRY) { toast('Loading your visits… try again in a second'); return; } if (!EDITOR) { toast('Open this map with your edit link to add visits'); openSheet(s); return; }
   if (cur && cur.id !== s.id) closeSheet();
   const ed = editsOf(s), id = 'v' + Date.now().toString(36); ed.push({ id, date: todayISO(), experience: null, dishes: [], notes: '', _touched: false });
   NEWV = { spot: s.id, id }; MTAB = 'food'; openSheet(s); }
-sheet.addEventListener('input', e => { if (!EDITOR || !cur) return; const vEl = e.target.closest('.visit'); if (!vEl) return; const v = editsOf(cur).find(x => x.id === vEl.dataset.v); if (!v) return;
+sheet.addEventListener('input', e => { if (!EDITOR || !cur) return; const vEl = e.target.closest('.visit'); if (!vEl) return;
+  if (e.target.classList.contains('vn')) { setNote(cur, vEl.dataset.v, e.target.value); return; } const v = editsOf(cur).find(x => x.id === vEl.dataset.v); if (!v) return;
   const val = e.target.value, n = val === '' ? null : Math.max(0, Math.min(10, Math.round(parseFloat(val) * 10) / 10));
   if (e.target.classList.contains('vx') || e.target.classList.contains('vxr')) { v.experience = isNaN(n) ? null : n;
     const other = vEl.querySelector(e.target.classList.contains('vx') ? '.vxr' : '.vx'), rd = vEl.querySelector('.xread');
@@ -592,7 +703,7 @@ sheet.addEventListener('click', e => { if (!EDITOR || !cur) return; const vEl = 
 const clock = new THREE.Clock(); let introT = 0;
 let SEEN = false; try { SEEN = !!sessionStorage.getItem('ce3d.intro'); sessionStorage.setItem('ce3d.intro', '1'); } catch (e) {}
 const INTRO_DUR = SEEN ? 1.1 : 3.2;
-// battery: full speed while you touch things or something animates; ~30 fps when idle; ~10 fps after a minute; stopped when the app is hidden
+// battery: full speed while you touch things or something animates; ~30 fps when idle; stopped when the app is hidden
 let lastAct = performance.now(), lastDraw = 0, sleeping = false, animBusy = true;
 const poke = () => { lastAct = performance.now(); if (sleeping && !document.hidden) { sleeping = false; clock.getDelta(); requestAnimationFrame(frame); } };
 ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, poke, { passive: true }));
@@ -600,7 +711,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) poke
 syncLabels();
 function frame(now = performance.now()) {
   if (document.hidden) { sleeping = true; return; }
-  const idle = now - lastAct, busy = introT < 1 || fly.t < 1 || bursts.length || animBusy, gap = busy || idle < 4000 ? 0 : idle < 60000 ? 33 : 100;
+  const idle = now - lastAct, busy = introT < 1 || fly.t < 1 || bursts.length || animBusy, gap = busy || idle < 4000 ? 0 : 33; // stays at ~30 fps so dragons never look choppy
   if (gap && now - lastDraw < gap) { requestAnimationFrame(frame); return; } lastDraw = now; animBusy = false;
   const dt = Math.min(clock.getDelta(), .1), T = clock.elapsedTime;
   if (introT < 1) { introT = Math.min(1, introT + dt / INTRO_DUR); const k = ease(introT); camera.position.lerpVectors(new THREE.Vector3(-600, 4200, 4200), HOME.pos, k); if (introT >= 1) controls.update(); }
@@ -612,6 +723,8 @@ function frame(now = performance.now()) {
     if (t.mascot) { const m = t.mascot; if (m.userData.pop < 1) { animBusy = true; m.userData.pop = Math.min(1, m.userData.pop + dt / .9); m.scale.setScalar(3.4 * Math.max(.001, backOut(m.userData.pop))); }
       t.walk += dt * .22; const R = 42; m.position.set(Math.cos(t.walk) * R, 0, Math.sin(t.walk) * R); m.rotation.y = -t.walk; // strolls around its shrine
       m.userData.body.position.y = Math.abs(Math.sin(T * 3.2 + t.walk * 4)) * 1.6; m.children.forEach(c => { if (c.userData.spin) c.rotation.z += dt * c.userData.spin; }); } });
+  PICKETS.forEach(g => { g.position.y = Math.abs(Math.sin(T * 2.2 + g.userData.k * 1.3)) * 2.5; g.rotation.z = Math.sin(T * 2.2 + g.userData.k) * .05; });
+  flyDragons(dt, T); ISLES.forEach((g, i) => { g.position.y = g.userData.y + Math.sin(T * .25 + i) * 14; g.rotation.y += dt * .01; });
   clouds.children.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 4500) c.position.x = -4500; });
   const pa = pollen.geometry.attributes.position; for (let i = 0; i < PN; i++) { let y = pa.getY(i) + dt * 4; if (y > 170) y = 0; pa.setY(i, y); pa.setX(i, pa.getX(i) + Math.sin(T * .5 + i) * dt * 2); } pa.needsUpdate = true;
   for (let i = bursts.length - 1; i >= 0; i--) { const b = bursts[i]; b.t += dt; const p = b.m.geometry.attributes.position; for (let k = 0; k < p.count; k++) { p.setXYZ(k, p.getX(k) + b.v[k * 3] * dt, p.getY(k) + (b.v[k * 3 + 1] - b.t * 60) * dt, p.getZ(k) + b.v[k * 3 + 2] * dt); } p.needsUpdate = true; b.m.material.opacity = 1 - b.t / 1.6; if (b.t > 1.6) { scene.remove(b.m); bursts.splice(i, 1); } }
@@ -621,5 +734,5 @@ function frame(now = performance.now()) {
 addEventListener('resize', () => { poke(); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); });
 requestAnimationFrame(frame);
 setTimeout(() => $('#intro').classList.add('out'), SEEN ? 60 : 500);
-window.__ok = true;
+window.__ok = true; window.__look = (x, z, d = 420) => flyTo(new THREE.Vector3(x + d * .6, d * .7, z + d * .8), new THREE.Vector3(x, 0, z), .1);
 </script></body></html>
