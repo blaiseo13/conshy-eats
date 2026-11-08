@@ -1,0 +1,1 @@
+window.FIREBASE_CONFIG={"apiKey":"AIzaSyB1oOq73NbIgy63QXCCLrDMAMFAaIZ0rCc","authDomain":"conshy-eats.firebaseapp.com","projectId":"conshy-eats","storageBucket":"conshy-eats.firebasestorage.app","messagingSenderId":"948853105635","appId":"1:948853105635:web:e612f33e6ff9ff7fc9f6d6"};
