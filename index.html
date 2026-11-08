@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=9">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=9">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=9">
+<link rel="manifest" href="manifest.webmanifest?v=10">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=10">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=10">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=9"></script>
-<script src="places.js?v=9"></script>
-<script src="map-data.js?v=9"></script>
+<script src="firebase-config.js?v=10"></script>
+<script src="places.js?v=10"></script>
+<script src="map-data.js?v=10"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -37,7 +37,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-.ro #sbtn,.ro #logV,.ro #wantB,.ro #editSpot,.ro #hideSpot,.ro #delSpot,.ro [data-ev],.ro [data-dv],.ro #bAdd,.ro [data-star],.ro #dbody .sec:last-child{display:none!important}
+.ro #sbtn,.ro #logV,.ro #wantB,.ro #editSpot,.ro #hideSpot,.ro #delSpot,.ro button[data-ev],.ro [data-dv],.ro #bAdd,.ro [data-star],.ro #dbody .sec:last-child{display:none!important}
 html,body{height:100%;margin:0;overflow:hidden;background:var(--ground);color:var(--ink);font:14px/1.45 var(--font);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -234,6 +234,48 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .rx-bubble b{display:block;font-size:20px;font-weight:800;letter-spacing:-.01em}.rx-bubble span{font-size:13px;color:var(--ink2)}.rx-bubble em{font-style:normal;font-weight:800}
 @keyframes rxIn{0%{transform:translateY(120%) scale(.6)}60%{transform:translateY(-6%) scale(1.08)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.mbody,.blink,.spark,.tear,.sweat,.arm{animation:none!important}}
+.addown{flex-wrap:wrap}
+textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box-shadow .3s}
+.vchip[data-ev],.dish[data-dn]{cursor:pointer}
+.vchip[data-ev]:hover{filter:brightness(.95)}
+.dish[data-dn]:hover{background:rgba(255,255,255,.5)}
+.ro .vchip[data-ev],.ro .dish[data-dn]{cursor:default}
+#notsaved{position:fixed;z-index:45;left:50%;top:max(14px,env(safe-area-inset-top,0px));transform:translateX(-50%);background:#DC2626;color:#fff;border:0;border-radius:14px;padding:10px 16px;font-weight:800;font-size:14px;box-shadow:0 10px 30px rgba(220,38,38,.4);animation:up .3s both}
+.actor,.prop{pointer-events:none}
+.life-off .actor,.life-off .prop{display:none}
+.actor .a-body{width:34px;height:34px;transition:transform .3s}
+.actor.a-vehicle .a-body{width:auto;height:auto;font-size:26px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.actor.flip .a-body{transform:scaleX(-1)}
+.actor.walking .a-body{animation:walk .42s ease-in-out infinite alternate}
+.actor.a-vehicle.walking .a-body{animation:drive .25s ease-in-out infinite alternate}
+@keyframes walk{0%{translate:0 0;rotate:-4deg}100%{translate:0 -3px;rotate:4deg}}
+@keyframes drive{0%{translate:0 0}100%{translate:0 -1.5px}}
+.actor.fallen .a-body{transform:rotate(90deg) translateX(10px);transition:transform .35s cubic-bezier(.5,1.8,.5,1)}
+.actor.climb .a-body{animation:climb .4s ease-in-out infinite alternate}
+@keyframes climb{0%{translate:0 0}100%{translate:0 -16px}}
+.actor.siren .a-body{animation:siren .5s steps(1) infinite}
+@keyframes siren{0%{filter:drop-shadow(0 0 6px #EF4444)}50%{filter:drop-shadow(0 0 6px #3B82F6)}}
+.a-say{position:absolute;left:50%;bottom:100%;transform:translate(-50%,4px) scale(.6);opacity:0;background:#fff;border-radius:12px;padding:3px 8px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(15,23,42,.2);transition:all .25s}
+.a-say.on{opacity:1;transform:translate(-50%,-4px) scale(1)}
+.prop.pop>*{animation:popIn .5s cubic-bezier(.3,1.7,.5,1) both}
+@keyframes popIn{0%{transform:scale(0)}100%{transform:scale(1)}}
+.prop.bye{opacity:0;transition:opacity .5s}
+.station{display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:10px;padding:2px 7px 3px;box-shadow:0 4px 12px rgba(15,23,42,.25);font-size:20px}
+.station b{font-size:9px;letter-spacing:.04em;color:#334155}
+.tree{font-size:40px;position:relative;line-height:1}
+.tree .kit{position:absolute;font-size:16px;left:14px;top:4px;animation:meow 1s ease-in-out infinite alternate}
+.tree.saved .kit{top:30px;left:30px;transition:all .6s}
+@keyframes meow{0%{rotate:-8deg}100%{rotate:8deg}}
+.fire{font-size:34px;position:relative;filter:drop-shadow(0 0 10px #F97316);animation:burn .3s ease-in-out infinite alternate}
+.fire i{position:absolute;font-style:normal;font-size:22px;left:-14px;top:10px}.fire i+i{left:24px;top:6px}
+.fire.douse{animation:none;opacity:.5;transition:opacity 2s}
+@keyframes burn{0%{transform:scale(1,1)}100%{transform:scale(1.08,1.15)}}
+.puff{font-size:28px;animation:puff 1.4s ease-out both}@keyframes puff{0%{transform:scale(.5);opacity:1}100%{transform:translateY(-30px) scale(1.6);opacity:0}}
+.geyser{position:relative;width:20px;height:40px}
+.geyser i{position:absolute;bottom:0;left:2px;font-style:normal;font-size:16px;animation:spray 1s ease-out infinite}
+.geyser i:nth-child(2){animation-delay:.25s;left:-6px}.geyser i:nth-child(3){animation-delay:.5s;left:10px}.geyser i:nth-child(4){animation-delay:.75s}
+@keyframes spray{0%{transform:translateY(0) scale(.6);opacity:1}100%{transform:translateY(-40px) scale(1.1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.actor,.prop{display:none}}
 .models{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px}
 .models button{border:1px solid var(--glass-line);background:rgba(255,255,255,.75);border-radius:12px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px}
 .models button span{font-size:20px}
@@ -351,9 +393,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
   <button id="bReset" title="Reset view"><span class="ic">⌂</span><span class="tx">Reset</span></button>
   <button id="b3d" title="Flat or 3D"><span class="ic">◩</span><span class="tx">2D</span></button>
   <span class="sep"></span>
+  <button id="bLife" class="on" title="Town life on/off"><span class="ic">🎭</span><span class="tx">Town life</span></button>
   <button id="bPreview" title="Preview sizes"><span class="ic">✨</span><span class="tx">Preview sizes</span></button>
 </nav>
 <div id="toast" role="status"></div>
+<button id="notsaved" hidden>⚠️ Not saved yet · tap to retry</button>
 <div id="react" aria-live="polite"></div>
 
 <script>
@@ -431,6 +475,9 @@ const dfmt=v=>v==null?'—':(VIEW==='reviews'?'★'+(v/2).toFixed(1):fmt(v));
 function reviewOf(id){ const r=MENUS[id]&&MENUS[id].reviews; return r&&typeof r.rating==='number'?r:null; }
 function hostOf(u){ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(e){ return 'source'; } }
 const dirty=new Set(); let flushT=null, flushing=false;
+const PKEY='conshyEats.pending';
+function savePending(){ try{ localStorage.setItem(PKEY,JSON.stringify([...dirty])); }catch(e){} }
+try{ (JSON.parse(localStorage.getItem(PKEY)||'[]')||[]).forEach(id=>dirty.add(id)); }catch(e){}
 
 function setSaveUI(){
   const dot=$('#sdot'), t=$('#stext');
@@ -443,7 +490,7 @@ function cacheLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }ca
 function save(id){
   if(preview||READONLY) return;
   S.savedAt=new Date().toISOString(); cacheLocal();
-  if(DB||FB){ if(id) dirty.add(id); saveState='saving'; setSaveUI(); clearTimeout(flushT); if(DB) flushT=setTimeout(flush,350); }
+  if(DB||FB){ if(id) dirty.add(id); savePending(); saveState='saving'; setSaveUI(); setTimeout(()=>{ const nb=$('#notsaved'); if(nb&&dirty.size&&saveState!=='saved') nb.hidden=false; },12000); clearTimeout(flushT); if(DB) flushT=setTimeout(flush,350); }
   else { saveState='local'; setSaveUI(); }
 }
 async function flush(){
@@ -454,11 +501,15 @@ async function flush(){
       const body=docBody(id);
       if(body) await DB.doc('spots/'+id).set(body); else await DB.doc('spots/'+id).delete();
       if(FB){ const st=S.spots[id]; const n={}; ((st&&st.visits)||[]).forEach(v=>{ if(v.notes) n[v.id]=v.notes; }); await DB.doc('notes/'+id).set({byVisit:n}); }
-      dirty.delete(id);
+      dirty.delete(id); savePending();
     }
     saveState='saved';
   }catch(e){ saveState=(e && /not_granted|permission|denied|not_writer/i.test(String(e.code||e.message))) ? 'denied' : 'unreachable'; }
-  flushing=false; setSaveUI(); if(dirty.size && saveState==='unreachable'){ clearTimeout(flushT); flushT=setTimeout(flush,4000); }
+  flushing=false; setSaveUI();
+  if(dirty.size && saveState==='denied' && FB && !flush._rereg){ flush._rereg=true; try{ await reRegister(); }catch(e){} clearTimeout(flushT); flushT=setTimeout(flush,800); }
+  else if(dirty.size){ clearTimeout(flushT); flushT=setTimeout(flush,saveState==='unreachable'?4000:15000); }
+  if(!dirty.size) flush._rereg=false;
+  const nb=$('#notsaved'); if(nb) nb.hidden=!dirty.size||saveState==='saving';
 }
 function docBody(id){
   const st=S.spots[id]; const cust=(S.custom||[]).find(c=>c.id===id);
@@ -474,6 +525,12 @@ function applySnapshot(snap){
     if(b.custom && typeof b.custom.lat==='number') custom.push({id:d.id,...b.custom}); }
   for(const id of dirty){ if(S.spots[id]) spots[id]=S.spots[id]; else delete spots[id]; const c=(S.custom||[]).find(x=>x.id===id); const i=custom.findIndex(x=>x.id===id); if(c){ if(i<0) custom.push(c); else custom[i]=c; } else if(i>=0) custom.splice(i,1); }
   S.spots=spots; S.custom=custom; cacheLocal();
+}
+async function reRegister(){
+  let key=null; try{ key=localStorage.getItem('conshyEats.editKey'); }catch(e){}
+  const m=/^#edit-([A-Za-z0-9_-]{10,})$/.exec(location.hash); if(!key&&m) key=m[1]; if(!key) return;
+  const fdb=firebase.firestore(); let u=firebase.auth().currentUser; if(!u) u=(await firebase.auth().signInAnonymously()).user;
+  const dref=fdb.doc('devices/'+u.uid); if(!(await dref.get()).exists) await dref.set({k:key,at:new Date().toISOString()});
 }
 async function initFirebase(){
   firebase.initializeApp(FB);
@@ -566,9 +623,9 @@ function recompute(){
 /* ================= geometry ================= */
 function sizeFor(p){
   if(p.hidden) return {S:0,P:0};
-  if(VIEW==='reviews'){ if(p.ds==null) return {S:6.5,P:.6}; const t=clamp((p.ds-6)/4,0,1), k=Math.pow(t,2.2); return {S:8+60*k, P:1+36*k}; }
+  if(VIEW==='reviews'){ if(p.ds==null) return {S:10,P:.8}; const t=clamp((p.ds-6)/4,0,1), k=Math.pow(t,2.2); return {S:8+60*k, P:1+36*k}; }
   const s=p.sc.combined, been=p.visits.length>0 || (preview&&preview[p.id]);
-  if(!been) return {S:6.5,P:.6};
+  if(!been) return {S:10,P:.8};
   if(s==null) return {S:24,P:3};
   const t=clamp((s-4)/6,0,1), k=Math.pow(t,2);
   return {S:24+58*k, P:3+38*k};
@@ -683,7 +740,7 @@ map.on('load',()=>{
   refreshAll(true);
   setTimeout(()=>$('#intro').classList.add('gone'),1700); setTimeout(()=>$('#intro')?.remove(),2700);
   map.flyTo({...HOME(),duration:4200,curve:1.3,essential:true});
-  requestAnimationFrame(pulseLoop); requestAnimationFrame(spinLoop);
+  requestAnimationFrame(pulseLoop); requestAnimationFrame(spinLoop); requestAnimationFrame(lifeTick);
   initCloud();
 });
 map.on('move',positionMarkers);
@@ -837,7 +894,7 @@ function select(id,fly){
   if(isPhone()) setSheet(false);
   renderDrawer(); $('#drawer').classList.add('open');
   if(fly){ stopOrbit(); const sz=sizeFor(p), big=sz.P+MODELS[p.mkey].top*sz.S; map.flyTo({center:[p.lng,p.lat],zoom:big>100?16.2:big>40?16.8:17.4,pitch:60,bearing:map.getBearing()-20,padding:flyPad(),duration:1800,essential:true}); }
-  syncMarkers(); startAnim(); setTimeout(()=>boing(id, p.visits.length?3.2:5),fly?900:50);
+  syncMarkers(); startAnim(); if(p.visits.length) setTimeout(()=>boing(id,3.2),fly?900:50);
   document.querySelectorAll('#list .row').forEach(r=>r.classList.toggle('sel',r.dataset.id===id));
 }
 function closeDrawer(){ $('#drawer').classList.remove('open'); selectedId=null; drawerMode='view'; syncMarkers(); startAnim(); document.querySelectorAll('#list .row.sel').forEach(r=>r.classList.remove('sel')); }
@@ -865,13 +922,13 @@ function renderDrawer(){
   if(preview) h+=`<div class="note-y">Preview mode shows sample scores. Exit preview to rate and edit for real.</div>`;
   else{
     h+=`<div class="btnrow"><button class="btn p grow" id="logV">${p.visits.length?'＋ Log another visit':'✓ I’ve been here'}</button>${s.combined==null?`<button class="btn g" id="wantB">${p.want?'★ On my list':'☆ Want to try'}</button>`:''}</div>`;
-    if(s.dishList.length) h+=`<div class="sec"><span class="label">Dishes ranked</span><div class="card" style="padding:6px 14px">`+s.dishList.map((d,i)=>`<div class="dish"><span style="width:20px;color:var(--ink3);font-weight:700;font-size:12px">${i===0?'🏆':i+1}</span><span class="nm">${esc(d.name)}${d.n>1?`<small>tried ${d.n}× · avg</small>`:''}</span><span class="pill tnum" style="background:${scoreColor(d.score)}">${fmt(d.score)}</span></div>`).join('')+`</div></div>`;
+    if(s.dishList.length) h+=`<div class="sec"><span class="label">Dishes ranked</span><div class="card" style="padding:6px 14px">`+s.dishList.map((d,i)=>`<div class="dish" data-dn="${esc(d.name)}" role="button" title="Tap to change this score"><span style="width:20px;color:var(--ink3);font-weight:700;font-size:12px">${i===0?'🏆':i+1}</span><span class="nm">${esc(d.name)}${d.n>1?`<small>tried ${d.n}× · avg</small>`:''}</span><span class="pill tnum" style="background:${scoreColor(d.score)}">${fmt(d.score)}</span></div>`).join('')+`</div></div>`;
     if(s.drinkList&&s.drinkList.length) h+=`<div class="sec"><span class="label">Drinks ranked</span><div class="card" style="padding:6px 14px">`+s.drinkList.map((d,i)=>`<div class="dish"><span style="width:20px;color:var(--ink3);font-weight:700;font-size:12px">${i===0?'🍹':i+1}</span><span class="nm">${esc(d.name)}${d.n>1?`<small>had ${d.n}× · avg</small>`:''}</span><span class="pill tnum" style="background:${scoreColor(d.score)}">${fmt(d.score)}</span></div>`).join('')+`</div></div>`;
     h+=`<div class="sec"><span class="label">Visits</span>`;
     if(!vs.length) h+=`<div class="empty" style="padding:6px 0;text-align:left">No visits yet. Log one and watch this place balloon into a giant.</div>`;
     for(const v of vs){
-      h+=`<div class="card visit"><div class="vh"><b class="tnum">${isoToMDY(v.date)}</b>${typeof v.experience==='number'?`<span class="chip i tnum">Experience ${fmt(v.experience)}</span>`:''}<span class="sp"></span><button class="ib" data-ev="${v.id}" aria-label="Edit visit">✎</button><button class="ib" data-dv="${v.id}" aria-label="Delete visit">🗑</button></div>
-        ${(v.dishes||[]).length?`<div class="vd">${v.dishes.map(d=>`<span class="vchip${d.kind==='drink'?' drink':''}">${d.kind==='drink'?'🍹 ':''}${esc(d.name)}<b class="tnum">${fmt(d.score)}</b></span>`).join('')}</div>`:''}
+      h+=`<div class="card visit"><div class="vh"><b class="tnum">${isoToMDY(v.date)}</b>${typeof v.experience==='number'?`<span class="chip i tnum">Experience ${fmt(v.experience)}</span>`:''}<span class="sp"></span><button class="btn g sm" data-ev="${v.id}" aria-label="Edit visit">✎ Edit</button><button class="ib" data-dv="${v.id}" aria-label="Delete visit">🗑</button></div>
+        ${(v.dishes||[]).length?`<div class="vd">${v.dishes.map(d=>`<span class="vchip${d.kind==='drink'?' drink':''}" data-ev="${v.id}" role="button" title="Tap to change this score">${d.kind==='drink'?'🍹 ':''}${esc(d.name)}<b class="tnum">${fmt(d.score)}</b></span>`).join('')}</div>`:''}
         ${v.notes?`<div class="vnote">“${esc(v.notes)}”</div>`:''}
         ${confirmDel===v.id?`<div class="confirm">Delete this visit?<button class="btn d sm" data-cdv="${v.id}">Delete</button><button class="btn g sm" data-ndv>Keep</button></div>`:''}</div>`;
     }
@@ -885,7 +942,8 @@ function renderDrawer(){
   on('#editSpot',()=>{ drawerMode='spot'; renderDrawer(); $('#dbody').scrollTop=0; });
   on('#hideSpot',()=>{ const st=spotState(p.id); st.hidden=!st.hidden; save(p.id); toast(st.hidden?'Hidden. Find it under All':'Back on the map'); refreshAll(); if(st.hidden) closeDrawer(); });
   on('#delSpot',()=>{ S.custom=S.custom.filter(c=>c.id!==p.id); delete S.spots[p.id]; save(p.id); closeDrawer(); refreshAll(); toast('Spot removed'); });
-  document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>{ drawerMode='visit'; editVisitId=b.dataset.ev; renderDrawer(); $('#dbody').scrollTop=0; });
+  document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>{ if(preview) return; drawerMode='visit'; editVisitId=b.dataset.ev; renderDrawer(); $('#dbody').scrollTop=0; });
+  document.querySelectorAll('#dbody .dish[data-dn]').forEach(r=>r.onclick=()=>{ if(preview||READONLY) return; const n=r.dataset.dn.toLowerCase(); const v=p.visits.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).find(v=>(v.dishes||[]).some(d=>d.name.trim().toLowerCase()===n)); if(v){ drawerMode='visit'; editVisitId=v.id; renderDrawer(); $('#dbody').scrollTop=0; } });
   document.querySelectorAll('[data-dv]').forEach(b=>b.onclick=()=>{ confirmDel=b.dataset.dv; renderDrawer(); });
   document.querySelectorAll('[data-ndv]').forEach(b=>b.onclick=()=>{ confirmDel=null; renderDrawer(); });
   document.querySelectorAll('[data-cdv]').forEach(b=>b.onclick=()=>{ const st=spotState(p.id); st.visits=st.visits.filter(v=>v.id!==b.dataset.cdv); confirmDel=null; save(p.id); refreshAll(); toast('Visit deleted'); });
@@ -925,7 +983,8 @@ function renderVisitForm(p){
       ${menu&&menu.items&&menu.items.length>8?'<div class="search" style="margin:0 0 8px"><span>⌕</span><input id="mq" type="search" placeholder="Find on the menu…" autocomplete="off"></div>':''}
       <div id="menuList" class="menulist"></div>
       <div class="quick" id="quick" hidden>${QUICK.map(([e,n])=>`<button type="button" data-q="${esc(n)}">${e} ${esc(n)}</button>`).join('')}</div>
-      <div class="addown"><input type="text" id="ownDish" placeholder="Something not on the menu?"><button class="btn g sm" id="ownAdd">Add</button></div>
+      <div class="addown"><input type="text" id="ownDish" placeholder="Not on the menu? Type it here"><button class="btn g sm" id="ownAdd" title="Add as a dish and score it">＋ Dish</button><button class="btn g sm" id="ownNote" title="Just log it in your notes, no score">📝 Note</button></div>
+      <div class="hint">＋ Dish adds something you ate and scores it. 📝 Note just saves it in your notes, with no score.</div>
     </div>
     <div class="card" style="padding:14px"><span class="l" style="color:var(--exp)">Overall experience: service, vibe, wait, value</span>${sliderHTML('exp',expVal,expVal==null)}<div class="hint">Leave at — to skip. The spot gets a combined score once it has both.</div></div>
     <div><label class="l" for="vNotes">Notes</label><textarea id="vNotes" placeholder="What stood out?">${esc(v?.notes||'')}</textarea></div>
@@ -959,6 +1018,7 @@ function renderVisitForm(p){
     $('#quick').hidden=mode!=='drink'; $('#vfHead').textContent=mode==='drink'?'What did you drink? Tap it, then rate it':'What did you get? Tap it, then rate it'; $('#vfHead').style.color=mode==='drink'?'#7C3AED':'var(--food)';
     $('#ownDish').placeholder=mode==='drink'?'Drink not listed? (e.g. Pinot noir)':'Something not on the menu?'; filter=''; if(mq) mq.value=''; draw(); });
   $('#ownAdd').onclick=addOwn; $('#ownDish').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); addOwn(); } };
+  $('#ownNote').onclick=()=>{ const n=$('#ownDish').value.trim(); if(!n) return; const ta=$('#vNotes'); ta.value=(ta.value.trim()?ta.value.trim()+' · ':'')+n; $('#ownDish').value=''; toast('Added to your notes (no score)'); ta.classList.add('flash'); setTimeout(()=>ta.classList.remove('flash'),900); };
   $('#cancelV').onclick=()=>{ drawerMode='view'; renderDrawer(); };
   $('#saveV').onclick=()=>{
     const iso=parseMDY($('#vDate').value); if(!iso){ $('#vDate').classList.add('bad'); toast('Type the date as MM/DD/YY'); return; }
@@ -1065,6 +1125,8 @@ function react(p){
   el.onclick=()=>el.classList.remove('show');
 }
 
+/* town life toggle */
+document.getElementById('bLife').onclick=()=>{ LIFE.on=!LIFE.on; document.getElementById('bLife').classList.toggle('on',LIFE.on); toast(LIFE.on?'Town life on: zoom in to see the mascots':'Town life off'); };
 /* ================= confetti ================= */
 function burst(p,emojis,n){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -1132,11 +1194,155 @@ function startPreview(){
 }
 function endPreview(){ preview=null; $('#banner').hidden=true; $('#bPreview').classList.remove('on'); $('#bPreview .tx').textContent='Preview sizes'; stopTour(); refreshAll(); }
 
+document.getElementById('notsaved').onclick=async()=>{ if(FB){ try{ await reRegister(); }catch(e){} } Object.keys(S.spots).forEach(id=>dirty.add(id)); (S.custom||[]).forEach(c=>dirty.add(c.id)); flush._rereg=false; saveState='saving'; setSaveUI(); await flush(); toast(saveState==='saved'?'Saved ✓ It\u2019s on every device now':'Still not saved. Check your connection and that you opened your edit link.'); };
+/* ================= town life: mascots wander the streets, little stories play out ================= */
+const LIFE={on:true, actors:[], props:[], graph:null, gCenter:null, last:0, nextScene:0, busy:false};
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mDist(a,b){ const k=Math.cos(a[1]*Math.PI/180); return Math.hypot((b[0]-a[0])*111320*k,(b[1]-a[1])*110540); }
+/* road graph from the vector tiles */
+function buildGraph(){
+  if(map.getZoom()<14) return;
+  const feats=map.querySourceFeatures('omt',{sourceLayer:'transportation',filter:['in',['get','class'],['literal',['minor','service','tertiary','secondary','primary']]]});
+  const nodes=new Map(), adj=new Map(); const key=c=>c[0].toFixed(5)+','+c[1].toFixed(5);
+  const add=(c)=>{ const k=key(c); if(!nodes.has(k)){ nodes.set(k,c); adj.set(k,new Set()); } return k; };
+  for(const f of feats){ const g=f.geometry; const lines=g.type==='LineString'?[g.coordinates]:g.type==='MultiLineString'?g.coordinates:[];
+    for(const ln of lines){ for(let i=1;i<ln.length;i++){ const a=add(ln[i-1]), b=add(ln[i]); if(a!==b){ adj.get(a).add(b); adj.get(b).add(a); } } } }
+  // stitch near-duplicate nodes (tile edges) with a 2 m grid
+  const grid=new Map(); for(const [k,c] of nodes){ const gk=Math.round(c[0]/2.5e-5)+':'+Math.round(c[1]/2e-5); if(grid.has(gk)){ const o=grid.get(gk); adj.get(k).add(o); adj.get(o).add(k); } else grid.set(gk,k); }
+  if(nodes.size<40) return;
+  LIFE.graph={nodes,adj,keys:[...nodes.keys()]}; const c=map.getCenter(); LIFE.gCenter=[c.lng,c.lat];
+}
+function nearestNode(ll){ let best=null,bd=1e9; for(const [k,c] of LIFE.graph.nodes){ const d=Math.abs(c[0]-ll[0])*.77+Math.abs(c[1]-ll[1]); if(d<bd){ bd=d; best=k; } } return best; }
+function route(fromLL,toLL){
+  if(!LIFE.graph) return [fromLL,toLL];
+  const G=LIFE.graph, s=nearestNode(fromLL), t=nearestNode(toLL); if(!s||!t) return [fromLL,toLL];
+  const g=new Map([[s,0]]), came=new Map(), open=[[0,s]], tc=G.nodes.get(t), closed=new Set();
+  const push=(f,k)=>{ open.push([f,k]); let i=open.length-1; while(i>0){ const p=(i-1)>>1; if(open[p][0]<=open[i][0]) break; [open[p],open[i]]=[open[i],open[p]]; i=p; } };
+  const pop=()=>{ const top=open[0], last=open.pop(); if(open.length){ open[0]=last; let i=0; for(;;){ const l=2*i+1,r=l+1; let m=i; if(l<open.length&&open[l][0]<open[m][0]) m=l; if(r<open.length&&open[r][0]<open[m][0]) m=r; if(m===i) break; [open[m],open[i]]=[open[i],open[m]]; i=m; } } return top; };
+  let n=0;
+  while(open.length && n++<20000){ const [,k]=pop(); if(k===t) break; if(closed.has(k)) continue; closed.add(k); const kc=G.nodes.get(k);
+    for(const nb of G.adj.get(k)){ const ng=g.get(k)+mDist(kc,G.nodes.get(nb)); if(ng<(g.get(nb)??1e12)){ g.set(nb,ng); came.set(nb,k); push(ng+mDist(G.nodes.get(nb),tc),nb); } } }
+  if(!came.has(t)&&s!==t) return [fromLL,toLL];
+  const path=[]; let k=t; while(k){ path.push(G.nodes.get(k)); if(k===s) break; k=came.get(k); } path.reverse();
+  return [fromLL,...path,toLL];
+}
+function randomNodeNear(ll,maxM){ const G=LIFE.graph; if(!G) return ll; for(let i=0;i<40;i++){ const c=G.nodes.get(G.keys[(Math.random()*G.keys.length)|0]); if(mDist(c,ll)<maxM) return c; } return G.nodes.get(G.keys[(Math.random()*G.keys.length)|0]); }
+/* actors */
+let actorSeq=0;
+function makeActor(kind,ll,opt={}){
+  const el=document.createElement('div'); el.className='actor a-'+kind;
+  const id='ac'+(actorSeq++);
+  el.innerHTML=(kind==='mascot'?`<div class="a-body">${mascotSVG(opt.mood||'happy',id)}</div>`:`<div class="a-body a-emoji">${opt.emoji}</div>`)+'<div class="a-say"></div>';
+  const mk=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(ll).addTo(map);
+  const a={id,kind,el,mk,ll:ll.slice(),path:[],speed:opt.speed||7,mood:opt.mood,home:opt.home||ll.slice(),busy:false,onArrive:null,wait:0,name:opt.name||''};
+  LIFE.actors.push(a); return a;
+}
+function removeActor(a){ a.mk.remove(); LIFE.actors=LIFE.actors.filter(x=>x!==a); }
+function say(a,txt,ms=2200){ const b=a.el.querySelector('.a-say'); b.textContent=txt; b.classList.add('on'); clearTimeout(a._st); a._st=setTimeout(()=>b.classList.remove('on'),ms); }
+function rush(...as){ as.forEach(a=>{ if(a&&a.kind==='mascot'){ a._sp=a._sp||a.speed; a.speed=24; } }); }
+function calm(...as){ as.forEach(a=>{ if(a&&a._sp){ a.speed=a._sp; a._sp=0; } }); }
+function goTo(a,ll,cb){ a.path=route(a.ll,ll); a.onArrive=cb||null; a.el.classList.add('walking'); }
+function prop(ll,html,cls=''){ const el=document.createElement('div'); el.className='prop '+cls; el.innerHTML=html; const mk=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(ll).addTo(map); const p={el,mk}; LIFE.props.push(p); return p; }
+function dropProp(p,ms=0){ setTimeout(()=>{ p.el.classList.add('bye'); setTimeout(()=>{ p.mk.remove(); LIFE.props=LIFE.props.filter(x=>x!==p); },500); },ms); }
+function stepActors(dt){
+  for(const a of LIFE.actors){
+    if(a.wait>0){ a.wait-=dt; continue; }
+    if(!a.path.length){ if(!a.busy && a.kind==='mascot') wander(a); continue; }
+    let move=a.speed*dt/1000;
+    while(move>0 && a.path.length){ const nx=a.path[0], d=mDist(a.ll,nx); if(d<=move){ a.ll=nx.slice(); a.path.shift(); move-=d; } else { const t=move/d; a.el.classList.toggle('flip',nx[0]<a.ll[0]); a.ll=[a.ll[0]+(nx[0]-a.ll[0])*t, a.ll[1]+(nx[1]-a.ll[1])*t]; move=0; } }
+    a.mk.setLngLat(a.ll);
+    if(!a.path.length){ a.el.classList.remove('walking'); const cb=a.onArrive; a.onArrive=null; if(cb) cb(); }
+  }
+}
+function wander(a){
+  a.wait=1500+Math.random()*4000;
+  const dest=randomNodeNear(Math.random()<.5?a.home:a.ll, 350);
+  goTo(a,dest);
+  const r=Math.random(); if(r<.25){ const m=a.mood; say(a, m==='obsessed'||m==='love'?'😋':m==='happy'?'🎵':m==='nope'?'😤':m==='sad'?'😒':m==='meh'?'🥱':'👀'); }
+}
+/* scenes */
+const angryOnes=()=>LIFE.actors.filter(a=>a.kind==='mascot'&&!a.busy&&(a.mood==='nope'||a.mood==='sad'));
+const happyOnes=()=>LIFE.actors.filter(a=>a.kind==='mascot'&&!a.busy&&['obsessed','love','happy'].includes(a.mood));
+const anyMascot=(ex)=>LIFE.actors.filter(a=>a.kind==='mascot'&&!a.busy&&!ex.includes(a));
+function edgeLL(){ const b=map.getBounds(); const r=Math.random(); return r<.5?[b.getWest()+(b.getEast()-b.getWest())*.08, b.getSouth()+(b.getNorth()-b.getSouth())*(.2+Math.random()*.6)]:[b.getEast()-(b.getEast()-b.getWest())*.08, b.getSouth()+(b.getNorth()-b.getSouth())*(.2+Math.random()*.6)]; }
+function station(emoji,label){ const ll=randomNodeNear(edgeLL(),400); const p=prop(ll,`<div class="station"><span>${emoji}</span><b>${label}</b></div>`,'pop'); return {ll,p}; }
+function sceneShove(){
+  const bully=angryOnes()[0]; if(!bully) return false; const victim=anyMascot([bully]).sort((x,y)=>mDist(x.ll,bully.ll)-mDist(y.ll,bully.ll))[0]; if(!victim) return false;
+  bully.busy=victim.busy=true; victim.path=[]; victim.wait=1e9; say(bully,'😠 Grr!'); rush(bully);
+  goTo(bully,victim.ll,()=>{ say(bully,'💢 Hmph!'); victim.el.classList.add('fallen'); say(victim,'😵',3000);
+    const st=station('🚓','Police'); const cop=makeActor('vehicle',st.ll,{emoji:'🚓',speed:60}); cop.el.classList.add('siren'); cop.busy=true;
+    goTo(cop,victim.ll,()=>{ say(cop,'🚨 Break it up!'); say(bully,'😳 Sorry…',2500); });
+    const helper=happyOnes().filter(h=>h!==bully&&h!==victim)[0];
+    const finish=()=>{ victim.el.classList.remove('fallen'); say(victim,'🥹 Thanks!'); setTimeout(()=>{ say(bully,'🤝'); say(victim,'❤️'); if(helper) say(helper,'❤️'); },1600);
+      setTimeout(()=>{ calm(bully,helper); [bully,victim,helper].forEach(m=>{ if(m){ m.busy=false; m.wait=0; } }); goTo(cop,st.ll,()=>{ removeActor(cop); dropProp(st.p); }); LIFE.busy=false; },3800); };
+    if(helper){ helper.busy=true; rush(helper); say(helper,'😮 Hey! You ok?'); goTo(helper,victim.ll,()=>{ say(helper,'🫶 Let me help'); setTimeout(finish,1400); }); } else setTimeout(finish,4500);
+  }); return true;
+}
+function sceneKitten(){
+  const hero=happyOnes()[0]||anyMascot([])[0]; if(!hero) return false; hero.busy=true; rush(hero);
+  const spot=randomNodeNear(hero.ll,220); const tree=prop(spot,'<div class="tree">🌳<span class="kit">🐱</span></div>','pop');
+  setTimeout(()=>say(hero,'😮 A kitten!'),400);
+  goTo(hero,spot,()=>{ hero.el.classList.add('climb'); say(hero,'🧗 Hold on!');
+    setTimeout(()=>{ hero.el.classList.remove('climb'); tree.el.classList.add('saved'); say(hero,'🐱💕 Saved!',2600); },1600);
+    setTimeout(()=>{ dropProp(tree); calm(hero); hero.busy=false; LIFE.busy=false; },4200); });
+  return true;
+}
+function sceneFire(){
+  const cands=PLACES.filter(p=>!p.hidden&&markers[p.id]); if(!cands.length) return false;
+  const low=cands.filter(p=>p.sc.combined!=null&&p.sc.combined<6), target=(low.length?low:cands.filter(p=>!p.visits.length))[(Math.random()*(low.length||1))|0]||cands[(Math.random()*cands.length)|0];
+  const at=[target.lng,target.lat]; const fire=prop(at,'<div class="fire">🔥<i>🔥</i><i>🔥</i></div>','pop');
+  const near=anyMascot([]).sort((x,y)=>mDist(x.ll,at)-mDist(y.ll,at))[0]; if(near){ say(near,'😱 FIRE!'); }
+  const st=station('🚒','Fire Co.'); const truck=makeActor('vehicle',st.ll,{emoji:'🚒',speed:65}); truck.el.classList.add('siren'); truck.busy=true;
+  goTo(truck,randomNodeNear(at,60),()=>{ say(truck,'💦💦💦',2600); fire.el.classList.add('douse');
+    setTimeout(()=>{ dropProp(fire); const puff=prop(at,'<div class="puff">💨</div>'); dropProp(puff,1400); say(truck,'👍 All clear'); },2400);
+    setTimeout(()=>{ goTo(truck,st.ll,()=>{ removeActor(truck); dropProp(st.p); LIFE.busy=false; }); },3600); });
+  return true;
+}
+function scenePipe(){
+  if(!LIFE.graph) return false; const at=randomNodeNear(map.getCenter().toArray(),300); const geyser=prop(at,'<div class="geyser"><i>💧</i><i>💧</i><i>💧</i><i>💧</i></div>','pop');
+  const near=anyMascot([]).sort((x,y)=>mDist(x.ll,at)-mDist(y.ll,at))[0]; if(near) say(near,'😲 Whoa!');
+  const st=station('🛠️','Plumbing'); const van=makeActor('vehicle',st.ll,{emoji:'🚐',speed:55}); van.busy=true;
+  goTo(van,at,()=>{ say(van,'🔧 On it!',2400); setTimeout(()=>{ dropProp(geyser); say(van,'✅ Fixed'); },2600);
+    setTimeout(()=>goTo(van,st.ll,()=>{ removeActor(van); dropProp(st.p); LIFE.busy=false; }),3800); });
+  return true;
+}
+function director(now){
+  if(LIFE.busy || now<LIFE.nextScene) return;
+  const scenes=[sceneShove,sceneKitten,sceneFire,scenePipe].sort(()=>Math.random()-.5);
+  if(angryOnes().length && Math.random()<.55) scenes.unshift(sceneShove);
+  for(const s of scenes){ if(s()){ LIFE.busy=true; break; } }
+  LIFE.nextScene=now+16000+Math.random()*12000;
+  setTimeout(()=>{ LIFE.busy=false; },45000); // safety valve
+}
+function populate(){
+  for(const a of LIFE.actors.slice()) removeActor(a);
+  for(const p of LIFE.props.slice()) dropProp(p);
+  if(!LIFE.graph) return;
+  const logged=PLACES.filter(p=>!p.hidden&&p.visits.length).slice(0,10);
+  for(const p of logged){ const s=p.sc.combined??p.sc.food??p.sc.exp; const mood=moodFor(s).key; makeActor('mascot',randomNodeNear([p.lng,p.lat],120),{mood,home:[p.lng,p.lat],speed:6+Math.random()*3,name:p.name}); }
+  const extra=Math.max(3,6-logged.length);
+  for(let i=0;i<extra;i++) makeActor('mascot',randomNodeNear(map.getCenter().toArray(),400),{mood:['happy','curious','love','meh'][i%4],speed:5+Math.random()*3});
+  LIFE.nextScene=performance.now()+7000;
+}
+function lifeTick(ts){
+  const dt=LIFE.last?Math.min(200,ts-LIFE.last):16; LIFE.last=ts;
+  const show=LIFE.on && !RM && map.getZoom()>=14.4 && !document.hidden;
+  document.body.classList.toggle('life-off',!show);
+  if(show){
+    if(!LIFE.graph){ buildGraph(); if(LIFE.graph) populate(); }
+    else if(LIFE.gCenter && mDist(LIFE.gCenter,map.getCenter().toArray())>900){ buildGraph(); populate(); }
+    stepActors(dt); director(ts);
+  }
+  requestAnimationFrame(lifeTick);
+}
+let lifeSig='';
+function lifeRefresh(){ const sig=PLACES.filter(p=>p.visits.length).map(p=>p.id+':'+(p.sc.combined??'')).join('|'); if(sig!==lifeSig){ lifeSig=sig; if(LIFE.graph) populate(); } }
+
 /* ================= refresh ================= */
 function refreshAll(intro){
   recompute();
   if(intro){ PLACES.slice().sort((a,b)=>(a.sc.combined??-1)-(b.sc.combined??-1)).forEach((p,i)=>{ p._delay=1500+i*30; }); }
-  renderKPIs(); renderList(); syncMarkers();
+  renderKPIs(); renderList(); syncMarkers(); try{ lifeRefresh(); }catch(e){}
   if($('#drawer').classList.contains('open') && selectedId && drawerMode==='view') renderDrawer();
   startAnim();
 }
