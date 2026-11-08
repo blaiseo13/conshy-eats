@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=18">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=18">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=18">
+<link rel="manifest" href="manifest.webmanifest?v=20">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=20">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=18"></script>
-<script src="places.js?v=18"></script>
-<script src="places-philly.js?v=18"></script>
+<script src="firebase-config.js?v=20"></script>
+<script src="places.js?v=20"></script>
+<script src="places-philly.js?v=20"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -1244,8 +1244,10 @@ function finishAdd(ll){
 
 /* ================= camera ================= */
 let orbitOn=false, orbitRaf;
-function orbitStep(){ if(!orbitOn) return; const now=performance.now(); if(now>CAM.pauseUntil) map.rotateTo(map.getBearing()+(CAM.focused?.22:.09),{duration:0}); camTick(now); orbitRaf=requestAnimationFrame(orbitStep); }
-function startOrbit(){ orbitOn=true; $('#bOrbit').classList.add('on'); CAM.focused=false; if(map.getZoom()<14.6) { CAM.pauseUntil=performance.now()+2200; map.easeTo({zoom:15.2,pitch:58,duration:2000}); } if(typeof LIFE!=='undefined' && !LIFE.busy) LIFE.nextScene=Math.min(LIFE.nextScene,performance.now()+3000); orbitStep(); }
+function orbitStep(){ if(!orbitOn) return; const now=performance.now();
+  // no spinning, no timed hops: hold on the nearest viewpoint until the next event
+  camTick(now); orbitRaf=requestAnimationFrame(orbitStep); }
+function startOrbit(){ orbitOn=true; $('#bOrbit').classList.add('on'); CAM.focused=false; { const c=map.getCenter(), vp=closestViewpoint([c.lng,c.lat]); CAM.pauseUntil=performance.now()+3000; map.flyTo({center:vp.c,zoom:vp.z,pitch:60,bearing:vp.b,duration:2800,curve:1.3,essential:true}); } if(typeof LIFE!=='undefined' && !LIFE.busy) LIFE.nextScene=Math.min(LIFE.nextScene,performance.now()+3000); orbitStep(); }
 function stopOrbit(){ orbitOn=false; cancelAnimationFrame(orbitRaf); $('#bOrbit').classList.remove('on'); }
 $('#bOrbit').onclick=()=>orbitOn?stopOrbit():startOrbit();
 ['mousedown','touchstart','wheel'].forEach(ev=>map.getCanvas().addEventListener(ev,()=>{ stopOrbit(); if(tourOn) stopTour(); },{passive:true}));
@@ -1434,12 +1436,12 @@ function cue(ll,fx){
   if(fx) setTimeout(()=>shake(fx), fx==='boom'?1400:700);
   if(!orbitOn) return;
   CAM.focused=true; CAM.pauseUntil=performance.now()+2700;
-  map.flyTo({center:ll,zoom:17.5,pitch:66,bearing:map.getBearing()+55,duration:2600,curve:1.2,essential:true});
+  map.flyTo({center:ll,zoom:17.5,pitch:66,bearing:map.getBearing()+20,duration:2600,curve:1.2,essential:true});
 }
 function camTick(now){
   if(!orbitOn){ CAM.focused=false; return; }
   if(CAM.focused && !LIFE.busy && now>CAM.pauseUntil+2500){
-    CAM.focused=false; CAM.pauseUntil=now+3400; const vp=nextViewpoint();
+    CAM.focused=false; CAM.pauseUntil=now+3400; const cc=map.getCenter(); const vp=closestViewpoint([cc.lng,cc.lat]);
     map.flyTo({center:vp.c,zoom:vp.z,pitch:60,bearing:vp.b,duration:3300,curve:1.4,essential:true});
   }
 }
@@ -1456,6 +1458,7 @@ function viewpoints(){
   VIEWS[CITY]=pts.map((ll,i)=>({c:ll,b:(i*36)%360-180,z:15.7+(i%3)*.35}));
   return VIEWS[CITY];
 }
+function closestViewpoint(ll){ const v=viewpoints(); let best=v[0],bd=1e12; for(const x of v){ const d=mDist(x.c,ll); if(d<bd){ bd=d; best=x; } } return best; }
 function nextViewpoint(){ const v=viewpoints(); viewIdx=(viewIdx+1)%v.length; return v[viewIdx]; }
 
 /* town look: lighting, sky, building colour */
@@ -1477,7 +1480,7 @@ function fly(a,ll,cb){ a.path=[ll]; a.onArrive=cb||null; a.el.classList.add('wal
 function mascotsSay(lines,n=4){ anyMascot([]).slice(0,n).forEach((m,i)=>setTimeout(()=>say(m,pick(lines),2400),i*300)); }
 function allFall(on){ LIFE.actors.filter(a=>a.kind==='mascot').forEach(a=>a.el.classList.toggle('fallen',on)); }
 function townCenter(){ const c=map.getCenter(); return [c.lng,c.lat]; }
-function wide(){ if(orbitOn){ CAM.focused=true; CAM.pauseUntil=performance.now()+2600; map.flyTo({center:townCenter(),zoom:15.3,pitch:55,bearing:map.getBearing()+40,duration:2500,essential:true}); } }
+function wide(){ if(orbitOn){ CAM.focused=true; CAM.pauseUntil=performance.now()+2600; map.flyTo({center:townCenter(),zoom:15.1,pitch:55,bearing:map.getBearing(),duration:2500,essential:true}); } }
 
 const ARCS={
   storm:{tick:'⛈️ Storm brewing',fore:['🌥️ Clouds rolling in…','🌬️ Getting windy','☁️ Smells like rain','🌂 Grab an umbrella']},
