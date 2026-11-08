@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=10">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=10">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=10">
+<link rel="manifest" href="manifest.webmanifest?v=11">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=11">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=11">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=10"></script>
-<script src="places.js?v=10"></script>
-<script src="map-data.js?v=10"></script>
+<script src="firebase-config.js?v=11"></script>
+<script src="places.js?v=11"></script>
+<script src="map-data.js?v=11"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -366,7 +366,7 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 
 <aside id="left" class="glass up">
   <button class="handle" id="handle" aria-label="Expand list"><i></i></button>
-  <div class="brand"><span class="logo"><svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><circle cx="50" cy="50" r="31" fill="none" stroke="#F472B6" stroke-width="6"/><g stroke="#67E8F9" stroke-width="5.5" stroke-linecap="round" fill="none"><path d="M39 33v9M42.5 33v9M46 33v9M39 42q3.5 4 7 0M42.5 45v22"/><path d="M58 33q6 6 3 17h-3M58 33v34"/></g></svg></span><div><h1>Conshy Eats</h1><p>Every spot is a little food building. Places you've been get comically huge, and your favorites tower over Conshy.</p></div></div>
+  <div class="brand"><span class="logo"><svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><circle cx="50" cy="50" r="31" fill="none" stroke="#F472B6" stroke-width="6"/><g stroke="#67E8F9" stroke-width="5.5" stroke-linecap="round" fill="none"><path d="M39 33v9M42.5 33v9M46 33v9M39 42q3.5 4 7 0M42.5 45v22"/><path d="M58 33q6 6 3 17h-3M58 33v34"/></g></svg></span><div><h1>Conshy Eats</h1></div></div>
   <div class="seg" id="seg" role="tablist"><button class="on" data-v="mine">My scores</button><button data-v="reviews">⭐ Reviews</button></div>
   <div class="kpis" id="kpis"></div>
   <div id="champ"></div>
@@ -912,12 +912,12 @@ function renderDrawer(){
   const vs=p.visits.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   let h=`<div class="card up"><div class="scorecard"><div class="ring">${ringSVG(s.combined,col)}<div class="mid"><div><b class="tnum" style="color:${s.combined==null?'var(--ink3)':'var(--ink)'}">${fmt(s.combined)}</b><span>Combined</span></div></div></div>
     <div class="halves">
-      <div class="half"><div class="top"><span class="label" style="color:var(--food)">Food</span><b class="tnum">${fmt(s.food)}</b></div><div class="bar"><i style="width:0;background:var(--food)" data-w="${(s.food||0)*10}%"></i></div><small>avg of ${s.dishCount} dish score${s.dishCount===1?'':'s'}</small></div>
-      <div class="half"><div class="top"><span class="label" style="color:var(--exp)">Experience</span><b class="tnum">${fmt(s.exp)}</b></div><div class="bar"><i style="width:0;background:var(--exp)" data-w="${(s.exp||0)*10}%"></i></div><small>avg of ${expN} visit score${expN===1?'':'s'}</small></div>
+      <div class="half"><div class="top"><span class="label" style="color:var(--food)">Food</span><b class="tnum">${fmt(s.food)}</b></div><div class="bar"><i style="width:0;background:var(--food)" data-w="${(s.food||0)*10}%"></i></div></div>
+      <div class="half"><div class="top"><span class="label" style="color:var(--exp)">Experience</span><b class="tnum">${fmt(s.exp)}</b></div><div class="bar"><i style="width:0;background:var(--exp)" data-w="${(s.exp||0)*10}%"></i></div></div>
     </div></div>
     <div class="rx-inline">${mascotHTML(s.combined??s.food??s.exp,false)}<div class="rx-say"><b>${esc(sayFor(s.combined??s.food??s.exp))}</b><span>${s.combined!=null?(tier(s.combined)?tier(s.combined)[2]:''):'Log a visit to get my take'}</span></div></div>
-    <div class="formula tnum">Combined = 50% Food + 50% Experience${s.combined!=null?` = ${fmt(s.food)} × 0.5 + ${fmt(s.exp)} × 0.5`:''}</div>
-    ${s.drinkCount?`<div class="drinkline"><span>🍹 Drinks</span><b class="tnum" style="color:${scoreColor(s.drink)}">${fmt(s.drink)}</b><small>avg of ${s.drinkCount} · not in combined</small></div>`:''}</div>`;
+
+    ${s.drinkCount?`<div class="drinkline"><span>🍹 Drinks</span><b class="tnum" style="color:${scoreColor(s.drink)}">${fmt(s.drink)}</b></div>`:''}</div>`;
   { const rv=reviewOf(p.id); h+= rv?`<div class="card rvcard" style="margin-top:10px;padding:12px 16px"><div class="rvstars" style="color:${scoreColor(rv.rating*2)}">★${rv.rating.toFixed(1)}</div><div style="min-width:0"><div style="font-weight:700">${rv.count?rv.count.toLocaleString()+' ':''}${esc(rv.site)} reviews</div><div class="hint" style="margin:0">${s.combined!=null?`You: ${fmt(s.combined)} vs crowd ${fmt(rv.rating*2)} · `:''}<a href="${esc(rv.source)}" target="_blank" rel="noopener">source</a>${MENUS[p.id]&&MENUS[p.id].asOf?' · as of '+esc(MENUS[p.id].asOf):''}</div></div></div>`:''; }
   if(preview) h+=`<div class="note-y">Preview mode shows sample scores. Exit preview to rate and edit for real.</div>`;
   else{
@@ -984,9 +984,8 @@ function renderVisitForm(p){
       <div id="menuList" class="menulist"></div>
       <div class="quick" id="quick" hidden>${QUICK.map(([e,n])=>`<button type="button" data-q="${esc(n)}">${e} ${esc(n)}</button>`).join('')}</div>
       <div class="addown"><input type="text" id="ownDish" placeholder="Not on the menu? Type it here"><button class="btn g sm" id="ownAdd" title="Add as a dish and score it">＋ Dish</button><button class="btn g sm" id="ownNote" title="Just log it in your notes, no score">📝 Note</button></div>
-      <div class="hint">＋ Dish adds something you ate and scores it. 📝 Note just saves it in your notes, with no score.</div>
     </div>
-    <div class="card" style="padding:14px"><span class="l" style="color:var(--exp)">Overall experience: service, vibe, wait, value</span>${sliderHTML('exp',expVal,expVal==null)}<div class="hint">Leave at — to skip. The spot gets a combined score once it has both.</div></div>
+    <div class="card" style="padding:14px"><span class="l" style="color:var(--exp)">Overall experience: service, vibe, wait, value</span>${sliderHTML('exp',expVal,expVal==null)}</div>
     <div><label class="l" for="vNotes">Notes</label><textarea id="vNotes" placeholder="What stood out?">${esc(v?.notes||'')}</textarea></div>
     <div class="btnrow vf-save"><button class="btn p grow" id="saveV">${v?'Save changes':'Save visit'}</button><button class="btn g" id="cancelV">Cancel</button></div></div>`;
   const list=$('#menuList');
