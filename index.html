@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#F97316">
-<link rel="manifest" href="manifest.webmanifest?v=6">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=6">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=6">
+<link rel="manifest" href="manifest.webmanifest?v=7">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=7">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=6"></script>
-<script src="places.js?v=6"></script>
-<script src="map-data.js?v=6"></script>
+<script src="firebase-config.js?v=7"></script>
+<script src="places.js?v=7"></script>
+<script src="map-data.js?v=7"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -157,6 +157,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .f textarea{min-height:64px;resize:vertical}
 .slider{display:flex;align-items:center;gap:12px}
 .slider input{flex:1;accent-color:var(--accent);height:28px}
+.slider{gap:8px}
+.nudge{width:34px;height:34px;flex:none;border-radius:10px;border:1px solid var(--glass-line);background:rgba(255,255,255,.85);font-size:18px;font-weight:700;color:var(--ink2);line-height:1}
+.nudge:active{transform:scale(.92)}
 .slider .val{min-width:70px;text-align:right;font-weight:800;font-size:18px}
 .slider .val small{font-size:16px;margin-left:3px}
 .dishrow{border:1px solid var(--glass-line);border-radius:14px;padding:10px 12px;background:rgba(255,247,237,.75)}
@@ -829,8 +832,9 @@ function renderDrawer(){
 const TIERS=[[9,'🏆','Legendary'],[8,'💛','Go-to'],[7,'👍','Solid'],[6,'🙂','Fine'],[5,'😐','Meh'],[0,'🚫','Never again']];
 function tier(s){ if(s==null) return null; return TIERS.find(t=>s>=t[0]); }
 const FACES=['😖','😖','😕','😕','😐','😐','🙂','😊','😋','🤩','🤯'];
-function sliderHTML(name,val,unset){ const v=val==null?7:val; return `<div class="slider"><input type="range" id="sl-${name}" min="0" max="10" step="0.5" value="${v}" data-s="${name}" aria-label="Score"><span class="val tnum" data-sv="${name}">${unset?'<span style="color:var(--ink3)">—</span>':fmt(v)+'<small>'+FACES[Math.round(v)]+'</small>'}</span></div>`; }
-function bindSliders(root,cb){ root.querySelectorAll('input[type=range]').forEach(r=>{ if(r._b) return; r._b=1; r.oninput=()=>{ const v=+r.value, out=root.querySelector(`[data-sv="${r.dataset.s}"]`); if(out){ out.innerHTML=fmt(v)+'<small>'+FACES[Math.round(v)]+'</small>'; out.style.color=scoreColor(v); } cb(r.dataset.s,v); }; }); }
+function sliderHTML(name,val,unset){ const v=val==null?7:val; return `<div class="slider"><button type="button" class="nudge" data-nudge="${name}" data-d="-0.1" aria-label="Minus 0.1">−</button><input type="range" id="sl-${name}" min="0" max="10" step="0.1" value="${v}" data-s="${name}" aria-label="Score"><button type="button" class="nudge" data-nudge="${name}" data-d="0.1" aria-label="Plus 0.1">+</button><span class="val tnum" data-sv="${name}">${unset?'<span style="color:var(--ink3)">—</span>':fmt(v)+'<small>'+FACES[Math.round(v)]+'</small>'}</span></div>`; }
+function bindSliders(root,cb){ root.querySelectorAll('[data-nudge]').forEach(b=>{ if(b._b) return; b._b=1; b.onclick=e=>{ e.preventDefault(); e.stopPropagation(); const r=b.parentElement.querySelector('input[type=range]'); if(!r) return; r.value=Math.min(10,Math.max(0,Math.round((+r.value+ +b.dataset.d)*10)/10)); r.dispatchEvent(new Event('input')); }; });
+  root.querySelectorAll('input[type=range]').forEach(r=>{ if(r._b) return; r._b=1; r.oninput=()=>{ const v=Math.round(+r.value*10)/10, out=root.querySelector(`[data-sv="${r.dataset.s}"]`); if(out){ out.innerHTML=fmt(v)+'<small>'+FACES[Math.round(v)]+'</small>'; out.style.color=scoreColor(v); } cb(r.dataset.s,v); }; }); }
 function renderVisitForm(p){
   const v=editVisitId?p.visits.find(x=>x.id===editVisitId):null;
   const menu=MENUS[p.id];
