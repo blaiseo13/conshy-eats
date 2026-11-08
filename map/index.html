@@ -117,6 +117,8 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .mchips{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden;max-height:none!important;padding-bottom:8px;scrollbar-width:none}.mchips::-webkit-scrollbar{display:none}.mchip{flex:none;white-space:nowrap}
 .lbl.un{background:#F5EFDFb3;border-color:#B9AE9C;color:#6B6052;font-weight:600}.lbl.lm{font-size:10px;padding:0 6px;border-width:1px}
 .dock [data-d].on{background:var(--paper2);box-shadow:inset 0 -3px 0 var(--red)}.dr-hd{position:relative}.dclose{margin-left:auto;width:40px;height:40px;border:1.5px solid var(--ink);border-radius:50%;background:var(--paper);font-size:22px;line-height:1;cursor:pointer;color:var(--ink)}
+.dot.plus{width:22px;height:22px;border:0;display:grid;place-items:center;font-size:15px;background:none}.addrow b{color:var(--red)}
+body.pinning #c{cursor:crosshair}
 /* floating labels */
 #labels{position:fixed;inset:0;pointer-events:none;z-index:3}
 .lbl{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:700 12px "Zen Maru Gothic";color:var(--ink);background:#F5EFDFee;border:1px solid var(--ink);border-radius:999px;padding:1px 9px;transition:opacity .3s}
@@ -391,7 +393,7 @@ function makeIcon(s) {
   const pick = () => { if (/boat/.test(n)) return 'boat'; if (/cigar/.test(n)) return 'whiskey'; if (/outback/.test(n)) return 'steak'; if (/dunkin|donut/.test(n)) return 'donut'; if (/bagel/.test(n)) return 'bagel';
     if (/wing|hot chicken|fingers/.test(n)) return 'drumstick'; if (/salad/.test(n)) return 'salad'; if (/burger|mcdonald/.test(n) || c === 'burger') return 'fries'; if (/rita|scoops|dairy queen/.test(n) || /ice/.test(c) || k === 'ice_cream') return 'cone';
     if (/primo|hoagie|steaks|deli|wawa/.test(n) || /sandwich/.test(c)) return 'sandwich'; if (/coyote|limon|qdoba|taco/.test(n) || /mexican/.test(c)) return 'taco';
-    if (/greek|mezeh|neo/.test(n) || /greek|mediterranean/.test(c)) return 'skewer'; if (/pho|noodle|saigon|chiang|win wah|dragon|masala/.test(n) || /thai|chinese|vietnam|indian|japanese|asian/.test(c)) return 'noodles';
+    if (/greek|mezeh|neo/.test(n) || /greek|mediterranean/.test(c)) return 'skewer'; if (/pho|noodle|saigon|chiang|win wah|dragon|masala|sushi|hibachi|ramen|thai|asian/.test(n) || /thai|chinese|vietnam|indian|japanese|asian/.test(c)) return 'noodles';
     if (/pizza|pizzeria|illiano|franzone|domino|tomato|roni/.test(n) || /pizza/.test(c)) return 'pizza'; if (/lucca|totaro|pepperoncini/.test(n) || /italian/.test(c)) return 'wine';
     if (/southern cross|spring mill|salt|sera|cerdo/.test(n)) return 'cocktail'; if (k === 'cafe' || /cafe|coffee|starbucks|feine|brunch|panera/.test(n)) return 'coffee';
     if (k === 'bar' || k === 'pub' || /pub|tavern|saloon|brew|backyard|guppy/.test(n)) return 'mug'; if (k === 'fast_food') return 'fries'; return 'fork'; };
@@ -656,7 +658,8 @@ function openDrawer(kind) {
     h = `<div class="dr-hd"><h2>Gallery</h2></div><div class="gal">${g.map(s => `<div class="gi" data-id="${s.id}"><img src="${esc(PHOTOS[s.id][0].u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><span>${esc(s.n)}</span></div>`).join('') || '<div class="mt" style="padding:16px">No photos yet.</div>'}</div>`; }
   if (kind === 'log') { h = `<div class="dr-hd"><h2>Log a visit</h2></div><div style="padding:10px 16px;font-size:13px;color:var(--ink2)">Where did you go? (In the real app this opens your rating form: dishes, experience, drinks.)</div>` + open.map(s => item(s, VISITS[s.id] ? `${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : 'Not visited yet')).join(''); }
   drawer.innerHTML = h; drawer.classList.add('on'); const dh = drawer.querySelector('.dr-hd'); if (dh) dh.insertAdjacentHTML('beforeend', '<button class="dclose" aria-label="Close">×</button>');
-  const q = kind === 'search' ? document.getElementById('q') : null; if (q) { const run = () => { const v = q.value.trim().toLowerCase(); drawer.querySelector('#qres').innerHTML = open.filter(s => !v || (s.n + ' ' + s.c + ' ' + s.k + ' ' + s.a).toLowerCase().includes(v)).slice(0, 25).map(s => item(s, esc(s.c || s.k) + (VISITS[s.id] ? ` · ${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : '') + (LIVE[s.id] && LIVE[s.id].combined != null ? ` · <b class="qs">${LIVE[s.id].combined.toFixed(1)}</b>` : '')).replace('</div></div>', `</div><button class="lg" data-log="${s.id}">＋ Log visit</button></div>`)).join(''); q.parentNode.classList.toggle('has', !!q.value); if (!drawer.querySelector('#qres .item')) drawer.querySelector('#qres').innerHTML = q.value ? '<div class="item" style="cursor:default">–</div>' : ''; };
+  const q = kind === 'search' ? document.getElementById('q') : null; if (q) { const run = () => { const v = q.value.trim().toLowerCase(); drawer.querySelector('#qres').innerHTML = open.filter(s => !v || (s.n + ' ' + s.c + ' ' + s.k + ' ' + s.a).toLowerCase().includes(v)).slice(0, 25).map(s => item(s, esc(s.c || s.k) + (VISITS[s.id] ? ` · ${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : '') + (LIVE[s.id] && LIVE[s.id].combined != null ? ` · <b class="qs">${LIVE[s.id].combined.toFixed(1)}</b>` : '')).replace('</div></div>', `</div><button class="lg" data-log="${s.id}">＋ Log visit</button></div>`)).join(''); if (EDITOR && v.length >= 3 && !open.some(s => s.n.toLowerCase() === v)) drawer.querySelector('#qres').insertAdjacentHTML('beforeend', `<div class="item addrow" data-addq="${esc(q.value.trim())}"><span class="dot plus">＋</span><div><b>Add "${esc(q.value.trim())}"</b><small>New place</small></div></div>`);
+    q.parentNode.classList.toggle('has', !!q.value); if (!drawer.querySelector('#qres .item')) drawer.querySelector('#qres').innerHTML = q.value ? '<div class="item" style="cursor:default">–</div>' : ''; };
     q.oninput = run; run(); q.onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); const it = drawer.querySelectorAll('#qres .item'); if (it.length === 1) it[0].click(); else q.blur(); };
     }
 }
@@ -671,7 +674,33 @@ const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let hover = null
 function pick(e) { mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); const h = ray.intersectObjects(hits, false)[0]; return h ? h.object.userData.spot : null; }
 canvas.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const s = pick(e); const id = s ? s.id : null; if (id !== hover) { hover = id; canvas.style.cursor = s ? 'pointer' : ''; syncLabels(hover); } });
 canvas.addEventListener('pointerdown', e => downAt = [e.clientX, e.clientY]);
-canvas.addEventListener('pointerup', e => { if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return; const s = pick(e); if (s) { flyToSpot(s); openSheet(s); } else { closeSheet(); if (dOpen) { drawer.classList.remove('on'); dOpen = null; document.getElementById('q').blur(); } } });
+/* ---------------- add a new place (custom spot, same format as the live app) ---------------- */
+const O = (window.GEO && GEO.origin) || [40.0752, -75.3010], KXg = Math.cos(O[0] * Math.PI / 180) * 111320, KZg = 110540;
+const toXZ = (lat, lng) => [Math.round((lng - O[1]) * KXg), Math.round(-(lat - O[0]) * KZg)], toLL = (x, z) => [+(O[0] - z / KZg).toFixed(6), +(O[1] + x / KXg).toFixed(6)];
+let PIN = null;
+function addCustomSpot(id, c) { if (totems.has(id) || !c || typeof c.lat !== 'number') return null; const [x, z] = toXZ(c.lat, c.lng);
+  const sp = { id, n: c.name || 'New spot', k: c.kind || 'restaurant', c: c.cuisine || '', a: c.address || '', x, z, f: '', hh: [], ent: [], drinks: [], price: 2, fun: 2, tier: 'Common', src: '' };
+  SPOTS.push(sp); const t = buildTotem(sp); setLit(t, (VISITS[id] || 0) > 0, true); applyLit(t); return sp; }
+async function addPlace(pl) { const id = 'my-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const custom = { name: pl.name, kind: pl.kind || 'restaurant', cuisine: pl.cuisine || '', address: pl.address || '', lat: pl.lat, lng: pl.lng, model: null };
+  const body = { visits: [], want: false, hidden: false, edit: null, custom, updatedAt: new Date().toISOString() };
+  if (DRY) { window.__lastPlace = body; RAW[id] = body; } else { try { await fdb.doc('spots/' + id).set(body); RAW[id] = body; } catch (e) { toast('Couldn\'t add the place. Try again.'); return; } }
+  const sp = addCustomSpot(id, custom); if (!sp) return; drawer.classList.remove('on'); dOpen = null; const qq = document.getElementById('q'); qq.value = ''; qq.parentNode.classList.remove('has'); qq.blur();
+  toast(`${esc(sp.n)} added`); flyToSpot(sp); setTimeout(() => startVisit(sp), 700); }
+async function findPlace(name) { const box = drawer.querySelector('#qres'); box.innerHTML = '<div class="item" style="cursor:default"><span class="spin"></span>…</div>';
+  let rows = []; try { const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(name)}&lat=${O[0]}&lon=${O[1]}&limit=8`); const j = await r.json();
+    rows = (j.features || []).map(f => { const [lng, lat] = f.geometry.coordinates, pr = f.properties || {}; return { name: pr.name || name, lat, lng, kind: ['restaurant', 'cafe', 'bar', 'pub', 'fast_food', 'ice_cream'].includes(pr.osm_value) ? pr.osm_value : 'restaurant',
+      address: [pr.housenumber, pr.street].filter(Boolean).join(' '), town: pr.city || pr.town || pr.county || '' }; }).filter(x => Math.hypot(...toXZ(x.lat, x.lng)) < 15000); } catch (e) {}
+  box.innerHTML = rows.map((x, i) => `<div class="item addrow" data-pl="${i}"><span class="dot plus">📍</span><div><b>${esc(x.name)}</b><small>${esc([x.address, x.town].filter(Boolean).join(', '))}</small></div><button class="lg">＋ Add</button></div>`).join('')
+    + `<div class="item addrow" data-pin="${esc(name)}"><span class="dot plus">👆</span><div><b>Tap its spot on the map</b><small>${esc(name)}</small></div></div>`;
+  box._rows = rows; }
+drawer.addEventListener('click', e => { const a = e.target.closest('[data-addq]'), pl = e.target.closest('[data-pl]'), pin = e.target.closest('[data-pin]');
+  if (a) { findPlace(a.dataset.addq); return; }
+  if (pl) { const x = drawer.querySelector('#qres')._rows[+pl.dataset.pl]; if (x) addPlace(x); return; }
+  if (pin) { PIN = { name: pin.dataset.pin.replace(/\b\w/g, m => m.toUpperCase()) }; drawer.classList.remove('on'); dOpen = null; document.getElementById('q').blur(); document.body.classList.add('pinning'); toast('Tap the map where it is'); } });
+function placePin(e) { mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); const hit = new THREE.Vector3();
+  if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit)) return; const [lat, lng] = toLL(hit.x, hit.z); const name = PIN.name; PIN = null; document.body.classList.remove('pinning'); addPlace({ name, lat, lng }); }
+canvas.addEventListener('pointerup', e => { if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return; if (PIN) { placePin(e); return; } const s = pick(e); if (s) { flyToSpot(s); openSheet(s); } else { closeSheet(); if (dOpen) { drawer.classList.remove('on'); dOpen = null; document.getElementById('q').blur(); } } });
 
 /* ---------------- live data: his real visits and scores (read-only) ---------------- */
 const decode = v => v == null ? null : 'stringValue' in v ? v.stringValue : 'integerValue' in v ? +v.integerValue : 'doubleValue' in v ? v.doubleValue : 'booleanValue' in v ? v.booleanValue : 'arrayValue' in v ? (v.arrayValue.values || []).map(decode) : 'mapValue' in v ? Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k, x]) => [k, decode(x)])) : null;
@@ -694,6 +723,7 @@ function computeLive(id, f) { const vis = Array.isArray(f.visits) ? f.visits : [
   LIVE[id] = { food, exp, drink, combined: food != null && exp != null ? (food + exp) / 2 : null, visits: vis.length, dishN: dishes.length, drinkN: drinks.length, dishes: [...dishes, ...drinks].map(x => ({ name: x.name, score: x.score, kind: x.kind })) };
   VISITS[id] = vis.length; }
 function rebuildLive(changed) {
+  changed.forEach(id => { const d = RAW[id]; if (d && d.custom && !d.hidden && !totems.has(id)) addCustomSpot(id, d.custom); });
   changed.forEach(id => { const before = VISITS[id] || 0; computeLive(id, RAW[id] || {}); const t = totems.get(id); if (!t) return; const now = VISITS[id] || 0;
     if (now && !before) { setLit(t, true, firstSnap); if (!firstSnap) { burst(t.T.position, TIER[t.s.tier]); toast(`${esc(t.s.n)} joined your crew!`); } }
     else if (!now && before) { t.target = 0; if (t.mascot) { t.T.remove(t.mascot); t.mascot = null; } }
