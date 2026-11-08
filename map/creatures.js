@@ -80,6 +80,11 @@
     S({ THREE, K, P, grp, eye, flame, halo, orbit, aura, rareRing, core, g, life, f, rare, hb, r, toon, glow });
     g.scale.setScalar([0.95, 1.12, 1.12, 1.3][f] * (rare ? 1.06 : 1));
     body.userData.isBody = true; g.userData.body = body; g.userData.species = sp; g.userData.form = FORMS[tier] || 'Baby';
+    // feet/legs for the walk cycle: core children that touch the ground and sit off-centre
+    { g.updateMatrixWorld(true); const bx = new THREE.Box3(), sc = g.scale.x; life.feet = []; life.step = 0;
+      core.children.forEach(ch => { bx.setFromObject(ch); if (bx.isEmpty()) return; const cx = (bx.min.x + bx.max.x) / 2, cz = (bx.min.z + bx.max.z) / 2;
+        if (bx.min.y < 1.3 * sc && bx.max.y < 6.5 * sc && Math.abs(cx) > .35 * sc && (bx.max.y - bx.min.y) < 6 * sc) life.feet.push({ o: ch, bz: ch.position.z, by: ch.position.y, brx: ch.rotation.x, ph: (cx > 0 ? Math.PI : 0) + (cz < -.3 * sc ? Math.PI : 0) }); });
+      life.pby = 0; }
     // idle life: breathing, blinking, wagging, flames flickering, wings flapping, floaters bobbing
     g.userData.tick = (dt, T) => {
       const t = T + life.ph; core.scale.y = 1 + Math.sin(t * 2.1) * .025; core.scale.x = core.scale.z = 1 - Math.sin(t * 2.1) * .012;
@@ -89,6 +94,13 @@
       life.wag.forEach((w, i) => w.o.rotation[w.ax] = w.base + Math.sin(t * w.sp + i) * w.amp);
       life.flick.forEach((q, i) => { const k = 1 + Math.sin(t * 13 + i * 2) * .08 + Math.sin(t * 7.3 + i) * .06; q.scale.set(1 / k, k, 1 / k); });
       life.flap.forEach((w, i) => w.o.rotation[w.ax] = w.base + Math.sin(t * w.sp) * w.amp * (i % 2 ? -1 : 1));
+      // walking: stepping feet, a little lean, livelier tails/ears, squash and stretch on hops
+      const mv = Math.min(1.3, g.userData.moving || 0); life.step += dt * (5 + 5 * mv) * Math.min(1, mv * 2);
+      life.feet.forEach(f => { const ph = life.step + f.ph, sw = Math.sin(ph); f.o.position.z = f.bz + sw * .85 * mv; f.o.position.y = f.by + Math.max(0, Math.cos(ph)) * .55 * mv; f.o.rotation.x = f.brx - sw * .35 * mv; });
+      if (mv > .05) life.wag.forEach((w, i) => w.o.rotation[w.ax] += Math.sin(t * w.sp * 1.6 + i) * w.amp * mv * 1.2);
+      core.rotation.x += ((.07 * mv) - core.rotation.x) * Math.min(1, dt * 6);
+      const by = body.position.y, vy = (by - life.pby) / Math.max(dt, 1e-3); life.pby = by; const st = Math.max(-.16, Math.min(.16, vy * .018 - (by < .25 && mv > .2 ? .05 : 0)));
+      core.scale.y *= 1 + st; core.scale.x *= 1 - st * .5; core.scale.z *= 1 - st * .5;
     };
     return g;
   }
