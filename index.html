@@ -3,9 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0C0A20">
-<link rel="manifest" href="manifest.webmanifest?v=16">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=16">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=16">
+<link rel="manifest" href="manifest.webmanifest?v=17">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=17">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=17">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=16"></script>
-<script src="places.js?v=16"></script>
-<script src="places-philly.js?v=16"></script>
+<script src="firebase-config.js?v=17"></script>
+<script src="places.js?v=17"></script>
+<script src="places-philly.js?v=17"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -292,6 +292,32 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 .cities button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .actor.a-boat .a-body{font-size:22px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,60,120,.35));animation:bobble 1.6s ease-in-out infinite}
 @keyframes bobble{0%,100%{translate:0 0;rotate:-3deg}50%{translate:0 -2px;rotate:3deg}}
+#fx{position:fixed;inset:0;z-index:1;pointer-events:none;transition:background .8s}
+#fx.rain{background:repeating-linear-gradient(105deg,rgba(255,255,255,.0) 0 7px,rgba(200,220,255,.22) 7px 8px);background-size:60px 60px;animation:rain .35s linear infinite}
+#fx.rain.dark{background-color:rgba(2,6,23,.35)}
+#fx.gold{background:radial-gradient(circle at 50% 40%,rgba(253,224,71,.18),rgba(245,158,11,.12))}
+#fx.future{background:linear-gradient(180deg,rgba(76,29,149,.18),rgba(14,165,233,.10))}
+#fx.flash{animation:flash .45s ease-out}
+@keyframes rain{to{background-position:-30px 60px}}
+@keyframes flash{0%{background-color:rgba(255,255,255,.85)}100%{background-color:rgba(255,255,255,0)}}
+#arc{position:fixed;z-index:6;left:50%;top:max(14px,env(safe-area-inset-top,0px));transform:translateX(-50%);padding:8px 16px;font-weight:800;font-size:14px;border-radius:999px;white-space:nowrap}
+#arc .bars{letter-spacing:2px;color:#F97316;margin-left:6px}
+.actor.ufo .a-body{font-size:40px;filter:drop-shadow(0 0 12px #22D3EE);animation:hover 1.2s ease-in-out infinite}
+.actor.flying .a-body{font-size:24px;translate:0 -40px;filter:drop-shadow(0 18px 6px rgba(0,0,0,.25))}
+@keyframes hover{0%,100%{translate:0 -60px}50%{translate:0 -70px}}
+.prop .beam{width:60px;height:110px;margin-bottom:0;background:linear-gradient(180deg,rgba(103,232,249,.85),rgba(103,232,249,0));clip-path:polygon(35% 0,65% 0,100% 100%,0 100%);animation:beam .8s ease-in-out infinite alternate}
+@keyframes beam{0%{opacity:.55}100%{opacity:.95}}
+.life-off #arc{display:none}
+@media (prefers-reduced-motion:reduce){#fx{animation:none!important}}
+#fx.warp{animation:warp .9s ease-out}
+@keyframes warp{0%{background:radial-gradient(circle,rgba(255,255,255,0) 0,rgba(168,85,247,0) 100%)}40%{background:radial-gradient(circle,rgba(255,255,255,.95) 0,rgba(168,85,247,.7) 60%,rgba(34,211,238,.5) 100%)}100%{background:radial-gradient(circle,rgba(255,255,255,0) 0,rgba(168,85,247,0) 100%)}}
+#map{transition:filter .6s}
+#quest{position:fixed;z-index:6;left:50%;top:calc(max(14px,env(safe-area-inset-top,0px)) + 46px);transform:translateX(-50%);padding:6px 14px;font-size:12.5px;border-radius:999px;white-space:nowrap}
+#quest span{margin-left:6px;letter-spacing:2px}
+.life-off #quest{display:none}
+.actor.era-walker .a-body{font-size:30px}
+.actor.quester .a-body{filter:drop-shadow(0 0 8px #FDE047)}
+.prop .big.era{font-size:40px}
 .models{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px}
 .models button{border:1px solid var(--glass-line);background:rgba(255,255,255,.75);border-radius:12px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px}
 .models button span{font-size:20px}
@@ -416,6 +442,9 @@ textarea.flash{box-shadow:0 0 0 3px rgba(79,70,229,.35)!important;transition:box
 <div id="toast" role="status"></div>
 <button id="notsaved" hidden>⚠️ Not saved yet · tap to retry</button>
 <div id="react" aria-live="polite"></div>
+<div id="fx"></div>
+<div id="arc" class="glass" hidden></div>
+<div id="quest" class="glass" hidden></div>
 
 <script>
 (() => {
@@ -638,7 +667,8 @@ function recompute(){
 }
 
 /* ================= geometry ================= */
-function sizeFor(p){
+function sizeFor(p){ const r=sizeFor0(p); if(TOWN_MULT===1) return r; return {S:r.S*TOWN_MULT,P:r.P*TOWN_MULT}; }
+function sizeFor0(p){
   if(p.hidden) return {S:0,P:0};
   if(VIEW==='reviews'){ if(p.ds==null) return {S:10,P:.8}; const t=clamp((p.ds-6)/4,0,1), k=Math.pow(t,2.2); return {S:8+60*k, P:1+36*k}; }
   const s=p.sc.combined, been=p.visits.length>0 || (preview&&preview[p.id]);
@@ -1311,7 +1341,7 @@ function makeActor(kind,ll,opt={}){
   const id='ac'+(actorSeq++);
   el.innerHTML=(kind==='mascot'?`<div class="a-body">${mascotSVG(opt.mood||'happy',id,opt.look)}</div>${opt.look&&opt.look.name?`<div class="a-tag">${esc(opt.look.name)}</div>`:''}`:`<div class="a-body a-emoji">${opt.emoji}</div>`)+'<div class="a-say"></div>';
   const mk=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(ll).addTo(map);
-  const a={id,kind,el,mk,ll:ll.slice(),path:[],speed:opt.speed||7,mood:opt.mood,home:opt.home||ll.slice(),busy:false,onArrive:null,wait:0,name:opt.name||''};
+  const a={id,kind,el,mk,ll:ll.slice(),path:[],speed:opt.speed||7,mood:opt.mood,look:opt.look||null,home:opt.home||ll.slice(),busy:false,onArrive:null,wait:0,name:opt.name||''};
   LIFE.actors.push(a); return a;
 }
 function removeActor(a){ a.mk.remove(); LIFE.actors=LIFE.actors.filter(x=>x!==a); }
@@ -1404,11 +1434,191 @@ function cue(ll,fx){
 function camTick(now){
   if(!orbitOn){ CAM.focused=false; return; }
   if(CAM.focused && !LIFE.busy && now>CAM.pauseUntil+2500){
-    CAM.focused=false; CAM.pauseUntil=now+2700;
-    map.flyTo({center:map.getCenter(),zoom:15.2,pitch:58,bearing:map.getBearing()+30,duration:2600,essential:true});
+    CAM.focused=false; CAM.pauseUntil=now+3400; const vp=nextViewpoint();
+    map.flyTo({center:vp.c,zoom:vp.z,pitch:60,bearing:vp.b,duration:3300,curve:1.4,essential:true});
   }
 }
 const STORY_FX={fire:'boom',fender:'boom',fireworks:'boom',pipe:'jolt',power:'jolt',bees:'jitter',party:'jitter',concert:'jitter',ambulance:'rumble',snow:'rumble',goose:'jitter',wedding:'jitter',lottery:'jolt'};
+
+/* ================= camera viewpoints + story arcs with climaxes ================= */
+let TOWN_MULT=1;
+const VIEWS={}; let viewIdx=0;
+function viewpoints(){
+  if(VIEWS[CITY]) return VIEWS[CITY];
+  const c=CITIES[CITY].ll; const pool=PLACES.filter(p=>p.city===CITY&&!p.hidden&&mDist([p.lng,p.lat],c)<2600);
+  const pts=[c.slice()];
+  while(pts.length<10 && pool.length){ let best=null,bd=-1; for(const p of pool){ const ll=[p.lng,p.lat]; const d=Math.min(...pts.map(q=>mDist(q,ll))); if(d>bd){ bd=d; best=ll; } } if(!best||bd<120) break; pts.push(best); }
+  VIEWS[CITY]=pts.map((ll,i)=>({c:ll,b:(i*36)%360-180,z:15.7+(i%3)*.35}));
+  return VIEWS[CITY];
+}
+function nextViewpoint(){ const v=viewpoints(); viewIdx=(viewIdx+1)%v.length; return v[viewIdx]; }
+
+/* town look: lighting, sky, building colour */
+let LOOK_SAVED=null;
+function saveLook(){ if(LOOK_SAVED) return; LOOK_SAVED={bld:map.getPaintProperty('buildings','fill-extrusion-color'), bg:map.getPaintProperty('bg','background-color'), water:map.getPaintProperty('water','fill-color')}; }
+function townLook(mode){
+  saveLook(); const fx=document.getElementById('fx'); fx.className='';
+  const set=(l,p,v)=>{ try{ map.setPaintProperty(l,p,v); }catch(e){} };
+  const sky=(a,b)=>{ try{ map.setSky({'sky-color':a,'horizon-color':b,'fog-color':b,'sky-horizon-blend':.6,'horizon-fog-blend':.7,'fog-ground-blend':.85,'atmosphere-blend':0}); }catch(e){} };
+  if(mode==='normal'){ set('buildings','fill-extrusion-color',LOOK_SAVED.bld); set('bg','background-color',LOOK_SAVED.bg); set('water','fill-color',LOOK_SAVED.water); sky('#BFD8F6','#EEF2F7'); try{ map.setLight({anchor:'viewport',color:'#ffffff',intensity:.42,position:[1.25,210,35]}); }catch(e){} return; }
+  if(mode==='storm'){ set('buildings','fill-extrusion-color','#9CA3AF'); set('bg','background-color','#6B7280'); set('water','fill-color','#475569'); sky('#334155','#64748B'); try{ map.setLight({anchor:'viewport',color:'#CBD5E1',intensity:.2}); }catch(e){} fx.className='rain'; }
+  if(mode==='blackout'){ set('buildings','fill-extrusion-color','#374151'); set('bg','background-color','#1F2937'); set('water','fill-color','#1E293B'); sky('#0F172A','#1E293B'); try{ map.setLight({anchor:'viewport',color:'#94A3B8',intensity:.12}); }catch(e){} fx.className='rain dark'; }
+  if(mode==='golden'){ set('buildings','fill-extrusion-color','#FCD34D'); set('bg','background-color','#FEF3C7'); set('water','fill-color','#FDBA74'); sky('#FDBA74','#FEF3C7'); try{ map.setLight({anchor:'viewport',color:'#FDE68A',intensity:.55}); }catch(e){} fx.className='gold'; }
+  if(mode==='future'){ set('buildings','fill-extrusion-color',['interpolate',['linear'],['coalesce',['get','render_height'],8],0,'#22D3EE',40,'#A855F7']); set('bg','background-color','#1E1B4B'); set('water','fill-color','#312E81'); sky('#0B0B2E','#4C1D95'); try{ map.setLight({anchor:'viewport',color:'#E9D5FF',intensity:.5}); }catch(e){} fx.className='future'; }
+}
+function flash(){ const fx=document.getElementById('fx'); fx.classList.remove('flash'); void fx.offsetWidth; fx.classList.add('flash'); }
+function setMult(m){ TOWN_MULT=m; startAnim(); }
+function fly(a,ll,cb){ a.path=[ll]; a.onArrive=cb||null; a.el.classList.add('walking'); }
+function mascotsSay(lines,n=4){ anyMascot([]).slice(0,n).forEach((m,i)=>setTimeout(()=>say(m,pick(lines),2400),i*300)); }
+function allFall(on){ LIFE.actors.filter(a=>a.kind==='mascot').forEach(a=>a.el.classList.toggle('fallen',on)); }
+function townCenter(){ const c=map.getCenter(); return [c.lng,c.lat]; }
+function wide(){ if(orbitOn){ CAM.focused=true; CAM.pauseUntil=performance.now()+2600; map.flyTo({center:townCenter(),zoom:15.3,pitch:55,bearing:map.getBearing()+40,duration:2500,essential:true}); } }
+
+const ARCS={
+  storm:{tick:'⛈️ Storm brewing',fore:['🌥️ Clouds rolling in…','🌬️ Getting windy','☁️ Smells like rain','🌂 Grab an umbrella']},
+  quake:{tick:'🫨 Tremors',fore:['🫨 Did the ground move?','🐦 The birds went quiet…','☕ My coffee rippled','😬 Feel that?']},
+  aliens:{tick:'🛸 Strange lights',fore:['👀 Weird lights in the sky','📡 Radio’s acting up','🛸 Was that a UFO?','🌌 The stars are moving…']},
+  golden:{tick:'✨ Boom times ahead',fore:['✨ Something good is coming','📈 Business is booming!','🎺 Big news tomorrow!','💰 Everyone’s hiring!']},
+};
+const ARC={type:null,step:0,need:3};
+function newArc(){ const avg=mean(RANKED.filter(p=>p.city===CITY).map(p=>p.sc.combined).filter(x=>x!=null)); const types=['storm','quake','aliens','golden']; let t=pick(types); if(avg!=null && Math.random()<.35) t=avg>=7.5?pick(['golden','aliens']):pick(['storm','quake']); ARC.type=t; ARC.step=0; ARC.need=3+((Math.random()*2)|0); arcTicker(); }
+function arcTicker(txt){ const el=document.getElementById('arc'); if(!el) return; if(txt===''){ el.hidden=true; return; } const a=ARCS[ARC.type]; el.hidden=false; el.innerHTML=txt||`${a.tick} <span class="bars">${'▮'.repeat(ARC.step)}${'▯'.repeat(Math.max(0,ARC.need-ARC.step))}</span>`; }
+function foreshadow(){ const a=ARCS[ARC.type]; setTimeout(()=>mascotsSay(a.fore,2),1800); const fx=['jitter','jolt','rumble','rumble'][Math.min(3,ARC.step)]; setTimeout(()=>shake(fx),2600); if(ARC.type==='aliens'&&ARC.step>=2){ const u=makeActor('vehicle',edgeLL(),{emoji:'🛸',speed:140}); fly(u,edgeLL(),()=>removeActor(u)); } if(ARC.type==='storm'&&ARC.step>=2) setTimeout(flash,2000); }
+
+/* climaxes */
+function climax(){
+  const t=ARC.type; LIFE.busy=true; arcTicker(({storm:'⛈️ MEGA STORM!',quake:'🫨 EARTHQUAKE!',aliens:'🛸 ALIEN VISIT!',golden:'✨ GOLDEN AGE!'})[t]);
+  const done=(ms)=>setTimeout(()=>{ townLook('normal'); setMult(1); allFall(false); arcTicker(''); LIFE.busy=false; LIFE.nextScene=performance.now()+6000; newArc(); },ms);
+  wide();
+  if(t==='storm'){
+    townLook('storm'); mascotsSay(['☔ Run!','⛈️ Whoa!','🌪️ Hold on!'],6); shake('rumble');
+    const bolts=setInterval(()=>{ flash(); shake('boom'); },2600);
+    setTimeout(()=>{ townLook('blackout'); mascotsSay(['💡 Power’s out!','🕯️ So dark…','😱 Blackout!'],5); },6000);
+    setTimeout(()=>{ clearInterval(bolts); arcTicker('🔧 Clean-up crews'); const s1=station('⚡','Electric Co.'); const v=makeActor('vehicle',s1.ll,{emoji:'🚚',speed:60}); v.busy=true; goTo(v,randomNodeNear(townCenter(),200),()=>{ say(v,'⚡ Power restored!',2600); townLook('normal'); const rb=prop(randomNodeNear(townCenter(),150),'<div class="big">🌈</div>','pop'); dropProp(rb,5000); mascotsSay(['🌈 A rainbow!','😌 Phew','🙌 Lights!'],5); setTimeout(()=>goTo(v,s1.ll,()=>{ removeActor(v); dropProp(s1.p); }),3000); }); },13000);
+    done(24000);
+  }
+  if(t==='quake'){
+    let n=0; const q=setInterval(()=>{ shake('boom'); if(++n>=4) clearInterval(q); },900);
+    setTimeout(()=>{ setMult(.18); allFall(true); mascotsSay(['😱 EARTHQUAKE!','🫨 AAAH!','🙀 Hold on!'],6);
+      PLACES.filter(p=>VIS.has(p.id)).slice(0,8).forEach((p,i)=>{ const d=prop([p.lng,p.lat],'<div class="puff">💨</div>'); dropProp(d,1400+i*100); }); },700);
+    setTimeout(()=>{ allFall(false); arcTicker('🏗️ Rebuilding…'); const sites=PLACES.filter(p=>VIS.has(p.id)).sort(()=>Math.random()-.5).slice(0,5); const cranes=sites.map(p=>prop([p.lng,p.lat],'<div class="big">🏗️</div>','pop'));
+      const crew=sites.slice(0,3).map(p=>{ const w=makeActor('vehicle',edgeLL(),{emoji:'👷',speed:50}); w.busy=true; goTo(w,randomNodeNear([p.lng,p.lat],40),()=>say(w,pick(['🔨 Bang bang','🧱 Brick by brick','📐 Measure twice'])) ); return w; });
+      [.4,.7,1.0,1.25].forEach((m,i)=>setTimeout(()=>setMult(m),2500+i*2500));
+      setTimeout(()=>{ cranes.forEach(c=>dropProp(c)); crew.forEach(w=>removeActor(w)); mascotsSay(['🎉 Rebuilt stronger!','🏙️ Look at us now!','🙌 Bigger & better'],6); },12500); },6500);
+    done(24000);
+  }
+  if(t==='aliens'){
+    const target=RANKED.find(p=>p.city===CITY&&VIS.has(p.id))||PLACES.find(p=>VIS.has(p.id)); const tll=target?[target.lng,target.lat]:townCenter();
+    const ufo=makeActor('vehicle',edgeLL(),{emoji:'🛸',speed:120}); ufo.el.classList.add('ufo');
+    if(orbitOn) cue(tll,'jolt');
+    fly(ufo,tll,()=>{ const beam=prop(tll,'<div class="beam"></div>','pop'); mascotsSay(['👽 ALIENS!','😱 They’re real!','👋 Take me with you!'],6); shake('rumble'); setMult(1.6);
+      setTimeout(()=>{ dropProp(beam); say(ufo,'🎁 A gift for Earth',2600); },5000);
+      setTimeout(()=>{ townLook('future'); arcTicker('🚀 The Future Age'); fly(ufo,edgeLL(),()=>removeActor(ufo));
+        let k=0; const cars=setInterval(()=>{ const a=makeActor('vehicle',edgeLL(),{emoji:pick(['🚁','🛸','🚀','🛰️']),speed:110}); a.el.classList.add('flying'); fly(a,edgeLL(),()=>removeActor(a)); if(++k>=10) clearInterval(cars); },900);
+        mascotsSay(['🤖 Beep boop!','🚀 The future is here!','😎 Flying cars!'],6); },7000); });
+    done(26000);
+  }
+  if(t==='golden'){
+    townLook('golden'); setMult(1.6); shake('boom');
+    let k=0; const fw=setInterval(()=>{ const f=prop(randomNodeNear(townCenter(),300),'<div class="big fireworks">🎆<i>🎇</i><i>✨</i></div>'); dropProp(f,1600); if(k%2===0) shake('jolt'); if(++k>=10) clearInterval(fw); },1100);
+    const top=RANKED.find(p=>p.city===CITY); const stage=top?[top.lng,top.lat]:townCenter();
+    anyMascot([]).slice(0,8).forEach((m,i)=>{ m.busy=true; rush(m); setTimeout(()=>goTo(m,randomNodeNear(stage,40),()=>say(m,pick(['🎺','🥳','💃','🕺','🎉']),3000)),i*250); });
+    setTimeout(()=>anyMascot([]).length,0);
+    setTimeout(()=>{ LIFE.actors.filter(a=>a.kind==='mascot').forEach(m=>{ calm(m); m.busy=false; }); },15000);
+    done(20000);
+  }
+}
+
+/* ================= time travel, climax tiers, side quests ================= */
+const ERAS={
+  dino:{label:'⏳ 65,000,000 BC',filter:'saturate(1.5) hue-rotate(-25deg) brightness(.95)',look:'normal',walkers:['🦖','🦕','🦖','🦣','🦕','🐊'],props:['🌋','🌴','🥚','🌴'],lines:['🦖 RUN!','😱 Is that a T-rex?!','🥚 Don’t touch the egg!','🌋 The volcano!']},
+  medieval:{label:'⏳ 1350 AD',filter:'sepia(.4) saturate(1.2)',walkers:['🏇','🧙','🛡️','🏇','🐎','🧝'],props:['🏰','⚔️','🏰','👑'],fly:'🐉',lines:['⚔️ Huzzah!','🐉 DRAGON!','🍗 To the feast!','👑 Long live the king!']},
+  west:{label:'⏳ 1873',filter:'sepia(.9) saturate(1.3) contrast(1.05)',walkers:['🤠','🐎','🐂','🤠','🐎','🌵'],props:['🌵','🏜️','🌵','💰'],roll:'🌾',lines:['🤠 Howdy!','🌵 Dusty out here','🐎 Yeehaw!','💰 Gold rush!']},
+  twenties:{label:'⏳ 1925',filter:'grayscale(1) contrast(1.15) brightness(1.05)',walkers:['🚗','🎩','🚗','🎷','🚂','🎩'],props:['🎷','🍸','📻','🎩'],lines:['🎷 Swing it!','🍸 Bee’s knees!','📻 Hear the news?','🕺 Charleston time']},
+  eighties:{label:'⏳ 1985',filter:'saturate(1.6) hue-rotate(240deg) contrast(1.1)',walkers:['🛹','📼','🛼','🛹','🚲','🎧'],props:['🕹️','📻','📼','💾'],lines:['😎 Totally rad!','🕹️ High score!','📼 Be kind, rewind','🛼 Radical!']},
+  future:{label:'⏳ 2150',filter:'saturate(1.3) hue-rotate(160deg)',look:'future',walkers:['🤖','🛸','🤖','🚀','👾','🦾'],props:['🛰️','🔮','🪐','🛰️'],fly:'🛸',lines:['🤖 Beep boop','🚀 Hyperloop’s late','👾 Greetings, human','🛸 Flying cars, finally']},
+};
+let ERA_ACTORS=[], ERA_PROPS=[];
+function warpFX(){ const fx=document.getElementById('fx'); fx.classList.remove('warp'); void fx.offsetWidth; fx.classList.add('warp'); shake('boom'); }
+function enterEra(k){
+  const e=ERAS[k]; warpFX(); arcTicker(e.label);
+  setTimeout(()=>{ document.getElementById('map').style.filter=e.filter; if(e.look) townLook(e.look);
+    const vs=viewpoints();
+    e.props.forEach((em,i)=>{ const ll=randomNodeNear(vs[i%vs.length].c,120); ERA_PROPS.push(prop(ll,`<div class="big era">${em}</div>`,'pop')); });
+    e.walkers.forEach((em,i)=>{ const a=makeActor('vehicle',randomNodeNear(townCenter(),500),{emoji:em,speed:em==='🦖'||em==='🦕'?14:10}); a.el.classList.add('era-walker'); a.busy=true; ERA_ACTORS.push(a); const roam=()=>{ if(!ERA_ACTORS.includes(a)) return; goTo(a,randomNodeNear(townCenter(),600),()=>setTimeout(roam,800)); }; roam(); });
+    if(e.fly){ let n=0; const f=setInterval(()=>{ const a=makeActor('vehicle',edgeLL(),{emoji:e.fly,speed:120}); a.el.classList.add('flying'); fly(a,edgeLL(),()=>removeActor(a)); if(++n>=4) clearInterval(f); },3000); }
+    mascotsSay(e.lines,6); setTimeout(()=>mascotsSay(e.lines,4),6000);
+  },500);
+}
+function exitEra(){ warpFX(); setTimeout(()=>{ document.getElementById('map').style.filter=''; townLook('normal'); ERA_ACTORS.forEach(a=>removeActor(a)); ERA_ACTORS=[]; ERA_PROPS.forEach(p=>dropProp(p)); ERA_PROPS=[]; mascotsSay(['😵‍💫 What just happened?','🕰️ Back to now!','🤯 Time travel!'],5); },500); }
+
+/* climax tiers */
+const SMALL={
+  shower:()=>{ townLook('storm'); mascotsSay(['🌦️ Quick shower!','☔ Umbrella!'],4); setTimeout(()=>{ townLook('normal'); const r=prop(randomNodeNear(townCenter(),150),'<div class="big">🌈</div>','pop'); dropProp(r,4000); },7000); return 10000; },
+  tremor:()=>{ shake('jolt'); setTimeout(()=>shake('jolt'),700); setMult(.8); mascotsSay(['🫨 Tremor!','😬 Whoa!'],4); setTimeout(()=>setMult(1),1500); return 6000; },
+  flyby:()=>{ const u=makeActor('vehicle',edgeLL(),{emoji:'🛸',speed:150}); u.el.classList.add('ufo'); fly(u,edgeLL(),()=>removeActor(u)); mascotsSay(['🛸 Did you see that?!','👽 UFO!','📸 Get a pic!'],4); return 8000; },
+  sparks:()=>{ let k=0; const t=setInterval(()=>{ const f=prop(randomNodeNear(townCenter(),250),'<div class="big fireworks">🎆<i>✨</i></div>'); dropProp(f,1500); shake('jitter'); if(++k>=4) clearInterval(t); },900); mascotsSay(['🎆 Ooooh!','🥳 Fireworks!'],4); return 7000; },
+  mini_warp:()=>{ const k=pick(Object.keys(ERAS)); enterEra(k); setTimeout(exitEra,9000); return 11000; },
+};
+function bigClimax(t){ ARC.type=t; climax0(); }
+const climax0=climax;
+climax=function(){
+  const tier=ARC.tier||'large';
+  LIFE.busy=true;
+  const finish=ms=>setTimeout(()=>{ LIFE.busy=false; LIFE.nextScene=performance.now()+6000; arcTicker(''); newArc(); },ms);
+  if(tier==='small'){ arcTicker('⚡ Mini event!'); wide(); finish(SMALL[ARC.type]()); return; }
+  if(ARC.type==='timewarp'){ wide(); const k=pick(Object.keys(ERAS)); enterEra(k); setTimeout(exitEra,22000); finish(24000); return; }
+  if(tier==='super'){
+    wide();
+    if(ARC.type==='timetour'){ const ks=Object.keys(ERAS).sort(()=>Math.random()-.5).slice(0,3); arcTicker('🌀 TIME STORM!');
+      ks.forEach((k,i)=>{ setTimeout(()=>{ if(i>0){ document.getElementById('map').style.filter=''; ERA_ACTORS.forEach(a=>removeActor(a)); ERA_ACTORS=[]; ERA_PROPS.forEach(p=>dropProp(p)); ERA_PROPS=[]; } enterEra(k); },i*16000); });
+      setTimeout(exitEra,48000); finish(51000); return; }
+    // saga: earthquake -> rebuild -> golden age
+    arcTicker('💥 THE BIG ONE'); ARC.type='quake'; climax0();
+    setTimeout(()=>{ LIFE.busy=true; ARC.type='golden'; climax0(); },25000);
+    return;
+  }
+  climax0();
+};
+function pickArc(){
+  ARC.count=(ARC.count||0)+1;
+  const tier=ARC.count%4===0?'super':ARC.count%2===0?'large':'small';
+  ARC.tier=tier;
+  if(tier==='small'){ ARC.type=pick(Object.keys(SMALL)); ARC.need=2; }
+  else if(tier==='large'){ ARC.type=pick(['storm','quake','aliens','golden','timewarp']); ARC.need=3; }
+  else { ARC.type=pick(['timetour','saga']); ARC.need=4; }
+}
+ARCS.timewarp={tick:'⏳ Time rift opening',fore:['🕰️ My watch is spinning','😵‍💫 Déjà vu…','⏳ Time feels weird','🌀 Did the sky just ripple?']};
+ARCS.timetour={tick:'🌀 TIME STORM building',fore:['🌀 The clocks are melting','⏰ It’s 3 different times at once','🤯 I just saw a dinosaur?!','🕰️ Something’s very wrong']};
+ARCS.saga={tick:'💥 Something BIG is coming',fore:['😰 I have a bad feeling','🐀 The rats are leaving…','🌡️ It’s weirdly warm','📉 Seismographs are going wild']};
+Object.keys(SMALL).forEach(k=>ARCS[k]={tick:'⚡ Something’s up',fore:['👀 Hmm…','🤔 Feels like something’s coming','😯 Huh, weird']});
+
+/* side quests */
+const QUESTS=[
+  {name:'The Lost Recipe',icon:'📜',items:['🥚','🧀','🌶️'],start:'📜 Grandma’s recipe is missing ingredients!',step:'Got it!',end:'🍲 Secret sauce complete!'},
+  {name:'The Pizza Run',icon:'🍕',items:['🍕','🍕','🍕','🍕'],start:'🍕 Four deliveries, 20 minutes!',step:'Delivered!',end:'💸 Biggest tip ever!'},
+  {name:'The Mystery Package',icon:'📦',items:['📦','🔑','🎁'],start:'📦 Who sent this package?',step:'A clue!',end:'🎁 It was a surprise party!'},
+  {name:'The Treasure Map',icon:'🗺️',items:['🧭','⛏️','💰'],start:'🗺️ X marks the spot…',step:'Dig here!',end:'💰 TREASURE!'},
+  {name:'The Secret Menu',icon:'🤫',items:['🔤','🔢','🔐'],start:'🤫 Learn the secret menu password',step:'Psst…',end:'🤤 The legendary off-menu sandwich!'},
+  {name:'The Lost Ring',icon:'💍',items:['🕵️','🐦','💍'],start:'💍 Someone lost an engagement ring!',step:'A lead!',end:'💞 She said yes!'},
+];
+const QUEST={q:null,hero:null,step:0,stops:[],cool:0};
+function questTick(now){
+  if(!LIFE.graph) return;
+  if(!QUEST.q){ if(now<QUEST.cool) return; const hero=anyMascot([]).find(m=>m.look); if(!hero) return;
+    const q=pick(QUESTS), vis=PLACES.filter(p=>VIS.has(p.id)).sort(()=>Math.random()-.5).slice(0,q.items.length); if(vis.length<q.items.length) return;
+    Object.assign(QUEST,{q,hero,step:0,stops:vis}); hero.busy=true; hero.el.classList.add('quester'); say(hero,q.start,3500); questBar(); questNext(); return; }
+}
+function questNext(){
+  const {q,hero,stops}=QUEST; if(!q) return;
+  if(QUEST.step>=stops.length){ say(hero,q.end,3500); const f=prop(hero.ll,'<div class="big fireworks">🎆<i>✨</i></div>'); dropProp(f,1600); shake('jolt'); toast(`🏆 Side quest complete: ${q.name}`);
+    setTimeout(()=>{ hero.busy=false; hero.el.classList.remove('quester'); QUEST.q=null; QUEST.cool=performance.now()+20000; questBar(); },3000); return; }
+  const p=stops[QUEST.step];
+  setTimeout(()=>goTo(hero,randomNodeNear([p.lng,p.lat],25),()=>{ const it=prop(hero.ll,`<div class="big">${q.items[QUEST.step]}</div>`,'pop'); dropProp(it,1800); say(hero,`${q.items[QUEST.step]} ${q.step} (${p.name.split(' ')[0]})`,2600); QUEST.step++; questBar(); setTimeout(questNext,2600); }),1200);
+}
+function questBar(){ const el=document.getElementById('quest'); if(!el) return; if(!QUEST.q){ el.hidden=true; return; } el.hidden=false; el.innerHTML=`🗺️ <b>${esc(QUEST.q.name)}</b> <span>${QUEST.q.items.map((it,i)=>i<QUEST.step?it:'▫️').join('')}</span>`; }
+
+newArc=function(){ pickArc(); ARC.step=0; arcTicker(); };
 
 /* ================= story engine: ~30 storylines x places x moods x crews x lines = 1000s of scenarios ================= */
 const pick=a=>a[(Math.random()*a.length)|0];
@@ -1479,11 +1689,13 @@ function playStory(st){
 
 function director(now){
   if(LIFE.busy || now<LIFE.nextScene) return;
+  if(!ARC.type) newArc();
+  if(ARC.step>=ARC.need){ climax(); LIFE.nextScene=now+30000; return; }
   let ok=false;
   if(angryOnes().length && Math.random()<.3) ok=sceneShove();
   if(!ok && Math.random()<.08) ok=sceneKitten();
   for(let i=0;!ok&&i<4;i++){ try{ ok=playStory(pick(STORIES)); }catch(e){ ok=false; } }
-  if(ok) LIFE.busy=true;
+  if(ok){ LIFE.busy=true; ARC.step++; arcTicker(); foreshadow(); }
   LIFE.nextScene=now+12000+Math.random()*10000;
   setTimeout(()=>{ LIFE.busy=false; },45000); // safety valve
 }
@@ -1505,7 +1717,7 @@ function lifeTick(ts){
   if(show){
     if(!LIFE.graph){ buildGraph(); if(LIFE.graph) populate(); }
     else if(LIFE.gCenter && mDist(LIFE.gCenter,map.getCenter().toArray())>900){ buildGraph(); populate(); }
-    stepActors(dt); stepBoats(dt); director(ts);
+    stepActors(dt); stepBoats(dt); director(ts); questTick(ts);
   }
   requestAnimationFrame(lifeTick);
 }
