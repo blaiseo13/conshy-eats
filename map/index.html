@@ -34,7 +34,7 @@
 .sheet.on{transform:none;opacity:1;pointer-events:auto}
 .sh-hd{position:relative;padding:16px 18px 10px;border-bottom:1px solid var(--line)}
 .sh-hd h2{margin:0;padding-right:96px;font:800 24px/1.15 "Shippori Mincho B1",serif}.sh-hd .addr{color:var(--ink2);font-size:12.5px}
-.tierseal{position:absolute;right:16px;top:14px;width:62px;height:62px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;text-align:center;font:800 10.5px/1.1 "Shippori Mincho B1",serif;letter-spacing:.08em;transform:rotate(-8deg);background:#fff6}
+.tierseal{position:absolute;right:16px;top:14px;width:62px;height:62px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;text-align:center;font:800 9px/1.1 "Shippori Mincho B1",serif;letter-spacing:0;transform:rotate(-8deg);background:#fff6}
 .x{position:absolute;left:auto;right:86px;top:12px;border:0;background:none;font-size:22px;cursor:pointer;color:var(--ink2)}
 .portrait{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;padding:12px 18px;background:linear-gradient(180deg,#EFE6CF,#F5EFDF)}
 .portrait canvas{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#FFFBEF,#E3D5B2);border:1.5px solid var(--ink)}
@@ -59,13 +59,13 @@
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px}.grid div{text-align:center;font-size:11px;cursor:pointer}
 .grid .ph{display:block;border-radius:50%;background:radial-gradient(circle at 50% 40%,#FFFBEF,#E3D5B2);border:1px solid var(--line)}.grid img{width:100%;aspect-ratio:1;display:block}
 .grid .lock img{filter:brightness(0) opacity(.3)}
-.search{width:calc(100% - 32px);margin:12px 16px 4px;padding:9px 12px;border:1.5px solid var(--ink);background:#fff;border-radius:3px;font:500 15px "Zen Maru Gothic"}
+.qwrap{position:relative;margin:12px 16px 6px}.search{width:100%;padding:11px 46px 11px 12px;border:1.5px solid var(--ink);background:#fff;border-radius:3px;font:500 16px "Zen Maru Gothic";color:var(--ink);-webkit-appearance:none}.qx{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;background:none;font-size:24px;line-height:1;color:var(--ink2);cursor:pointer;display:none}.qwrap.has .qx{display:block}.search::-webkit-search-cancel-button,.search::-webkit-search-decoration{-webkit-appearance:none;display:none}.item .qs{color:var(--red)}
 .combined{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}.combined b{font:800 40px/1 "Shippori Mincho B1",serif;color:var(--red)}.combined small{color:var(--ink2);font-size:12px}
 .strip{display:flex;gap:8px;overflow-x:auto;padding:12px 18px 4px;scroll-snap-type:x mandatory}.strip figure{margin:0;flex:0 0 78%;scroll-snap-align:start}.strip img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:3px;border:1px solid var(--ink);display:block}.strip figcaption{font-size:10.5px;color:var(--ink2)}
 .gal{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px}.gi{position:relative;cursor:pointer;border-radius:3px;overflow:hidden;border:1px solid var(--ink)}.gi img{width:100%;aspect-ratio:1;object-fit:cover;display:block;transition:transform .5s var(--ease)}.gi:hover img{transform:scale(1.06)}
 .gi span{position:absolute;left:0;right:0;bottom:0;padding:16px 6px 5px;font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.7))}
 .rank{width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:12px;font-weight:900;flex:none}.item .big{font:800 22px "Shippori Mincho B1",serif;color:var(--red)}
-.item .lg{margin-left:auto;flex:none;border:0;background:var(--red);color:var(--paper);font:800 12px "Zen Maru Gothic";padding:6px 10px;border-radius:3px;cursor:pointer}.item>div{min-width:0}
+.item .lg{margin-left:auto;flex:none;border:0;background:var(--red);color:var(--paper);font:800 13px "Zen Maru Gothic";min-height:40px;padding:8px 12px;border-radius:3px;cursor:pointer}.item>div{min-width:0}
 .lbl .sc{color:var(--red);margin-left:2px}
 .nav{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:5;display:grid;grid-template-columns:repeat(6,36px) auto;gap:2px;padding:5px}
 .nav button{height:34px;border:0;background:none;font-size:17px;cursor:pointer;color:var(--ink);border-radius:3px}.nav button:hover{background:var(--paper2)}.nav .w{font:700 12px "Zen Maru Gothic";padding:0 8px}
@@ -73,12 +73,26 @@
 .lvbar{height:6px;border-radius:3px;background:#E3D8BE;margin:6px 0 2px;overflow:hidden}.lvbar span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--red));border-radius:3px}
 .visit{border:1px solid var(--line);border-radius:3px;padding:8px;margin-bottom:8px;background:#fff8}
 .vh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;margin-bottom:6px}
-.visit input{font:600 14px "Zen Maru Gothic";border:1px solid var(--line);border-radius:3px;padding:5px 7px;background:#fff;color:var(--ink);min-width:0}
+.visit input{font:600 16px "Zen Maru Gothic";border:1px solid var(--line);border-radius:3px;padding:8px 9px;background:#fff;color:var(--ink);min-width:0}
 .visit input:disabled{background:transparent;border-color:transparent}.visit input.bad{border-color:var(--red)}
-.vd{width:92px}.vx{width:68px}.dish{display:grid;grid-template-columns:34px 1fr 64px 28px;gap:5px;align-items:center;margin-bottom:5px}
-.dish .ds{text-align:center}.dk,.dx{border:1px solid var(--line);background:#fff;border-radius:3px;height:32px;cursor:pointer;font-size:15px}.dx{color:var(--red);font-weight:900}
-.vadd{display:flex;gap:6px;margin-top:4px}.vadd button{border:1px dashed var(--ink2);background:none;border-radius:3px;padding:5px 10px;font:700 12px "Zen Maru Gothic";cursor:pointer}.vadd .vdel{margin-left:auto;border:0;color:var(--ink2);text-decoration:underline}
+.vd{width:112px}.vx{width:80px}.dish{display:grid;grid-template-columns:42px 1fr 78px 42px;gap:6px;align-items:center;margin-bottom:6px}
+.dish .ds{text-align:center}.dk,.dx{border:1px solid var(--line);background:#fff;border-radius:3px;height:42px;cursor:pointer;font-size:17px}.dx{color:var(--red);font-weight:900}
+.vadd{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center}.vadd button{border:1px dashed var(--ink2);background:none;border-radius:3px;min-height:42px;padding:8px 12px;font:700 14px "Zen Maru Gothic";cursor:pointer;color:var(--ink)}.vadd .vdel{margin-left:auto;border:0;color:var(--ink2);text-decoration:underline}
 .vstat{font-size:12px;color:var(--ink2);min-height:16px}.vstat.ok{color:#2E7D32}
+.sh-hd{position:sticky;top:0;z-index:3;background:var(--paper)}.grab{display:none}
+.x{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;line-height:1}.x:hover{background:var(--paper2)}
+.nv{border:1.5px solid var(--ink);background:#FFFCF3;padding:12px;margin:0}.nvh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}.nvh b{font:800 18px "Shippori Mincho B1",serif;color:var(--red)}
+.xrow{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}.xrow span{font:800 13px "Shippori Mincho B1",serif;letter-spacing:.12em;text-transform:uppercase}.xread{font:800 36px/1 "Shippori Mincho B1",serif;color:var(--red)}
+.visit input.vxr{width:100%;height:44px;-webkit-appearance:none;appearance:none;background:transparent;border:0;padding:0;margin:2px 0;touch-action:pan-y}
+.vxr::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#E3D8BE,var(--gold),var(--red))}.vxr::-moz-range-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#E3D8BE,var(--gold),var(--red))}
+.vxr::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);margin-top:-12px;box-shadow:0 2px 6px rgba(0,0,0,.25)}.vxr::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--paper);border:2px solid var(--ink)}
+.vxr.unset::-webkit-slider-thumb{background:#E3D8BE}.xhint{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);margin-bottom:8px}
+.mtabs{display:flex;gap:6px;margin:6px 0}.mtab{flex:1;min-height:40px;border:1.5px solid var(--ink);background:#fff;border-radius:3px;font:700 14px "Zen Maru Gothic";cursor:pointer;color:var(--ink)}.mtab.on{background:var(--ink);color:var(--paper)}
+.mchips{display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow:auto;padding:2px 0 8px;margin-bottom:6px;border-bottom:1px dotted var(--line)}
+.mchip{border:1px solid var(--ink);background:#fff;border-radius:999px;min-height:38px;padding:6px 12px;font:600 14px "Zen Maru Gothic";cursor:pointer;color:var(--ink);text-align:left}.mchip:active{background:var(--paper2)}
+.vdone{width:100%;margin-top:8px;min-height:46px;border:0;background:var(--red);color:var(--paper);font:900 16px "Zen Maru Gothic";border-radius:3px;cursor:pointer}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield}.dish .ds,.vx{text-align:center}
+#newBox:empty{display:none}#newBox{padding:12px 14px;border-bottom:1px solid var(--line)}
 /* floating labels */
 #labels{position:fixed;inset:0;pointer-events:none;z-index:3}
 .lbl{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:700 12px "Zen Maru Gothic";color:var(--ink);background:#F5EFDFee;border:1px solid var(--ink);border-radius:999px;padding:1px 9px;transition:opacity .3s}
@@ -87,14 +101,18 @@
 .intro{position:fixed;inset:0;z-index:9;display:grid;place-items:center;background:#E9DFC4;transition:opacity 1.2s var(--ease)}.intro.out{opacity:0;pointer-events:none}
 .intro div{font:800 34px "Shippori Mincho B1",serif;letter-spacing:.2em;color:var(--ink)}.intro small{display:block;text-align:center;font:500 12px "Zen Maru Gothic";letter-spacing:.3em;color:var(--ink2);margin-top:6px}
 @media (max-width:700px){
-  .sheet,.drawer{left:8px;right:8px;width:auto;top:auto;bottom:calc(84px + env(safe-area-inset-bottom));max-height:62%;transform:translateY(30px)}
+  .sheet,.drawer{left:6px;right:6px;width:auto;top:auto;bottom:calc(84px + env(safe-area-inset-bottom));max-height:56%;transform:translateY(40px);transition:transform .4s var(--ease),opacity .3s var(--ease),max-height .35s var(--ease);overscroll-behavior:contain}
+  .sheet.full,.drawer.full{max-height:calc(100% - 100px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+  .grab{display:block;width:48px;height:5px;border-radius:3px;background:#C3B593;margin:-4px auto 10px}.sh-hd{padding:12px 14px 10px;touch-action:none}
+  .sh-hd h2{font-size:21px;padding-right:118px}.x{right:10px;top:16px;width:44px;height:44px;border:1.5px solid var(--ink);background:var(--paper);font-size:24px;color:var(--ink)}
+  .tierseal{right:62px;top:16px;width:50px;height:50px;font-size:7px;letter-spacing:0}.dish{grid-template-columns:42px 1fr 64px 42px}.sec{padding:12px 14px}.strip{padding:12px 14px 4px}
   .sheet.on,.drawer.on{transform:none}
   .dock button{padding:6px 7px}.dock button span{font-size:10.5px}.asof{display:none}
   .portrait{grid-template-columns:110px 1fr}.portrait canvas{width:110px;height:110px}
 }
 </style></head><body>
 <canvas id="c"></canvas><div class="grain"></div><div id="labels"></div>
-<div class="intro" id="intro"><div>CONSHY EATS<small>CONSHOHOCKEN · PREVIEW</small></div></div>
+<div class="intro" id="intro"><div>CONSHY EATS<small>CONSHOHOCKEN</small></div></div>
 <div class="top"><div class="brand panel"><div class="seal">食</div><div><b>Conshy Eats</b><small>Conshohocken</small></div></div><span class="asof">Facts as of 11/08/26</span></div>
 <div class="dock panel">
   <button class="main" data-d="search"><i>🔎</i><span>Search / add</span></button>
@@ -136,7 +154,7 @@ const backOut = t => { const c = 1.9; return 1 + (c + 1) * Math.pow(t - 1, 3) + 
 /* ---------------- renderer, scene, camera ---------------- */
 const canvas = $('#c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.75 : 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.5 : 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
@@ -156,7 +174,7 @@ scene.add(new THREE.HemisphereLight('#FFF4E0', '#6B7A4F', 1.15));
 const sun = new THREE.DirectionalLight('#FFEFD2', 2.4);
 sun.position.set(-1600, 2400, 1200); sun.castShadow = true;
 const SH = 2900; Object.assign(sun.shadow.camera, { left: -SH, right: SH, top: SH, bottom: -SH, near: 100, far: 7000 });
-sun.shadow.mapSize.set(MOBILE ? 2048 : 4096, MOBILE ? 2048 : 4096); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.5;
+sun.shadow.mapSize.set(MOBILE ? 1536 : 4096, MOBILE ? 1536 : 4096); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.5;
 scene.add(sun); scene.add(sun.target);
 
 /* ---------------- land, water, roads, buildings from the real map ---------------- */
@@ -212,8 +230,8 @@ scene.add(new THREE.Mesh(ribbons(G.rail, () => 5, 0.65), new THREE.MeshLambertMa
   const r = rng(11), pts = [];
   G.parks.forEach(poly => { if (poly.length < 4) return; let minx = 1e9, maxx = -1e9, minz = 1e9, maxz = -1e9; poly.forEach(([x, z]) => { minx = Math.min(minx, x); maxx = Math.max(maxx, x); minz = Math.min(minz, z); maxz = Math.max(maxz, z); });
     const area = (maxx - minx) * (maxz - minz), n = Math.min(160, area / 2600); for (let i = 0; i < n; i++) { const x = minx + r() * (maxx - minx), z = minz + r() * (maxz - minz); if (inPoly(x, z, poly)) pts.push([x, z]); } });
-  for (let i = 0; i < (MOBILE ? 1200 : 2600); i++) { const a = r() * Math.PI * 2, d = 2700 + r() * 3600; pts.push([Math.cos(a) * d, Math.sin(a) * d]); }
-  const N = Math.min(pts.length, MOBILE ? 3000 : 6000);
+  for (let i = 0; i < (MOBILE ? 700 : 2600); i++) { const a = r() * Math.PI * 2, d = 2700 + r() * 3600; pts.push([Math.cos(a) * d, Math.sin(a) * d]); }
+  const N = Math.min(pts.length, MOBILE ? 1800 : 6000);
   const round = new THREE.IcosahedronGeometry(1, 1), pine = mergeGeometries([new THREE.ConeGeometry(.9, 1.6, 7).translate(0, .4, 0), new THREE.ConeGeometry(.7, 1.3, 7).translate(0, 1.2, 0)]), trunk = new THREE.CylinderGeometry(.12, .16, 1, 6).translate(0, .5, 0);
   const mR = new THREE.InstancedMesh(round, new THREE.MeshLambertMaterial({ flatShading: true }), N), mP = new THREE.InstancedMesh(pine, new THREE.MeshLambertMaterial({ flatShading: true }), N), mT = new THREE.InstancedMesh(trunk, new THREE.MeshLambertMaterial({ color: '#6B4E36' }), N);
   const GREENS = ['#5E8A4A', '#6E9A52', '#7FA75C', '#4F7A45'].map(c => new THREE.Color(c)), PINES = ['#3F6B4E', '#4B7757', '#36604A'].map(c => new THREE.Color(c)), BLOSSOM = new THREE.Color('#EBB4C2');
@@ -345,7 +363,7 @@ totems.forEach(applyLit);
 const clouds = new THREE.Group(); scene.add(clouds);
 for (let i = 0; i < 14; i++) { const r = rng(100 + i), c = new THREE.Group(); for (let k = 0; k < 5; k++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, transparent: true, depthWrite: false, opacity: .85, fog: true })); sp.scale.set(260 + r() * 240, 120 + r() * 80, 1); sp.position.set(k * 140 - 280, r() * 40, r() * 80); c.add(sp); }
   c.position.set(-4000 + r() * 8000, 900 + r() * 300, -4000 + r() * 8000); c.userData.v = 6 + r() * 6; clouds.add(c); }
-const PN = MOBILE ? 250 : 500, pg = new THREE.BufferGeometry(), pp = new Float32Array(PN * 3); const pr = rng(5);
+const PN = MOBILE ? 150 : 500, pg = new THREE.BufferGeometry(), pp = new Float32Array(PN * 3); const pr = rng(5);
 for (let i = 0; i < PN; i++) { pp[i * 3] = (pr() - .5) * 3200; pp[i * 3 + 1] = pr() * 160; pp[i * 3 + 2] = (pr() - .5) * 3200; }
 pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
 const pollen = new THREE.Points(pg, new THREE.PointsMaterial({ color: '#FFE9A8', size: 3.2, transparent: true, opacity: .75, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(pollen);
@@ -404,8 +422,8 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 function scoresHTML(s) { const L = LIVE[s.id] || {}, f = x => x == null ? '–' : x.toFixed(1); return `<div class="combined"><b>${f(L.combined)}</b><small>${L.combined == null ? 'Not rated yet' : 'Overall · 50% food + 50% experience'}</small></div><div class="scores"><div><b>${f(L.food)}</b><small>Food${L.dishN ? ' · ' + L.dishN + ' dish' + (L.dishN > 1 ? 'es' : '') : ''}</small></div><div><b>${f(L.exp)}</b><small>Experience</small></div><div><b>${f(L.drink)}</b><small>Drinks${L.drinkN ? ' · ' + L.drinkN : ''}</small></div></div>${(L.dishes || []).length ? `<div style="margin-top:8px">${L.dishes.map(d => `<div class="row"><span>${d.kind === 'drink' ? '🍹' : '🍽️'} ${esc(d.name)}</span><b>${d.score.toFixed(1)}</b></div>`).join('')}</div>` : ''}`;  }
 function openSheet(s) {
   cur = s; const v = VISITS[s.id] || 0, lv = level(v), ab = abilityOf(s), c = TIER[s.tier];
-  sheet.innerHTML = `<div class="sh-hd"><h2>${esc(s.n)}</h2><div class="addr">${esc(s.a || s.k)} · ${'$'.repeat(s.price)}</div>
-      <div class="tierseal" style="color:${c}">${TIER_JP[s.tier]}<br>${s.tier === 'Closed' ? '' : '★'.repeat(Math.max(1, ['Common', 'Uncommon', 'Rare', 'Unique', 'Legendary'].indexOf(s.tier) + 1))}</div><button class="x" aria-label="Close">×</button></div>
+  sheet.innerHTML = `<div class="sh-hd"><div class="grab" aria-hidden="true"></div><h2>${esc(s.n)}</h2><div class="addr">${esc(s.a || s.k)} · ${'$'.repeat(s.price)}</div>
+      <div class="tierseal" style="color:${c}">${TIER_JP[s.tier]}<br>${s.tier === 'Closed' ? '' : '★'.repeat(Math.max(1, ['Common', 'Uncommon', 'Rare', 'Unique', 'Legendary'].indexOf(s.tier) + 1))}</div><button class="x" aria-label="Close">×</button></div><div id="newBox"></div>
     ${s.tier === 'Closed' ? '' : `<div class="portrait"><div id="pslot"></div><div><div class="mn">${esc(s.n)} crew</div><div class="mt">${v ? nameOf(s) + ' · Lv ' + lv : 'Visit once to unlock'}</div>
       <div class="ab">${v ? `<b>⚡ ${ab.n} · Lv ${lv}</b>${ab.t}${(() => { const T = [1, 3, 6, 10, 15], nx = T[lv], pv = T[lv - 1]; return nx ? `<div class="lvbar"><span style="width:${Math.round((v - pv) / (nx - pv) * 100)}%"></span></div><small>${v} visit${v > 1 ? 's' : ''} · Lv ${lv + 1} at ${nx} visits</small>` : '<div class="lvbar"><span style="width:100%"></span></div><small>Max level</small>'; })()}` : '<b>⚡ Hidden ability</b>Revealed on your first visit. It gets stronger every time you come back.'}</div></div></div>`}
     ${(window.PHOTOS && PHOTOS[s.id] || []).length ? `<div class="strip">${PHOTOS[s.id].map(ph => `<figure><img src="${esc(ph.u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${esc(ph.from)}</figcaption></figure>`).join('')}</div>` : ''}
@@ -416,9 +434,11 @@ function openSheet(s) {
     ${s.drinks.length ? `<div class="sec"><h3>Drinks</h3><div class="chips">${s.drinks.map(d => `<span class="chip">${esc(d)}</span>`).join('')}</div></div>` : ''}
     `;
   const slot = sheet.querySelector('#pslot'); if (slot) slot.appendChild(portrait(s));
+  sheet.classList.toggle('full', !!(MOBILE && NEWV && NEWV.spot === s.id)); sheet.scrollTop = 0;
+  if (MOBILE) { drawer.classList.remove('on', 'full'); dOpen = null; }
   sheet.classList.add('on'); sheet.querySelector('.x').onclick = closeSheet; renderVisits(s);
 }
-function closeSheet() { if (cur) delete EDIT[cur.id]; sheet.classList.remove('on'); cur = null; }
+function closeSheet() { if (cur) { if (saveT) { clearTimeout(saveT); saveT = null; saveSpot(cur); } if (NEWV && NEWV.spot === cur.id) NEWV = null; delete EDIT[cur.id]; } sheet.classList.remove('on', 'full'); cur = null; }
 const toast = (h) => { const t = $('#toast'); t.innerHTML = h; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 2600); };
 function logVisit(s) { // preview only: the real app opens the rating form here, then saves to Firebase
   const first = !VISITS[s.id]; const before = level(VISITS[s.id] || 0); VISITS[s.id] = (VISITS[s.id] || 0) + 1; const t = totems.get(s.id);
@@ -426,6 +446,13 @@ function logVisit(s) { // preview only: the real app opens the rating form here,
   else if (level(VISITS[s.id]) > before) { burst(t.T.position, '#FFE48A'); toast(`${abilityOf(s).n} grew stronger! ${'★'.repeat(level(VISITS[s.id]))}`); }
   else toast('Visit logged'); openSheet(s); }
 
+{ let y0 = null, t0 = 0; const hd = () => sheet.querySelector('.sh-hd');
+  sheet.addEventListener('pointerdown', e => { if (!MOBILE || !e.target.closest('.sh-hd') || e.target.closest('.x')) return; y0 = e.clientY; t0 = Date.now(); });
+  sheet.addEventListener('pointerup', e => { if (y0 == null) return; const dy = e.clientY - y0; y0 = null;
+    if (dy < -30) sheet.classList.add('full'); else if (dy > 50) { if (sheet.classList.contains('full')) sheet.classList.remove('full'); else closeSheet(); }
+    else if (Math.abs(dy) < 8 && Date.now() - t0 < 400 && !e.target.closest('input,button')) sheet.classList.toggle('full'); });
+  sheet.addEventListener('pointercancel', () => y0 = null); }
+addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (sheet.classList.contains('on')) closeSheet(); else if (dOpen) { drawer.classList.remove('on'); dOpen = null; } });
 /* ---------------- drawers: search / try next / this week / crew ---------------- */
 const drawer = $('#drawer'); let dOpen = null;
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -433,9 +460,9 @@ function daysOf(str) { const s = String(str || ''), out = new Set(); if (/daily|
   const re = /(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*\.?(?:\s*-\s*(Mon|Tue|Wed|Thu|Fri|Sat|Sun))?/gi; let m; while ((m = re.exec(s))) { const a = DAYS.findIndex(d => d.toLowerCase() === m[1].slice(0, 3).toLowerCase()), b = m[2] ? DAYS.findIndex(d => d.toLowerCase() === m[2].slice(0, 3).toLowerCase()) : a; for (let i = a; ; i = (i + 1) % 7) { out.add(DAYS[i]); if (i === b) break; } } return [...out]; }
 function item(s, sub) { return `<div class="item" data-id="${s.id}"><span class="dot" style="background:${TIER[s.tier]}"></span><div><b>${esc(s.n)}</b><small>${sub}</small></div></div>`; }
 function openDrawer(kind) {
-  if (dOpen === kind) { drawer.classList.remove('on'); dOpen = null; return; } dOpen = kind; let h = '';
+  if (dOpen === kind) { drawer.classList.remove('on'); dOpen = null; return; } dOpen = kind; let h = ''; if (MOBILE && sheet.classList.contains('on')) closeSheet();
   const open = SPOTS.filter(s => s.tier !== 'Closed');
-  if (kind === 'search') h = `<div class="dr-hd"><h2>Search</h2></div><input class="search" id="q" placeholder="Where did you go? Restaurant, bar, cuisine…" autocomplete="off"><div id="qres"></div>`;
+  if (kind === 'search') h = `<div class="dr-hd"><h2>Search</h2></div><div class="qwrap"><input class="search" id="q" type="search" enterkeyhint="search" placeholder="Where did you go? Restaurant, bar, cuisine…" autocomplete="off"><button class="qx" aria-label="Clear">×</button></div><div id="qres"></div>`;
   if (kind === 'next') h = `<div class="dr-hd"><h2>Try next</h2></div>` + open.filter(s => !VISITS[s.id]).sort((a, b) => (b.fun + b.price) - (a.fun + a.price)).slice(0, 20).map(s => item(s, `${s.tier} crew · ${s.ent.length ? (ENT[s.ent[0].type] || '✨ Events') : s.hh.length ? '🍻 Happy hour' : esc(s.c || s.k)}`)).join('');
   if (kind === 'week') { h = `<div class="dr-hd"><h2>This week</h2></div>`; DAYS.forEach(d => { const rows = []; open.forEach(s => { s.hh.forEach(x => { if (daysOf(x.days).includes(d)) rows.push(item(s, `🍻 ${esc(x.deal)}${x.time ? ' · ' + esc(x.time) : ''}`)); });
       s.ent.forEach(x => { if (['outdoor', 'sports'].includes(x.type)) return; if (daysOf(x.when).includes(d)) rows.push(item(s, `${ENT[x.type] || '✨'} ${esc(x.when)}`)); }); }); if (rows.length) h += `<div class="day">${d.toUpperCase()}</div>` + rows.join(''); }); }
@@ -446,7 +473,9 @@ function openDrawer(kind) {
     h = `<div class="dr-hd"><h2>Gallery</h2></div><div class="gal">${g.map(s => `<div class="gi" data-id="${s.id}"><img src="${esc(PHOTOS[s.id][0].u)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><span>${esc(s.n)}</span></div>`).join('') || '<div class="mt" style="padding:16px">No photos yet.</div>'}</div>`; }
   if (kind === 'log') { h = `<div class="dr-hd"><h2>Log a visit</h2></div><div style="padding:10px 16px;font-size:13px;color:var(--ink2)">Where did you go? (In the real app this opens your rating form: dishes, experience, drinks.)</div>` + open.map(s => item(s, VISITS[s.id] ? `${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : 'Not visited yet')).join(''); }
   drawer.innerHTML = h; drawer.classList.add('on');
-  const q = drawer.querySelector('#q'); if (q) { const run = () => { const v = q.value.trim().toLowerCase(); drawer.querySelector('#qres').innerHTML = open.filter(s => !v || (s.n + ' ' + s.c + ' ' + s.k + ' ' + s.a).toLowerCase().includes(v)).slice(0, 25).map(s => item(s, esc(s.c || s.k) + (VISITS[s.id] ? ` · ${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : '')).replace('</div></div>', `</div><button class="lg" data-log="${s.id}">＋ Log visit</button></div>`)).join(''); }; q.oninput = run; run(); setTimeout(() => q.focus(), 300); }
+  const q = drawer.querySelector('#q'); if (q) { const run = () => { const v = q.value.trim().toLowerCase(); drawer.querySelector('#qres').innerHTML = open.filter(s => !v || (s.n + ' ' + s.c + ' ' + s.k + ' ' + s.a).toLowerCase().includes(v)).slice(0, 25).map(s => item(s, esc(s.c || s.k) + (VISITS[s.id] ? ` · ${VISITS[s.id]} visit${VISITS[s.id] > 1 ? 's' : ''}` : '') + (LIVE[s.id] && LIVE[s.id].combined != null ? ` · <b class="qs">${LIVE[s.id].combined.toFixed(1)}</b>` : '')).replace('</div></div>', `</div><button class="lg" data-log="${s.id}">＋ Log visit</button></div>`)).join(''); q.parentNode.classList.toggle('has', !!q.value); };
+    q.oninput = run; run(); q.onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); const it = drawer.querySelectorAll('#qres .item'); if (it.length === 1) it[0].click(); else q.blur(); };
+    drawer.querySelector('.qx').onclick = () => { q.value = ''; run(); q.focus(); }; if (!MOBILE) setTimeout(() => q.focus(), 300); }
 }
 drawer.addEventListener('click', e => { const lg = e.target.closest('[data-log]'); if (lg) { const s = SPOTS.find(x => x.id === lg.dataset.log); flyToSpot(s); startVisit(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } return; } const el = e.target.closest('[data-id]'); if (!el) return; const s = SPOTS.find(x => x.id === el.dataset.id); flyToSpot(s); if (dOpen === 'log') { logVisit(s); } else openSheet(s); if (MOBILE) { drawer.classList.remove('on'); dOpen = null; } });
 document.querySelector('.dock').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (!b) return; if (b.dataset.d === 'log' && cur) { logVisit(cur); return; } openDrawer(b.dataset.d); });
@@ -469,7 +498,7 @@ async function loadLive() { try { const r = await fetch('https://firestore.googl
     VISITS[id] = vis.length; const t = totems.get(id); if (t) setLit(t, true, true); });
   totems.forEach(applyLit); lblEls.forEach(el => el.remove()); lblEls.clear(); syncLabels(); if (cur) openSheet(cur); } catch (e) { console.warn('live data unavailable', e); } }
 /* ---------------- editing: same save path + private edit link as the live app ---------------- */
-const RAW = {}, EDIT = {}, MENU = {}, DELETED = new Set(); const DRY = location.hash === '#dryrun'; let fdb = null, EDITOR = DRY, firstSnap = true; // #dryrun = test the editor without saving
+const RAW = {}, EDIT = {}, MENU = {}, DELETED = new Set(); let NEWV = null, MTAB = 'food'; const DRY = location.hash === '#dryrun'; let fdb = null, EDITOR = DRY, firstSnap = true; // #dryrun = test the editor without saving
 const todayISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const mdy = iso => iso ? iso.slice(5, 7) + '/' + iso.slice(8, 10) + '/' + iso.slice(2, 4) : '';
 const parseMDY = t => { const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/.exec(String(t).trim()); if (!m) return null; const y = m[3].length === 2 ? '20' + m[3] : m[3]; return `${y}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`; };
@@ -497,21 +526,40 @@ if (FBC && fbase && fbase.firestore) {
   fdb.collection('spots').onSnapshot(snap => { const ch = []; snap.docChanges().forEach(c => { if (c.type === 'removed') delete RAW[c.doc.id]; else RAW[c.doc.id] = c.doc.data(); ch.push(c.doc.id); }); rebuildLive(ch); }, () => loadLive());
 } else loadLive();
 async function menuFor(id) { if (id in MENU) return MENU[id]; MENU[id] = []; if (!fdb) return []; try { const d = await fdb.doc('menus/' + id).get(); const it = d.exists ? (d.data().items || []) : []; MENU[id] = it.filter(x => x && x.name).map(x => ({ n: String(x.name), drink: x.kind === 'drink' || /drink|beer|wine|cocktail|margarita|sangria|tequila|mezcal|bourbon|whiskey|spirit|draft|bottle/i.test(x.section || '') })); } catch (e) {} return MENU[id]; }
-const vstat = t => { const el = $('#vstat'); if (el) { el.textContent = t; el.classList.toggle('ok', /Saved/.test(t)); } };
+const vstat = t => sheet.querySelectorAll('.vstat').forEach(el => { el.textContent = t; el.classList.toggle('ok', /Saved/.test(t)); });
 function editsOf(s) { if (firstSnap && !DRY) return ((RAW[s.id] || {}).visits || []).slice(); if (!EDIT[s.id]) EDIT[s.id] = JSON.parse(JSON.stringify(((RAW[s.id] || {}).visits) || [])); return EDIT[s.id]; }
+function dishRows(v, ro) { const num = x => x == null ? '' : x; return (v.dishes || []).map((d, i) => `<div class="dish" data-i="${i}"><button class="dk" title="Food or drink" ${ro ? 'disabled' : ''}>${d.kind === 'drink' ? '🍹' : '🍽️'}</button><input class="dn" list="ml-${d.kind === 'drink' ? 'drink' : 'food'}" value="${esc(d.name)}" placeholder="${d.kind === 'drink' ? 'Drink' : 'Dish'}" ${ro ? 'disabled' : ''}><input class="ds" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(d.score)}" placeholder="0-10" ${ro ? 'disabled' : ''}>${ro ? '' : '<button class="dx" title="Remove">×</button>'}</div>`).join(''); }
+function newVisitHTML(v) { const x = v.experience;
+  return `<div class="visit nv" data-v="${esc(v.id)}"><div class="nvh"><b>New visit</b><input class="vd" value="${esc(mdy(v.date))}" placeholder="MM/DD/YY"></div>
+    <div class="xrow"><span>Experience</span><b class="xread">${x == null ? '–' : x.toFixed(1)}</b></div>
+    <input class="vxr${x == null ? ' unset' : ''}" type="range" min="0" max="10" step="0.1" value="${x == null ? 7 : x}" aria-label="Experience score">
+    <div class="xhint"><input class="vx" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${x == null ? '' : x}" placeholder="0-10"> slide, or type the score</div>
+    <div class="mtabs"><button class="mtab${MTAB === 'food' ? ' on' : ''}" data-t="food">🍽️ Food</button><button class="mtab${MTAB === 'drink' ? ' on' : ''}" data-t="drink">🍹 Drinks</button></div>
+    <div class="mchips"><span class="mt">Loading the menu…</span></div>
+    ${dishRows(v, false)}
+    <div class="vadd"><button data-add="food">＋ Type a food</button><button data-add="drink">＋ Type a drink</button></div>
+    <div class="vstat"></div><button class="vdone">Done</button></div>`; }
+function fillChips(s, v) { const box = sheet.querySelector('.nv .mchips'); if (!box) return;
+  menuFor(s.id).then(list => { if (!sheet.contains(box)) return; const have = new Set((v.dishes || []).map(d => (d.name || '').trim().toLowerCase()));
+    const items = list.filter(x => (MTAB === 'drink') === x.drink && !have.has(x.n.trim().toLowerCase())).slice(0, 80);
+    box.innerHTML = items.length ? items.map(x => `<button class="mchip" data-name="${esc(x.n)}">${esc(x.n)}</button>`).join('') : `<span class="mt">${list.length ? 'Nothing else on this list.' : 'No menu on file.'} Use ＋ Type a ${MTAB === 'drink' ? 'drink' : 'food'}.</span>`; }); }
 function renderVisits(s) { const box = $('#visitsBox'); if (!box || !cur || cur.id !== s.id) return;
-  const vis = (EDITOR ? editsOf(s) : ((RAW[s.id] || {}).visits || [])).slice().sort((a, b) => (b.date || '') < (a.date || '') ? -1 : 1);
-  if (!vis.length) { box.innerHTML = `<div class="mt">${EDITOR ? 'No visits yet. Use 🔎 Search / add to log one.' : 'No visits yet.'}</div>`; return; }
+  const all = (EDITOR ? editsOf(s) : ((RAW[s.id] || {}).visits || [])).slice().sort((a, b) => (b.date || '') < (a.date || '') ? -1 : 1);
+  const nb = $('#newBox'), nv = EDITOR && NEWV && NEWV.spot === s.id ? all.find(v => v.id === NEWV.id) : null;
+  if (nb) { nb.innerHTML = nv ? newVisitHTML(nv) : ''; if (nv) fillChips(s, nv); }
+  const vis = all.filter(v => v !== nv);
+  if (!vis.length) { box.innerHTML = `<datalist id="ml-food"></datalist><datalist id="ml-drink"></datalist><div class="mt">${nv ? 'Your first visit here.' : EDITOR ? 'No visits yet. Use 🔎 Search / add to log one.' : 'No visits yet.'}</div>`; menuFor(s.id).then(fillLists); return; }
   const ro = !EDITOR, num = (v) => v == null ? '' : v;
   box.innerHTML = `<datalist id="ml-food"></datalist><datalist id="ml-drink"></datalist>` + vis.map(v => `<div class="visit" data-v="${esc(v.id)}">
     <div class="vh"><span>📅 <input class="vd" value="${esc(mdy(v.date))}" placeholder="MM/DD/YY" ${ro ? 'disabled' : ''}></span>
       <label>Experience <input class="vx" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(v.experience)}" ${ro ? 'disabled' : ''}></label></div>
-    ${(v.dishes || []).map((d, i) => `<div class="dish" data-i="${i}"><button class="dk" title="Food or drink" ${ro ? 'disabled' : ''}>${d.kind === 'drink' ? '🍹' : '🍽️'}</button><input class="dn" list="ml-${d.kind === 'drink' ? 'drink' : 'food'}" value="${esc(d.name)}" placeholder="${d.kind === 'drink' ? 'Drink' : 'Dish'}" ${ro ? 'disabled' : ''}><input class="ds" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="${num(d.score)}" placeholder="0-10" ${ro ? 'disabled' : ''}>${ro ? '' : '<button class="dx" title="Remove">×</button>'}</div>`).join('')}
+    ${dishRows(v, ro)}
     ${ro ? '' : `<div class="vadd"><button data-add="food">＋ Food</button><button data-add="drink">＋ Drink</button><button class="vdel">Delete visit</button></div>`}</div>`).join('');
-  menuFor(s.id).then(list => { const f = $('#ml-food'), d = $('#ml-drink'); if (!f) return; f.innerHTML = list.filter(x => !x.drink).map(x => `<option value="${esc(x.n)}">`).join(''); d.innerHTML = list.filter(x => x.drink).map(x => `<option value="${esc(x.n)}">`).join(''); });
+  menuFor(s.id).then(fillLists);
 }
+function fillLists(list) { const f = $('#ml-food'), d = $('#ml-drink'); if (!f) return; f.innerHTML = list.filter(x => !x.drink).map(x => `<option value="${esc(x.n)}">`).join(''); d.innerHTML = list.filter(x => x.drink).map(x => `<option value="${esc(x.n)}">`).join(''); }
 let saveT = null;
-function queueSave(s) { vstat('Saving…'); clearTimeout(saveT); saveT = setTimeout(() => saveSpot(s), 700); }
+function queueSave(s) { vstat('Saving…'); clearTimeout(saveT); saveT = setTimeout(() => { saveT = null; saveSpot(s); }, 700); }
 async function saveSpot(s) { if (!EDITOR || (!fdb && !DRY)) return; const base = RAW[s.id] || {};
   const clean = editsOf(s).filter(v => v._touched !== false).map(v => ({ id: v.id, date: v.date || todayISO(), experience: typeof v.experience === 'number' ? v.experience : null,
     dishes: (v.dishes || []).filter(d => d.name && d.name.trim() && typeof d.score === 'number').map(d => ({ name: d.name.trim(), score: d.score, ...(d.kind === 'drink' ? { kind: 'drink' } : {}) })), notes: v.notes || '' }));
@@ -521,31 +569,47 @@ async function saveSpot(s) { if (!EDITOR || (!fdb && !DRY)) return; const base =
   if (DRY) { window.__lastBody = body; vstat('Saved ✓ (test mode, nothing written)'); return; }
   try { await fdb.doc('spots/' + s.id).set(body); vstat('Saved ✓ · live on every device'); } catch (e) { vstat(/permission|denied/i.test(String(e.code || e.message)) ? 'This device can\'t save: open your edit link once' : 'Couldn\'t reach the cloud. Try again in a moment.'); } }
 function startVisit(s) { if (firstSnap && !DRY) { toast('Loading your visits… try again in a second'); return; } if (!EDITOR) { toast('Open this map with your edit link to add visits'); openSheet(s); return; }
-  const ed = editsOf(s); ed.push({ id: 'v' + Date.now().toString(36), date: todayISO(), experience: null, dishes: [{ name: '', score: null }], notes: '', _touched: false });
-  openSheet(s); setTimeout(() => { const b = $('#visitsBox'); if (b) { b.scrollIntoView({ behavior: 'smooth', block: 'start' }); const x = b.querySelector('.visit .vx'); x && x.focus(); } }, 450); }
+  if (cur && cur.id !== s.id) closeSheet();
+  const ed = editsOf(s), id = 'v' + Date.now().toString(36); ed.push({ id, date: todayISO(), experience: null, dishes: [], notes: '', _touched: false });
+  NEWV = { spot: s.id, id }; MTAB = 'food'; openSheet(s); }
 sheet.addEventListener('input', e => { if (!EDITOR || !cur) return; const vEl = e.target.closest('.visit'); if (!vEl) return; const v = editsOf(cur).find(x => x.id === vEl.dataset.v); if (!v) return;
   const val = e.target.value, n = val === '' ? null : Math.max(0, Math.min(10, Math.round(parseFloat(val) * 10) / 10));
-  if (e.target.classList.contains('vx')) v.experience = isNaN(n) ? null : n;
+  if (e.target.classList.contains('vx') || e.target.classList.contains('vxr')) { v.experience = isNaN(n) ? null : n;
+    const other = vEl.querySelector(e.target.classList.contains('vx') ? '.vxr' : '.vx'), rd = vEl.querySelector('.xread');
+    if (other && v.experience != null) other.value = v.experience; if (rd) rd.textContent = v.experience == null ? '–' : v.experience.toFixed(1); const sl = vEl.querySelector('.vxr'); if (sl) sl.classList.toggle('unset', v.experience == null); }
   else if (e.target.classList.contains('vd')) { const iso = parseMDY(val); e.target.classList.toggle('bad', !iso); if (!iso) return; v.date = iso; }
   else { const dEl = e.target.closest('.dish'), d = v.dishes[+dEl.dataset.i]; if (e.target.classList.contains('dn')) d.name = val; if (e.target.classList.contains('ds')) d.score = isNaN(n) ? null : n; }
   delete v._touched; queueSave(cur); });
 sheet.addEventListener('click', e => { if (!EDITOR || !cur) return; const vEl = e.target.closest('.visit'); if (!vEl) return; const ed = editsOf(cur), v = ed.find(x => x.id === vEl.dataset.v); if (!v) return;
-  const add = e.target.closest('[data-add]'); if (add) { v.dishes.push({ name: '', score: null, ...(add.dataset.add === 'drink' ? { kind: 'drink' } : {}) }); renderVisits(cur); const rows = $('#visitsBox').querySelectorAll(`.visit[data-v="${v.id}"] .dn`); rows[rows.length - 1].focus(); return; }
+  const tab = e.target.closest('.mtab'); if (tab) { MTAB = tab.dataset.t; vEl.querySelectorAll('.mtab').forEach(b => b.classList.toggle('on', b === tab)); fillChips(cur, v); return; }
+  const chip = e.target.closest('.mchip'); if (chip) { v.dishes.push({ name: chip.dataset.name, score: null, ...(MTAB === 'drink' ? { kind: 'drink' } : {}) }); renderVisits(cur); const sc = sheet.querySelectorAll(`.visit[data-v="${v.id}"] .ds`); const last = sc[sc.length - 1]; if (last) { last.scrollIntoView({ block: 'center', behavior: 'smooth' }); last.focus({ preventScroll: true }); } return; }
+  if (e.target.closest('.vdone')) { if (v._touched === false) { EDIT[cur.id] = ed.filter(x => x !== v); } else if (saveT) { clearTimeout(saveT); saveT = null; saveSpot(cur); } NEWV = null; sheet.classList.remove('full'); renderVisits(cur); sheet.scrollTo({ top: 0, behavior: 'smooth' }); if (v._touched !== false) toast('Visit saved'); return; }
+  const add = e.target.closest('[data-add]'); if (add) { v.dishes.push({ name: '', score: null, ...(add.dataset.add === 'drink' ? { kind: 'drink' } : {}) }); renderVisits(cur); const rows = sheet.querySelectorAll(`.visit[data-v="${v.id}"] .dn`); rows[rows.length - 1].focus(); return; }
   if (e.target.closest('.dk')) { const d = v.dishes[+e.target.closest('.dish').dataset.i]; if (d.kind === 'drink') delete d.kind; else d.kind = 'drink'; delete v._touched; renderVisits(cur); queueSave(cur); return; }
   if (e.target.closest('.dx')) { v.dishes.splice(+e.target.closest('.dish').dataset.i, 1); delete v._touched; renderVisits(cur); queueSave(cur); return; }
-  if (e.target.closest('.vdel')) { if (!confirm('Delete this visit and its scores?')) return; DELETED.add(v.id); EDIT[cur.id] = ed.filter(x => x !== v); renderVisits(cur); queueSave(cur); } });
+  if (e.target.closest('.vdel')) { if (!confirm('Delete this visit and its scores?')) return; if (NEWV && NEWV.id === v.id) NEWV = null; DELETED.add(v.id); EDIT[cur.id] = ed.filter(x => x !== v); renderVisits(cur); queueSave(cur); } });
 /* ---------------- loop ---------------- */
 const clock = new THREE.Clock(); let introT = 0;
+let SEEN = false; try { SEEN = !!sessionStorage.getItem('ce3d.intro'); sessionStorage.setItem('ce3d.intro', '1'); } catch (e) {}
+const INTRO_DUR = SEEN ? 1.1 : 3.2;
+// battery: full speed while you touch things or something animates; ~30 fps when idle; ~10 fps after a minute; stopped when the app is hidden
+let lastAct = performance.now(), lastDraw = 0, sleeping = false, animBusy = true;
+const poke = () => { lastAct = performance.now(); if (sleeping && !document.hidden) { sleeping = false; clock.getDelta(); requestAnimationFrame(frame); } };
+['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, poke, { passive: true }));
+document.addEventListener('visibilitychange', () => { if (!document.hidden) poke(); });
 syncLabels();
-function frame() {
-  const dt = Math.min(clock.getDelta(), .05), T = clock.elapsedTime;
-  if (introT < 1) { introT = Math.min(1, introT + dt / 3.2); const k = ease(introT); camera.position.lerpVectors(new THREE.Vector3(-600, 4200, 4200), HOME.pos, k); if (introT >= 1) controls.update(); }
+function frame(now = performance.now()) {
+  if (document.hidden) { sleeping = true; return; }
+  const idle = now - lastAct, busy = introT < 1 || fly.t < 1 || bursts.length || animBusy, gap = busy || idle < 4000 ? 0 : idle < 60000 ? 33 : 100;
+  if (gap && now - lastDraw < gap) { requestAnimationFrame(frame); return; } lastDraw = now; animBusy = false;
+  const dt = Math.min(clock.getDelta(), .1), T = clock.elapsedTime;
+  if (introT < 1) { introT = Math.min(1, introT + dt / INTRO_DUR); const k = ease(introT); camera.position.lerpVectors(new THREE.Vector3(-600, 4200, 4200), HOME.pos, k); if (introT >= 1) controls.update(); }
   else if (fly.t < 1) { fly.t = Math.min(1, fly.t + dt / fly.dur); const k = ease(fly.t); camera.position.lerpVectors(fly.fp, fly.tp, k); controls.target.lerpVectors(fly.ft, fly.tt, k); }
   controls.update();
   waveTex.offset.x = T * .004; waveTex.offset.y = T * .0015;
-  totems.forEach(t => { if (Math.abs(t.lit - t.target) > .001) { t.lit += (t.target - t.lit) * Math.min(1, dt * 1.6); applyLit(t); }
+  totems.forEach(t => { if (Math.abs(t.lit - t.target) > .001) { animBusy = true; t.lit += (t.target - t.lit) * Math.min(1, dt * 1.6); applyLit(t); }
     t.ring.rotation.z += dt * .6; t.beam.material.uniforms.t.value = T; t.orb.position.y = 23 + Math.sin(T * 1.4 + t.walk) * .8; t.orb.rotation.y += dt * .45;
-    if (t.mascot) { const m = t.mascot; if (m.userData.pop < 1) { m.userData.pop = Math.min(1, m.userData.pop + dt / .9); m.scale.setScalar(3.4 * Math.max(.001, backOut(m.userData.pop))); }
+    if (t.mascot) { const m = t.mascot; if (m.userData.pop < 1) { animBusy = true; m.userData.pop = Math.min(1, m.userData.pop + dt / .9); m.scale.setScalar(3.4 * Math.max(.001, backOut(m.userData.pop))); }
       t.walk += dt * .22; const R = 42; m.position.set(Math.cos(t.walk) * R, 0, Math.sin(t.walk) * R); m.rotation.y = -t.walk; // strolls around its shrine
       m.userData.body.position.y = Math.abs(Math.sin(T * 3.2 + t.walk * 4)) * 1.6; m.children.forEach(c => { if (c.userData.spin) c.rotation.z += dt * c.userData.spin; }); } });
   clouds.children.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 4500) c.position.x = -4500; });
@@ -554,8 +618,8 @@ function frame() {
   if (cur && pMascot && sheet.classList.contains('on')) { pMascot.rotation.y = -.25 + Math.sin(T * .8) * .55; pMascot.children[0].position.y = Math.abs(Math.sin(T * 3)) * 1.2; pr3.render(ps, pc); }
   composer.render(); placeLabels(); requestAnimationFrame(frame);
 }
-addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); });
+addEventListener('resize', () => { poke(); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); });
 requestAnimationFrame(frame);
-setTimeout(() => $('#intro').classList.add('out'), 500);
+setTimeout(() => $('#intro').classList.add('out'), SEEN ? 60 : 500);
 window.__ok = true;
 </script></body></html>
