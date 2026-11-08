@@ -416,7 +416,7 @@ function buildTotem(s) {
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, color: TIER[s.tier], transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })); halo.scale.set(34, 34, 1); halo.position.y = 29; inner.add(halo);
   const ring = new THREE.Mesh(new THREE.TorusGeometry(8.5, .55, 10, 64), new THREE.MeshBasicMaterial({ color: TIER[s.tier] })); ring.position.y = 28; ring.rotation.x = Math.PI / 2.3; inner.add(ring);
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, 420, 24, 1, true), beamMat(TIER[s.tier])); beam.position.y = 28 + 210; inner.add(beam);
-  const mist = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, color: '#F4F1EA', transparent: true, depthWrite: false, opacity: .9 })); mist.scale.set(40, 30, 1); mist.position.y = 24; inner.add(mist);
+  const mist = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, color: '#F4F1EA', transparent: true, depthWrite: false, opacity: .22 })); mist.scale.set(22, 15, 1); mist.position.y = 26; inner.add(mist);
   const hit = new THREE.Mesh(MOBILE ? new THREE.CylinderGeometry(26, 26, 64, 8) : new THREE.CylinderGeometry(16, 16, 40, 8), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = MOBILE ? 26 : 20; hit.userData.spot = s; inner.add(hit); hits.push(hit);
   const t = { s, T, inner, orb, orbM, halo, ring, beam, mist, bar, post, mascot: null, lit: 0, target: 0, walk: rng(hash(s.id))() * 6 };
   totems.set(s.id, t); return t;
@@ -427,7 +427,7 @@ function setLit(t, on, instant) { t.target = on ? 1 : 0; if (instant) t.lit = t.
 function applyLit(t) { const k = t.lit, c = new THREE.Color(TIER[t.s.tier]);
   t.orb.userData.mats.forEach(({ m, c: rc }) => m.color.copy(GREY).lerp(rc, .3 + .7 * k)); t.halo.material.opacity = .5 * k;
   t.ring.visible = k > .02; t.ring.scale.setScalar(.6 + .4 * k); t.beam.visible = k > .02; t.beam.scale.y = Math.max(.001, k); t.beam.position.y = 28 + 210 * k;
-  t.mist.material.opacity = .9 * (1 - k); t.mist.visible = k < .98; t.bar.material = k > .5 ? t.bar.material : t.bar.material; t.post.material = k > .5 ? WOOD : GREYW; }
+  t.mist.material.opacity = .22 * (1 - k); t.mist.visible = k < .98; t.bar.material = k > .5 ? t.bar.material : t.bar.material; t.post.material = k > .5 ? WOOD : GREYW; }
 totems.forEach(applyLit);
 
 /* ---------------- fantasy life: lanterns, glow mushrooms, crystals, reeds, windmills, waterwheels, moon, aurora ---------------- */
@@ -559,7 +559,7 @@ composer.addPass(new ShaderPass({ uniforms: { tDiffuse: { value: null } }, verte
 composer.addPass(new OutputPass());
 
 /* ---------------- camera: Pokémon GO tilt, drag to pan, pinch/scroll to zoom, right-drag to turn ---------------- */
-const controls = new MapControls(camera, canvas);
+const controls = new MapControls(camera, canvas); controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
 Object.assign(controls, { enableDamping: true, dampingFactor: .08, minDistance: 140, maxDistance: 3600, maxPolarAngle: 1.36, minPolarAngle: .15, zoomSpeed: .9, panSpeed: .9, rotateSpeed: .5 });
 const HOME = { pos: new THREE.Vector3(260, 1050, 1250), tgt: new THREE.Vector3(80, 0, -60) };
 camera.position.set(-600, 4200, 4200); controls.target.copy(HOME.tgt); controls.update();
