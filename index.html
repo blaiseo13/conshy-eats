@@ -2,14 +2,14 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F97316">
-<link rel="manifest" href="manifest.webmanifest?v=8">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=8">
-<link rel="icon" type="image/png" href="icons/favicon-64.png?v=8">
+<meta name="theme-color" content="#0C0A20">
+<link rel="manifest" href="manifest.webmanifest?v=9">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=9">
+<link rel="icon" type="image/png" href="icons/favicon-64.png?v=9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Conshy Eats">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Conshy Eats</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,9 +19,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=8"></script>
-<script src="places.js?v=8"></script>
-<script src="map-data.js?v=8"></script>
+<script src="firebase-config.js?v=9"></script>
+<script src="places.js?v=9"></script>
+<script src="map-data.js?v=9"></script>
 <style>
 /* Layout: full-bleed 3D map; frosted-glass panels float over it (left list + right spot card on desktop, bottom sheets on phone). */
 :root{
@@ -52,7 +52,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 #left{position:fixed;z-index:5;top:max(16px,env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));width:350px;display:flex;flex-direction:column;overflow:hidden}
 .handle{display:none}
 .brand{display:flex;align-items:center;gap:12px;padding:18px 20px 6px}
-.logo{width:40px;height:40px;border-radius:13px;flex:none;display:grid;place-items:center;font-size:21px;background:linear-gradient(140deg,#FDBA74,#F97316 45%,#6366F1);box-shadow:0 6px 16px rgba(99,102,241,.35), inset 0 1px 0 rgba(255,255,255,.5)}
+.logo{width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;padding:3px;background:radial-gradient(circle at 50% 45%,#312E81,#0C0A20);box-shadow:0 6px 16px rgba(49,46,129,.45),0 0 10px rgba(244,114,182,.35)}
 .brand h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
 .brand p{margin:2px 0 0;color:var(--ink2);font-size:12.5px}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px}
@@ -197,6 +197,43 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .vchip.drink{background:rgba(124,58,237,.1);color:#5B21B6}
 .drinkline{display:flex;align-items:baseline;gap:8px;justify-content:center;margin-top:8px;font-size:13px}
 .drinkline span{font-weight:700;color:#7C3AED}.drinkline b{font-size:17px}.drinkline small{color:var(--ink3)}
+.mascot-wrap{width:84px;height:84px;flex:none}
+.mascot-wrap.big{width:min(46vw,220px);height:min(46vw,220px)}
+.mascot{width:100%;height:100%;overflow:visible}
+.mbody{transform-origin:60px 108px;animation:mIdle 2.6s ease-in-out infinite}
+.blink{transform-origin:60px 56px;animation:mBlink 4.2s infinite}
+.m-obsessed .mbody{animation:mJump .7s cubic-bezier(.3,1.6,.5,1) infinite alternate}
+.m-love .mbody{animation:mBounce .9s ease-in-out infinite}
+.m-happy .mbody{animation:mHop 1.6s ease-in-out infinite}
+.m-sad .mbody{animation:mDroop 3s ease-in-out infinite}
+.m-nope .mbody{animation:mShake .5s ease-in-out infinite}
+.m-curious .mbody{animation:mTilt 2.4s ease-in-out infinite}
+.spark{animation:mSpark 1.2s ease-in-out infinite}
+.tear{animation:mTear 2s ease-in infinite}
+.sweat{animation:mTear 1.4s ease-in infinite}
+.arm{transform-origin:100px 70px;animation:mWave 1.8s ease-in-out infinite}
+@keyframes mIdle{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-3px) scale(1.02,.98)}}
+@keyframes mBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes mJump{0%{transform:translateY(0) scale(1.1,.9)}100%{transform:translateY(-16px) scale(.95,1.06)}}
+@keyframes mBounce{0%,100%{transform:translateY(0) scale(1.04,.96)}50%{transform:translateY(-8px) scale(.98,1.03)}}
+@keyframes mHop{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-7px)}}
+@keyframes mDroop{0%,100%{transform:translateY(2px) scale(1.03,.96)}50%{transform:translateY(4px) scale(1.05,.94)}}
+@keyframes mShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+@keyframes mTilt{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+@keyframes mSpark{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes mTear{0%{transform:translateY(-4px);opacity:0}30%{opacity:1}100%{transform:translateY(14px);opacity:0}}
+@keyframes mWave{0%,100%{transform:rotate(0)}50%{transform:rotate(-10deg)}}
+.rx-inline{display:flex;align-items:center;gap:12px;margin-top:12px;padding:8px 12px;border-radius:14px;background:rgba(255,241,242,.7);border:1px solid rgba(251,113,133,.25)}
+.rx-say b{display:block;font-size:15px}.rx-say span{font-size:12px;color:var(--ink2)}
+#react{position:fixed;inset:0;z-index:40;display:grid;place-items:end center;padding-bottom:max(90px,env(safe-area-inset-bottom,0px));pointer-events:none;opacity:0;transition:opacity .25s}
+#react.show{opacity:1;pointer-events:auto;background:radial-gradient(circle at 50% 75%,rgba(15,23,42,.28),rgba(15,23,42,0) 60%)}
+.rx-card{display:flex;flex-direction:column;align-items:center;transform:translateY(120%) scale(.6)}
+#react.show .rx-card{animation:rxIn .7s cubic-bezier(.2,1.5,.4,1) forwards}
+.rx-bubble{margin-top:-6px;background:#fff;border-radius:18px;padding:10px 18px;text-align:center;box-shadow:0 12px 30px rgba(15,23,42,.25);position:relative}
+.rx-bubble:before{content:"";position:absolute;top:-8px;left:50%;margin-left:-8px;border:8px solid transparent;border-top:0;border-bottom-color:#fff}
+.rx-bubble b{display:block;font-size:20px;font-weight:800;letter-spacing:-.01em}.rx-bubble span{font-size:13px;color:var(--ink2)}.rx-bubble em{font-style:normal;font-weight:800}
+@keyframes rxIn{0%{transform:translateY(120%) scale(.6)}60%{transform:translateY(-6%) scale(1.08)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.mbody,.blink,.spark,.tear,.sweat,.arm{animation:none!important}}
 .models{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px}
 .models button{border:1px solid var(--glass-line);background:rgba(255,255,255,.75);border-radius:12px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px}
 .models button span{font-size:20px}
@@ -237,12 +274,18 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .maplibregl-ctrl-group{background:var(--glass)!important;backdrop-filter:blur(16px);border-radius:12px!important;border:1px solid var(--glass-line);box-shadow:var(--shadow)!important}
 .maplibregl-ctrl-attrib{background:rgba(255,255,255,.6)!important;font-size:10px}
 .addmode #map canvas{cursor:crosshair!important}
-#intro{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.7),rgba(233,237,242,.97));transition:opacity .8s;pointer-events:none}
+#intro{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#312E81,#0C0A20 70%);transition:opacity .9s,transform .9s;pointer-events:none}
+#intro.gone{transform:scale(1.25)}
+#intro .neon{width:min(52vw,240px);height:min(52vw,240px);display:block;margin:0 auto}
+#intro .iring{animation:iOn 1.5s steps(1) both}
+#intro .icut{animation:iOn2 1.5s steps(1) both}
+#intro .itext{margin:6px 0 0;font-size:22px;font-weight:800;letter-spacing:.28em;color:#F9A8D4;text-shadow:0 0 12px rgba(244,114,182,.8);animation:iOn2 1.5s steps(1) both}
+#intro .isub{color:#A5B4FC;margin:8px 0 0;font-size:13px;opacity:.8}
+@keyframes iOn{0%{opacity:.06}10%{opacity:1}14%{opacity:.15}20%{opacity:1}27%{opacity:.3}31%,100%{opacity:1}}
+@keyframes iOn2{0%,34%{opacity:.06}40%{opacity:1}44%{opacity:.2}49%,100%{opacity:1}}
 #intro.gone{opacity:0}
 #intro .in{text-align:center}
-#intro .logo{width:68px;height:68px;border-radius:20px;font-size:34px;margin:0 auto 14px;animation:up .5s both}
-#intro h1{margin:0;font-size:34px;font-weight:800;letter-spacing:-.03em;animation:up .5s .1s both}
-#intro p{color:var(--ink2);margin:6px 0 0;animation:up .5s .2s both}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ---------- phone ---------- */
@@ -274,11 +317,14 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 </style>
 
 <div id="map"></div>
-<div id="intro"><div class="in"><div class="logo">🍔</div><h1>Conshy Eats</h1><p>Building your little food world…</p></div></div>
+<div id="intro"><div class="in"><svg class="neon" viewBox="0 0 100 100" aria-hidden="true"><defs><filter id="iglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<circle class="iring" cx="50" cy="50" r="30" fill="none" stroke="#F472B6" stroke-width="2.6" filter="url(#iglow)"/>
+<g class="icut" filter="url(#iglow)" stroke="#67E8F9" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M39 33v9M42.5 33v9M46 33v9M39 42q3.5 4 7 0M42.5 45v22"/><path d="M58 33q6 6 3 17h-3M58 33v34"/></g></svg>
+<h1 class="itext">CONSHY EATS</h1><p class="isub">Building your little food world…</p></div></div>
 
 <aside id="left" class="glass up">
   <button class="handle" id="handle" aria-label="Expand list"><i></i></button>
-  <div class="brand"><span class="logo">🍔</span><div><h1>Conshy Eats</h1><p>Every spot is a little food building. Places you've been get comically huge, and your favorites tower over Conshy.</p></div></div>
+  <div class="brand"><span class="logo"><svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><circle cx="50" cy="50" r="31" fill="none" stroke="#F472B6" stroke-width="6"/><g stroke="#67E8F9" stroke-width="5.5" stroke-linecap="round" fill="none"><path d="M39 33v9M42.5 33v9M46 33v9M39 42q3.5 4 7 0M42.5 45v22"/><path d="M58 33q6 6 3 17h-3M58 33v34"/></g></svg></span><div><h1>Conshy Eats</h1><p>Every spot is a little food building. Places you've been get comically huge, and your favorites tower over Conshy.</p></div></div>
   <div class="seg" id="seg" role="tablist"><button class="on" data-v="mine">My scores</button><button data-v="reviews">⭐ Reviews</button></div>
   <div class="kpis" id="kpis"></div>
   <div id="champ"></div>
@@ -308,6 +354,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
   <button id="bPreview" title="Preview sizes"><span class="ic">✨</span><span class="tx">Preview sizes</span></button>
 </nav>
 <div id="toast" role="status"></div>
+<div id="react" aria-live="polite"></div>
 
 <script>
 (() => {
@@ -634,7 +681,7 @@ map.on('load',()=>{
     map.on('mouseleave',L,()=>{ if(!addMode) map.getCanvas().style.cursor=''; });
   }
   refreshAll(true);
-  setTimeout(()=>$('#intro').classList.add('gone'),300); setTimeout(()=>$('#intro')?.remove(),1300);
+  setTimeout(()=>$('#intro').classList.add('gone'),1700); setTimeout(()=>$('#intro')?.remove(),2700);
   map.flyTo({...HOME(),duration:4200,curve:1.3,essential:true});
   requestAnimationFrame(pulseLoop); requestAnimationFrame(spinLoop);
   initCloud();
@@ -790,7 +837,7 @@ function select(id,fly){
   if(isPhone()) setSheet(false);
   renderDrawer(); $('#drawer').classList.add('open');
   if(fly){ stopOrbit(); const sz=sizeFor(p), big=sz.P+MODELS[p.mkey].top*sz.S; map.flyTo({center:[p.lng,p.lat],zoom:big>100?16.2:big>40?16.8:17.4,pitch:60,bearing:map.getBearing()-20,padding:flyPad(),duration:1800,essential:true}); }
-  syncMarkers(); startAnim();
+  syncMarkers(); startAnim(); setTimeout(()=>boing(id, p.visits.length?3.2:5),fly?900:50);
   document.querySelectorAll('#list .row').forEach(r=>r.classList.toggle('sel',r.dataset.id===id));
 }
 function closeDrawer(){ $('#drawer').classList.remove('open'); selectedId=null; drawerMode='view'; syncMarkers(); startAnim(); document.querySelectorAll('#list .row.sel').forEach(r=>r.classList.remove('sel')); }
@@ -811,6 +858,7 @@ function renderDrawer(){
       <div class="half"><div class="top"><span class="label" style="color:var(--food)">Food</span><b class="tnum">${fmt(s.food)}</b></div><div class="bar"><i style="width:0;background:var(--food)" data-w="${(s.food||0)*10}%"></i></div><small>avg of ${s.dishCount} dish score${s.dishCount===1?'':'s'}</small></div>
       <div class="half"><div class="top"><span class="label" style="color:var(--exp)">Experience</span><b class="tnum">${fmt(s.exp)}</b></div><div class="bar"><i style="width:0;background:var(--exp)" data-w="${(s.exp||0)*10}%"></i></div><small>avg of ${expN} visit score${expN===1?'':'s'}</small></div>
     </div></div>
+    <div class="rx-inline">${mascotHTML(s.combined??s.food??s.exp,false)}<div class="rx-say"><b>${esc(sayFor(s.combined??s.food??s.exp))}</b><span>${s.combined!=null?(tier(s.combined)?tier(s.combined)[2]:''):'Log a visit to get my take'}</span></div></div>
     <div class="formula tnum">Combined = 50% Food + 50% Experience${s.combined!=null?` = ${fmt(s.food)} × 0.5 + ${fmt(s.exp)} × 0.5`:''}</div>
     ${s.drinkCount?`<div class="drinkline"><span>🍹 Drinks</span><b class="tnum" style="color:${scoreColor(s.drink)}">${fmt(s.drink)}</b><small>avg of ${s.drinkCount} · not in combined</small></div>`:''}</div>`;
   { const rv=reviewOf(p.id); h+= rv?`<div class="card rvcard" style="margin-top:10px;padding:12px 16px"><div class="rvstars" style="color:${scoreColor(rv.rating*2)}">★${rv.rating.toFixed(1)}</div><div style="min-width:0"><div style="font-weight:700">${rv.count?rv.count.toLocaleString()+' ':''}${esc(rv.site)} reviews</div><div class="hint" style="margin:0">${s.combined!=null?`You: ${fmt(s.combined)} vs crowd ${fmt(rv.rating*2)} · `:''}<a href="${esc(rv.source)}" target="_blank" rel="noopener">source</a>${MENUS[p.id]&&MENUS[p.id].asOf?' · as of '+esc(MENUS[p.id].asOf):''}</div></div></div>`:''; }
@@ -855,7 +903,7 @@ function renderVisitForm(p){
   if(v) (v.dishes||[]).forEach(d=>picked.set(d.name.trim().toLowerCase(),{name:d.name,score:d.score,kind:d.kind||'food'}));
   let mode='food';
   const DRINK_RE=/drink|beverage|beer|wine|cocktail|margarita|sangria|spirit|whisk|bourbon|tequila|bar\b|draft|bottle|coffee|espresso|latte|tea\b|soda|juice|lemonade|shake|smoothie|mocktail|frozen/i;
-  const isDrinkItem=it=>DRINK_RE.test(it.section||'')||/^(beer|wine|margarita|mojito|sangria|latte|coffee|soda)\b/i.test(it.name);
+  const isDrinkItem=it=>it.drink===true||DRINK_RE.test(it.section||'')||/^(beer|wine|margarita|mojito|sangria|latte|coffee|soda)\b/i.test(it.name);
   const QUICK=[['🍺','Beer'],['🍷','Red wine'],['🥂','White wine'],['🍹','Margarita'],['🍸','Cocktail'],['🥃','Whiskey'],['🍾','Prosecco'],['☕','Coffee']];
   const menuNames=new Set(((menu&&menu.items)||[]).map(i=>i.name.trim().toLowerCase()));
   // dishes rated here before that aren't on the menu
@@ -920,6 +968,7 @@ function renderVisitForm(p){
     if(v) st.visits=st.visits.map(x=>x.id===v.id?rec:x); else st.visits.push(rec);
     st.want=false; save(p.id); drawerMode='view'; refreshAll();
     const np=PLACES.find(x=>x.id===p.id), after=np.sc.combined, tr=tier(after);
+    setTimeout(()=>{ boing(np.id,7); react(np); },250);
     if(after!=null&&np.rank===1){ toast('👑 '+np.name+' is your new Conshy champion!'); burst(np,['👑','✨','🎉',np.emoji],46); }
     else if(after!=null){ toast(`${tr[1]} ${tr[2]}! ${np.name}: ${fmt(after)}${before!=null?` (was ${fmt(before)})`:''} · #${np.rank} of ${RANKED.length}`); burst(np,after>=7?[np.emoji,'✨','😋']:[np.emoji,'💨'],after>=7?32:14); }
     else { toast(v?'Visit updated':'Been there! Add an experience score to rank it.'); burst(np,[np.emoji,'✨'],20); }
@@ -950,6 +999,71 @@ document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{ if(VIEW===b.
   $('#legend .ends').innerHTML=VIEW==='reviews'?'<span>★2</span><span>★3</span><span>★3.8</span><span>★4.5+</span>':'<span>4</span><span>6</span><span>7.5</span><span>9+</span>';
   if(VIEW==='reviews' && !Object.values(MENUS).some(m=>m&&m.reviews)) toast('Review ratings are still loading');
   refreshAll(); });
+
+
+/* ================= mascot ================= */
+const MOODS=[
+  {min:9,  key:'obsessed', say:['OBSESSED.','Chef’s kiss!','Take me back NOW'], emoji:'😍'},
+  {min:8,  key:'love',     say:['So good!','Ooh, that hit.','Yes chef!'],         emoji:'😋'},
+  {min:7,  key:'happy',    say:['Solid pick.','Pretty tasty!','Would go again.'],  emoji:'🙂'},
+  {min:6,  key:'meh',      say:['It’s fine.','Eh, okay.','Not bad, not great.'], emoji:'😐'},
+  {min:5,  key:'sad',      say:['Meh…','Kinda let down.','Expected more.'],   emoji:'😒'},
+  {min:-1, key:'nope',     say:['Never again.','Nope. Nope.','Bring the antacids.'], emoji:'🤢'}];
+function moodFor(score){ if(score==null) return {key:'curious',say:['Try it and tell me!','Hmm, what’s good here?'],emoji:'🤔'}; return MOODS.find(m=>score>=m.min); }
+function mascotSVG(key,id){
+  const green=key==='nope';
+  const body=green?['#86EFAC','#16A34A']:['#FDA4AF','#F43F5E'];
+  const eyes={
+    obsessed:'<path d="M41 52c-4-5-11-1-7 5l7 6 7-6c4-6-3-10-7-5z" fill="#E11D48"/><path d="M79 52c-4-5-11-1-7 5l7 6 7-6c4-6-3-10-7-5z" fill="#E11D48"/>',
+    love:'<path d="M34 56q7-8 14 0" stroke="#1F1F2E" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M72 56q7-8 14 0" stroke="#1F1F2E" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    happy:'<g class="blink"><ellipse cx="41" cy="55" rx="6.5" ry="8" fill="#fff"/><ellipse cx="79" cy="55" rx="6.5" ry="8" fill="#fff"/><circle cx="42" cy="57" r="3.6" fill="#1F1F2E"/><circle cx="80" cy="57" r="3.6" fill="#1F1F2E"/><circle cx="43.2" cy="55.6" r="1.2" fill="#fff"/><circle cx="81.2" cy="55.6" r="1.2" fill="#fff"/></g>',
+    meh:'<g class="blink"><ellipse cx="41" cy="56" rx="6.5" ry="6" fill="#fff"/><ellipse cx="79" cy="56" rx="6.5" ry="6" fill="#fff"/><circle cx="45" cy="57" r="3.2" fill="#1F1F2E"/><circle cx="83" cy="57" r="3.2" fill="#1F1F2E"/><path d="M34 50h14M72 50h14" stroke="#9F1239" stroke-width="3" stroke-linecap="round"/></g>',
+    sad:'<g class="blink"><ellipse cx="41" cy="57" rx="6" ry="6.5" fill="#fff"/><ellipse cx="79" cy="57" rx="6" ry="6.5" fill="#fff"/><circle cx="41" cy="59" r="3.2" fill="#1F1F2E"/><circle cx="79" cy="59" r="3.2" fill="#1F1F2E"/><path d="M33 49l15 4M87 49l-15 4" stroke="#9F1239" stroke-width="3" stroke-linecap="round"/></g>',
+    nope:'<path d="M35 50l12 12M47 50l-12 12M73 50l12 12M85 50l-12 12" stroke="#14532D" stroke-width="4" stroke-linecap="round"/>',
+    curious:'<g class="blink"><ellipse cx="41" cy="55" rx="6.5" ry="8" fill="#fff"/><ellipse cx="79" cy="55" rx="6.5" ry="8" fill="#fff"/><circle cx="43" cy="53" r="3.6" fill="#1F1F2E"/><circle cx="81" cy="53" r="3.6" fill="#1F1F2E"/></g><path d="M71 44l14-4" stroke="#9F1239" stroke-width="3" stroke-linecap="round"/>'}[key];
+  const mouth={
+    obsessed:'<path d="M44 70q16 22 32 0z" fill="#7F1D1D"/><path d="M52 78q8 6 16 0" fill="#FB7185"/>',
+    love:'<path d="M45 70q15 16 30 0z" fill="#7F1D1D"/><path d="M54 77q6 4 12 0" fill="#FB7185"/>',
+    happy:'<path d="M46 70q14 12 28 0" stroke="#7F1D1D" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    meh:'<path d="M48 74h24" stroke="#7F1D1D" stroke-width="4" stroke-linecap="round"/>',
+    sad:'<path d="M47 78q13-10 26 0" stroke="#7F1D1D" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    nope:'<path d="M44 76q4-5 8 0t8 0 8 0 8 0" stroke="#14532D" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    curious:'<ellipse cx="60" cy="74" rx="5" ry="4" fill="#7F1D1D"/>'}[key];
+  const extra={
+    obsessed:'<g class="spark"><path d="M14 30l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#FDE047"/><path d="M104 22l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#FDE047"/><path d="M108 70l2 4 4 2-4 2-2 4-2-4-4-2 4-2z" fill="#67E8F9"/></g><ellipse cx="32" cy="68" rx="6" ry="3.5" fill="#FB7185" opacity=".7"/><ellipse cx="88" cy="68" rx="6" ry="3.5" fill="#FB7185" opacity=".7"/>',
+    love:'<ellipse cx="32" cy="66" rx="6" ry="3.5" fill="#FB7185" opacity=".7"/><ellipse cx="88" cy="66" rx="6" ry="3.5" fill="#FB7185" opacity=".7"/>',
+    happy:'<ellipse cx="32" cy="66" rx="5" ry="3" fill="#FB7185" opacity=".5"/><ellipse cx="88" cy="66" rx="5" ry="3" fill="#FB7185" opacity=".5"/>',
+    meh:'', sad:'<path class="tear" d="M86 64q3 6 0 9q-3-3 0-9z" fill="#7DD3FC"/>',
+    nope:'<path class="sweat" d="M95 38q4 7 0 10q-4-3 0-10z" fill="#7DD3FC"/>',
+    curious:'<text x="96" y="34" font-size="22" font-weight="800" fill="#A78BFA" font-family="Inter,sans-serif">?</text>'}[key];
+  return `<svg class="mascot m-${key}" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="mb${id}" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="${body[0]}"/><stop offset="1" stop-color="${body[1]}"/></radialGradient>
+    <filter id="mg${id}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <ellipse cx="60" cy="112" rx="26" ry="4" fill="#0F172A" opacity=".18" class="mshadow"/>
+    <g class="mbody">
+      <ellipse cx="44" cy="104" rx="9" ry="5" fill="${body[1]}"/><ellipse cx="76" cy="104" rx="9" ry="5" fill="${body[1]}"/>
+      <circle cx="60" cy="64" r="40" fill="url(#mb${id})" stroke="#67E8F9" stroke-width="2" filter="url(#mg${id})"/>
+      <ellipse cx="46" cy="40" rx="12" ry="7" fill="#fff" opacity=".35"/>
+      <g class="hat"><path d="M40 30q-10-14 4-18q4-10 16-6q12-4 16 6q14 4 4 18z" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/><rect x="40" y="26" width="40" height="8" rx="3" fill="#fff" stroke="#E2E8F0" stroke-width="1.5"/></g>
+      <g class="arm"><path d="M100 70q12-6 10-22" stroke="${body[1]}" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M106 48v-14M110 48v-14M114 48v-14M106 48q4 6 8 0M110 50v8" stroke="#CBD5E1" stroke-width="2.4" stroke-linecap="round" fill="none"/></g>
+      ${eyes}${mouth}${extra}
+    </g></svg>`;
+}
+let mascotSeq=0;
+function mascotHTML(score,big){ const m=moodFor(score); const id='m'+(mascotSeq++); return `<div class="mascot-wrap ${big?'big':''}">${mascotSVG(m.key,id)}</div>`; }
+function sayFor(score){ const m=moodFor(score); return m.say[Math.floor(Math.random()*m.say.length)]; }
+
+/* comical boing: kick the spring so the building balloons past its size and wobbles back */
+function boing(id,k){ const c=anim[id]; if(!c) return; c.vS=(c.vS||0)+Math.max(c.S,6)*k; c.vP=(c.vP||0)+(c.P+6)*k*.7; startAnim(); }
+
+/* full-screen reaction after a save */
+function react(p){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const sc=p.sc.combined ?? p.sc.food ?? p.sc.exp; const m=moodFor(sc);
+  const el=$('#react'); el.innerHTML=`<div class="rx-card">${mascotHTML(sc,true)}<div class="rx-bubble"><b>${esc(sayFor(sc))}</b><span>${esc(p.name)}${sc!=null?` · <em style="color:${scoreColor(sc)}">${fmt(sc)}</em>`:''}</span></div></div>`;
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),3400);
+  el.onclick=()=>el.classList.remove('show');
+}
 
 /* ================= confetti ================= */
 function burst(p,emojis,n){
