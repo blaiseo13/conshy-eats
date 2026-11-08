@@ -119,6 +119,8 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .dock [data-d].on{background:var(--paper2);box-shadow:inset 0 -3px 0 var(--red)}.dr-hd{position:relative}.dclose{margin-left:auto;width:40px;height:40px;border:1.5px solid var(--ink);border-radius:50%;background:var(--paper);font-size:22px;line-height:1;cursor:pointer;color:var(--ink)}
 .dot.plus{width:22px;height:22px;border:0;display:grid;place-items:center;font-size:15px;background:none}.addrow b{color:var(--red)}
 body.pinning #c{cursor:crosshair}
+.evchip{position:fixed;left:50%;top:calc(66px + env(safe-area-inset-top));transform:translate(-50%,-8px);z-index:5;font:700 13px "Zen Maru Gothic";color:var(--ink);padding:6px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .8s var(--ease),transform .8s var(--ease);white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.evchip.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 /* floating labels */
 #labels{position:fixed;inset:0;pointer-events:none;z-index:3}
 .lbl{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:700 12px "Zen Maru Gothic";color:var(--ink);background:#F5EFDFee;border:1px solid var(--ink);border-radius:999px;padding:1px 9px;transition:opacity .3s}
@@ -156,12 +158,14 @@ body.pinning #c{cursor:crosshair}
   </div>
 </div>
 <div class="nav panel" id="nav"><button data-n="rl" title="Turn left (Q)">⟲</button><button data-n="up" title="Look down">▲</button><button data-n="rr" title="Turn right (E)">⟳</button><button data-n="in" title="Zoom in">＋</button><button data-n="dn" title="Look across">▼</button><button data-n="out" title="Zoom out">－</button><button data-n="home" class="w">⌖ Reset view</button></div>
+<button class="evchip panel" id="evchip"></button>
 <aside class="sheet panel" id="sheet"></aside>
 <aside class="drawer panel" id="drawer"></aside>
 <div class="toast panel" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="../firebase-config.js"></script>
 <script src="geo.js"></script><script src="spots.js"></script><script src="photos.js" onerror="window.PHOTOS={}"></script>
+<script src="creatures.js"></script>
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -281,9 +285,10 @@ const badgeTex = (emo, col) => { const c = document.createElement('canvas'); c.w
   x.beginPath(); x.arc(64, 64, 56, 0, 7); x.fillStyle = '#F5EFDF'; x.fill(); x.lineWidth = 8; x.strokeStyle = col; x.stroke(); x.lineWidth = 2.5; x.strokeStyle = '#2B2622'; x.beginPath(); x.arc(64, 64, 61, 0, 7); x.stroke();
   x.font = '64px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(emo, 64, 70);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+const BADGES = [];
 const BTEX = {}; MARKS.forEach(m => { const [emo, col] = MK[m.c]; BTEX[m.c] = BTEX[m.c] || badgeTex(emo, col);
   const h = m.b != null ? Math.max(6, Math.min(70, G.buildings[m.b].h)) * 1.15 : 4;
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BTEX[m.c], transparent: true, depthWrite: false })); sp.scale.set(30, 30, 1); sp.position.set(m.x, h + 26, m.z); sp.renderOrder = 2; scene.add(sp);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BTEX[m.c], transparent: true, depthWrite: false })); sp.scale.set(30, 30, 1); sp.position.set(m.x, h + 26, m.z); sp.renderOrder = 2; scene.add(sp); BADGES.push(sp);
   const pole = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, 18, 6), new THREE.MeshBasicMaterial({ color: MK[m.c][1] })); pole.position.set(m.x, h + 9, m.z); scene.add(pole); m.y = h + 46; });
 /* ---------------- distant layered hills (atmospheric, Hisui-style) ---------------- */
 [[7000, 560, '#7E9A86'], [9000, 1500, '#97ADB2'], [11500, 2600, '#BAC4CF']].forEach(([R, H, c], li) => {
@@ -320,6 +325,7 @@ const toon = c => new THREE.MeshToonMaterial({ color: c, gradientMap: grad });
 const INK = new THREE.MeshBasicMaterial({ color: '#2B2622', side: THREE.BackSide });
 const BODY = ['#F2C46D', '#F29E7D', '#9ED0B8', '#A9C2E8', '#E7A9C4', '#C9B4E6', '#F4E3B0', '#B7D58E'];
 function addInk(g) { const outl = []; g.traverse(o => { if (o.isMesh && !o.userData.noInk) { const k = new THREE.Mesh(o.geometry, INK); k.userData.noInk = true; k.position.copy(o.position); k.rotation.copy(o.rotation); k.scale.copy(o.scale).multiplyScalar(1.07); outl.push([o.parent, k]); } }); outl.forEach(([p, k]) => p.add(k)); }
+const mascotOf = sp => window.CREATURES ? CREATURES.make(THREE, sp, grad) : makeMascot(sp);
 function makeMascot(spot) {
   const r = rng(hash(spot.id)), g = new THREE.Group(), body = new THREE.Group(); g.add(body);
   const col = BODY[Math.floor(r() * BODY.length)], tc = TIER[spot.tier];
@@ -418,18 +424,18 @@ function buildTotem(s) {
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, color: TIER[s.tier], transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })); halo.scale.set(34, 34, 1); halo.position.y = 29; inner.add(halo);
   const ring = new THREE.Mesh(new THREE.TorusGeometry(8.5, .55, 10, 64), new THREE.MeshBasicMaterial({ color: TIER[s.tier] })); ring.position.y = 28; ring.rotation.x = Math.PI / 2.3; inner.add(ring);
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, 420, 24, 1, true), beamMat(TIER[s.tier])); beam.position.y = 28 + 210; inner.add(beam);
-  const mist = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, color: '#F4F1EA', transparent: true, depthWrite: false, opacity: .22 })); mist.scale.set(22, 15, 1); mist.position.y = 26; inner.add(mist);
+  const mist = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, color: '#F4F1EA', transparent: true, depthWrite: false, opacity: .22 })); mist.scale.set(22, 15, 1); mist.position.y = 26; mist.visible = false;
   const hit = new THREE.Mesh(MOBILE ? new THREE.CylinderGeometry(26, 26, 64, 8) : new THREE.CylinderGeometry(16, 16, 40, 8), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = MOBILE ? 26 : 20; hit.userData.spot = s; inner.add(hit); hits.push(hit);
   const t = { s, T, inner, orb, orbM, halo, ring, beam, mist, bar, post, mascot: null, lit: 0, target: 0, walk: rng(hash(s.id))() * 6 };
   totems.set(s.id, t); return t;
 }
 SPOTS.forEach(s => { const t = buildTotem(s); setLit(t, (VISITS[s.id] || 0) > 0, true); });
 function setLit(t, on, instant) { t.target = on ? 1 : 0; if (instant) t.lit = t.target;
-  if (on && !t.mascot && t.s.tier !== 'Closed') { t.mascot = makeMascot(t.s); t.mascot.scale.setScalar(instant ? 3.4 : .001); t.mascot.userData.pop = instant ? 1 : 0; t.T.add(t.mascot); } }
+  if (on && !t.mascot && t.s.tier !== 'Closed') { t.mascot = mascotOf(t.s); t.mascot.scale.setScalar(instant ? 3.4 : .001); t.mascot.userData.pop = instant ? 1 : 0; t.mascot.position.set(t.s.x + 42, 0, t.s.z); scene.add(t.mascot); } }
 function applyLit(t) { const k = t.lit, c = new THREE.Color(TIER[t.s.tier]);
   t.orb.userData.mats.forEach(({ m, c: rc }) => m.color.copy(GREY).lerp(rc, .3 + .7 * k)); t.halo.material.opacity = .5 * k;
   t.ring.visible = k > .02; t.ring.scale.setScalar(.6 + .4 * k); t.beam.visible = k > .02; t.beam.scale.y = Math.max(.001, k); t.beam.position.y = 28 + 210 * k;
-  t.mist.material.opacity = .22 * (1 - k); t.mist.visible = k < .98; t.bar.material = k > .5 ? t.bar.material : t.bar.material; t.post.material = k > .5 ? WOOD : GREYW; }
+  t.mist.visible = false; t.bar.material = k > .5 ? t.bar.material : t.bar.material; t.post.material = k > .5 ? WOOD : GREYW; }
 totems.forEach(applyLit);
 
 /* ---------------- fantasy life: lanterns, glow mushrooms, crystals, reeds, windmills, waterwheels, moon, aurora ---------------- */
@@ -525,9 +531,13 @@ const PICKETS = [];
   } }
 const DRAGONS = [];
 { const LEG = SPOTS.filter(s => s.tier === 'Legendary'), CC = [['#E0B13A', '#FFF1C1', '#B8352B'], ['#C8463D', '#F6D6A8', '#F5CF4A'], ['#3F7FC8', '#DDEBFF', '#F5CF4A']];
-  LEG.forEach((s, i) => { const d = makeDragon(...CC[i % CC.length]); d.scale.setScalar(2.6); scene.add(d); DRAGONS.push({ d, cx: s.x, cz: s.z, R: 210 + i * 30, h: 250 + i * 40, a: i * 2, sp: .16 + i * .02 }); });
-  const big = makeDragon('#3FA672', '#F3E3A0', '#F5CF4A'); big.scale.setScalar(3.2); scene.add(big); DRAGONS.push({ d: big, cx: 0, cz: -700, R: 950, h: 520, a: 1, sp: .055 }); }
-function flyDragons(dt, T) { DRAGONS.forEach((o, i) => { o.a += o.sp * dt; const x = o.cx + Math.cos(o.a) * o.R, z = o.cz + Math.sin(o.a) * o.R, y = o.h + Math.sin(o.a * 3 + i) * 25;
+  LEG.forEach((s, i) => { const d = makeDragon(...CC[i % CC.length]); d.scale.setScalar(2.6); d.visible = false; scene.add(d); DRAGONS.push({ d, sid: s.id, cx: s.x, cz: s.z, R: 210 + i * 30, h: 250 + i * 40, a: i * 2, sp: .16 + i * .02 }); });
+  const big = makeDragon('#3FA672', '#F3E3A0', '#F5CF4A'); big.scale.setScalar(3.2); big.visible = false; scene.add(big); DRAGONS.push({ d: big, big: true, cx: 0, cz: -700, R: 950, h: 520, a: 1, sp: .055 }); }
+function flyDragons(dt, T) { const anyLeg = SPOTS.some(sp => sp.tier === 'Legendary' && VISITS[sp.id] > 0);
+  DRAGONS.forEach((o, i) => { const on = o.big ? anyLeg : VISITS[o.sid] > 0;
+  if (!on) { o.on = false; o.d.visible = false; return; } if (!o.on) { o.on = true; o.arr = 0; o.d.visible = true; }
+  o.a += o.sp * dt; const x = o.cx + Math.cos(o.a) * o.R, z = o.cz + Math.sin(o.a) * o.R, y = o.h + Math.sin(o.a * 3 + i) * 25;
+  if (o.arr < 1) { o.arr = Math.min(1, o.arr + dt / 7); animBusy = true; const k = ease(o.arr); o.d.position.set(x + (1 - k) * 2200, y + (1 - k) * 900, z - (1 - k) * 2200); } else
   o.d.position.set(x, y, z); o.d.rotation.y = Math.atan2(-Math.sin(o.a), Math.cos(o.a)); o.d.rotation.z = -.32; o.d.rotation.x = Math.cos(o.a * 3 + i) * .08;
   const glide = (Math.sin(T * .35 + i * 2) + 1) / 2, flap = Math.sin(T * 3.2 + i) * (.15 + .55 * glide);
   o.d.userData.wings[0].rotation.z = flap; o.d.userData.wings[1].rotation.z = -flap; o.d.userData.tail.forEach((sg, k) => sg.rotation.y = Math.sin(T * 1.6 - k * .55 + i) * .16); o.d.userData.head.rotation.x = Math.sin(T * .9 + i) * .08; }); }
@@ -561,7 +571,7 @@ composer.addPass(new ShaderPass({ uniforms: { tDiffuse: { value: null } }, verte
 composer.addPass(new OutputPass());
 
 /* ---------------- camera: Pokémon GO tilt, drag to pan, pinch/scroll to zoom, right-drag to turn ---------------- */
-const controls = new MapControls(camera, canvas); controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
+const controls = new MapControls(camera, canvas); controls.touches = { ONE: THREE.TOUCH.PAN, TWO: -1 }; // two fingers handled by the custom gesture below
 Object.assign(controls, { enableDamping: true, dampingFactor: .08, minDistance: 140, maxDistance: 3600, maxPolarAngle: 1.36, minPolarAngle: .15, zoomSpeed: .9, panSpeed: .9, rotateSpeed: .5 });
 const HOME = { pos: new THREE.Vector3(260, 1050, 1250), tgt: new THREE.Vector3(80, 0, -60) };
 camera.position.set(-600, 4200, 4200); controls.target.copy(HOME.tgt); controls.update();
@@ -596,7 +606,10 @@ const pr3 = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDraw
 const ps = new THREE.Scene(); ps.add(new THREE.HemisphereLight('#FFF4E0', '#8A7A60', 1.6)); const pl = new THREE.DirectionalLight('#FFFFFF', 1.6); pl.position.set(10, 20, 30); ps.add(pl);
 const pc = new THREE.PerspectiveCamera(30, 1, 1, 200); pc.position.set(0, 12, 46); pc.lookAt(0, 6.5, 0);
 let pMascot = null;
-function portrait(s, spin) { if (pMascot) ps.remove(pMascot); pMascot = makeMascot(s); pMascot.rotation.y = spin || -.35; ps.add(pMascot); pr3.render(ps, pc); return pr3.domElement; }
+function portrait(s, spin) { if (pMascot) ps.remove(pMascot); pMascot = mascotOf(s); pMascot.rotation.y = 0; ps.add(pMascot);
+  const bx = new THREE.Box3().setFromObject(pMascot), sz = bx.getSize(new THREE.Vector3()), cy = (bx.min.y + bx.max.y) / 2, span = Math.max(sz.y, sz.x * .9, 8) * 1.18;
+  const dist = span / (2 * Math.tan(THREE.MathUtils.degToRad(pc.fov / 2))); pc.position.set(0, cy + span * .12, dist + sz.z / 2); pc.lookAt(0, cy, 0); pc.updateProjectionMatrix();
+  pMascot.rotation.y = spin || -.35; pr3.render(ps, pc); return pr3.domElement; }
 const thumbs = new Map();
 function thumb(s) { if (!thumbs.has(s.id)) { portrait(s, -.4); thumbs.set(s.id, pr3.domElement.toDataURL('image/png')); } return thumbs.get(s.id); }
 
@@ -700,7 +713,7 @@ drawer.addEventListener('click', e => { const a = e.target.closest('[data-addq]'
   if (pin) { PIN = { name: pin.dataset.pin.replace(/\b\w/g, m => m.toUpperCase()) }; drawer.classList.remove('on'); dOpen = null; document.getElementById('q').blur(); document.body.classList.add('pinning'); toast('Tap the map where it is'); } });
 function placePin(e) { mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); const hit = new THREE.Vector3();
   if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit)) return; const [lat, lng] = toLL(hit.x, hit.z); const name = PIN.name; PIN = null; document.body.classList.remove('pinning'); addPlace({ name, lat, lng }); }
-canvas.addEventListener('pointerup', e => { if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return; if (PIN) { placePin(e); return; } const s = pick(e); if (s) { flyToSpot(s); openSheet(s); } else { closeSheet(); if (dOpen) { drawer.classList.remove('on'); dOpen = null; document.getElementById('q').blur(); } } });
+canvas.addEventListener('pointerup', e => { if (G2used) return; if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return; if (PIN) { placePin(e); return; } const s = pick(e); if (s) { flyToSpot(s); openSheet(s); } else { closeSheet(); if (dOpen) { drawer.classList.remove('on'); dOpen = null; document.getElementById('q').blur(); } } });
 
 /* ---------------- live data: his real visits and scores (read-only) ---------------- */
 const decode = v => v == null ? null : 'stringValue' in v ? v.stringValue : 'integerValue' in v ? +v.integerValue : 'doubleValue' in v ? v.doubleValue : 'booleanValue' in v ? v.booleanValue : 'arrayValue' in v ? (v.arrayValue.values || []).map(decode) : 'mapValue' in v ? Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k, x]) => [k, decode(x)])) : null;
@@ -726,7 +739,7 @@ function rebuildLive(changed) {
   changed.forEach(id => { const d = RAW[id]; if (d && d.custom && !d.hidden && !totems.has(id)) addCustomSpot(id, d.custom); });
   changed.forEach(id => { const before = VISITS[id] || 0; computeLive(id, RAW[id] || {}); const t = totems.get(id); if (!t) return; const now = VISITS[id] || 0;
     if (now && !before) { setLit(t, true, firstSnap); if (!firstSnap) { burst(t.T.position, TIER[t.s.tier]); toast(`${esc(t.s.n)} joined your crew!`); } }
-    else if (!now && before) { t.target = 0; if (t.mascot) { t.T.remove(t.mascot); t.mascot = null; } }
+    else if (!now && before) { t.target = 0; if (t.mascot) { scene.remove(t.mascot); if (t.mascot.userData.emo) scene.remove(t.mascot.userData.emo); t.mascot = null; } }
     else if (!firstSnap && level(now) > level(before)) { burst(t.T.position, '#FFE48A'); toast(`${abilityOf(t.s).n} reached Lv ${level(now)}!`); } });
   totems.forEach(applyLit); lblEls.forEach(el => el.remove()); lblEls.clear(); syncLabels(hover);
   if (cur) { const sb = $('#scoresBox'); if (sb) sb.innerHTML = scoresHTML(cur); if (!EDIT[cur.id]) renderVisits(cur); }
@@ -801,7 +814,7 @@ async function saveSpot(s) { if (!EDITOR || (!fdb && !DRY)) return; const base =
   const keep = new Set(clean.map(v => v.id)), lost = ((base.visits) || []).filter(v => !keep.has(v.id) && !DELETED.has(v.id));
   if (lost.length) { vstat('Not saved: that would drop a visit. Close the card and try again.'); return; }
   const body = JSON.parse(JSON.stringify({ visits: clean, want: clean.length ? false : !!base.want, hidden: !!base.hidden, edit: base.edit || null, custom: base.custom || null, updatedAt: new Date().toISOString() }));
-  if (DRY) { window.__lastBody = body; vstat('Saved ✓ (test mode, nothing written)'); return; }
+  if (DRY) { window.__lastBody = body; RAW[s.id] = Object.assign({}, base, body); rebuildLive([s.id]); vstat('Saved ✓ (test mode, nothing written)'); return; }
   try { await fdb.doc('spots/' + s.id).set(body); vstat('Saved ✓ · live on every device'); } catch (e) { vstat(/permission|denied/i.test(String(e.code || e.message)) ? 'This device can\'t save: open your edit link once' : 'Couldn\'t reach the cloud. Try again in a moment.'); } }
 /* ---------------- comments: private notes/<id> {byVisit:{visitId:text}}, editors only (same as the live app) ---------------- */
 const NOTES = {}, NOTES_FAIL = new Set(); let noteT = null;
@@ -839,6 +852,113 @@ sheet.addEventListener('click', e => { if (!EDITOR || !cur) return; const vEl = 
   if (e.target.closest('.dk')) { const d = v.dishes[+e.target.closest('.dish').dataset.i]; if (d.kind === 'drink') delete d.kind; else d.kind = 'drink'; delete v._touched; renderVisits(cur); queueSave(cur); return; }
   if (e.target.closest('.dx')) { v.dishes.splice(+e.target.closest('.dish').dataset.i, 1); delete v._touched; renderVisits(cur); queueSave(cur); return; }
   if (e.target.closest('.vdel')) { if (!confirm('Delete this visit and its scores?')) return; if (NEWV && NEWV.id === v.id) NEWV = null; DELETED.add(v.id); EDIT[cur.id] = ed.filter(x => x !== v); renderVisits(cur); queueSave(cur); } });
+/* ---------------- crew life: roam to friends, meet, interact; one small slow event at a time ---------------- */
+const EMO = {};
+const emoTex = e => EMO[e] || (EMO[e] = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+  x.fillStyle = '#FFFDF6'; x.strokeStyle = '#2B2622'; x.lineWidth = 5; x.beginPath(); x.arc(64, 56, 44, 0, 7); x.fill(); x.stroke();
+  x.beginPath(); x.moveTo(54, 96); x.lineTo(64, 120); x.lineTo(74, 96); x.closePath(); x.fill(); x.stroke(); x.fillRect(52, 90, 24, 9);
+  x.font = '56px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(e, 64, 60);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })());
+function emote(m, e, dur = 3) { const u = m.userData; if (!u.emo) { u.emo = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false })); u.emo.scale.set(24, 24, 1); u.emo.renderOrder = 3; scene.add(u.emo); }
+  u.emo.material.map = emoTex(e); u.emo.material.needsUpdate = true; u.emo.visible = true; u.emoT = dur; }
+const ACTS = [['greet', '❤️'], ['chase', '✨'], ['dance', '🎵'], ['snack', '🍡'], ['nap', '💤']];
+let MEETS = 0;
+const EVT = { on: false, nextIn: 300 + Math.random() * 180, t: 0, dur: 45, type: '', x: 0, z: 0, members: [], label: '', path: null };
+function aiOf(t) { const u = t.mascot.userData; if (!u.ai) u.ai = { st: 'idle', tm: 3 + Math.random() * 6, ang: Math.random() * 6.28, tx: t.s.x, tz: t.s.z, cd: 6 + Math.random() * 6, partner: null, back: false }; return u.ai; }
+const goTo = (a, x, z, st = 'walk') => { a.st = st; a.tx = x; a.tz = z; };
+const faceTo = (m, x, z, dt, k = 5) => { const yaw = Math.atan2(x - m.position.x, z - m.position.z); let d = (yaw - m.rotation.y) % (Math.PI * 2); if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2; m.rotation.y += d * Math.min(1, dt * k); };
+const resetPose = m => { const b = m.userData.body; b.rotation.set(0, 0, 0); b.scale.set(1, 1, 1); };
+function endMeet(t) { const a = aiOf(t); if (a.lead) MEETS--; a.lead = false; a.partner = null; a.cd = 22 + Math.random() * 15; resetPose(t.mascot); goTo(a, t.s.x + 42, t.s.z); }
+function startMeet(t, o) { const a = aiOf(t), b = aiOf(o), act = ACTS[hash(t.s.id + o.s.id) % ACTS.length], dur = act[0] === 'nap' ? 5 : 3.6;
+  const mx = (t.mascot.position.x + o.mascot.position.x) / 2, mz = (t.mascot.position.z + o.mascot.position.z) / 2, ang = Math.atan2(o.mascot.position.z - t.mascot.position.z, o.mascot.position.x - t.mascot.position.x);
+  [[t, a, o, -1], [o, b, t, 1]].forEach(([me, ai, other, sd]) => { ai.st = 'meet'; ai.partner = other; ai.act = act[0]; ai.tm = dur; ai.mx = mx; ai.mz = mz; ai.base = ang + (sd > 0 ? 0 : Math.PI); ai.sd = sd; ai.ph = 0; });
+  a.lead = true; MEETS++; emote(t.mascot, act[1], dur); if (act[0] === 'greet' || act[0] === 'snack') emote(o.mascot, act[1], dur); }
+function crewStep(t, dt, T, crew) { const m = t.mascot, a = aiOf(t), u = m.userData, B = u.body; a.cd -= dt;
+  if (a.st === 'idle') { a.ang += dt * .22; const x = t.s.x + Math.cos(a.ang) * 42, z = t.s.z + Math.sin(a.ang) * 42; m.position.x += (x - m.position.x) * Math.min(1, dt * 2); m.position.z += (z - m.position.z) * Math.min(1, dt * 2); faceTo(m, t.s.x + Math.cos(a.ang + .3) * 42, t.s.z + Math.sin(a.ang + .3) * 42, dt);
+    B.position.y = Math.abs(Math.sin(T * 3.2 + a.ang * 4)) * 1.2; a.tm -= dt;
+    if (a.tm < 0) { const others = crew.filter(o => o !== t && Math.hypot(o.s.x - t.s.x, o.s.z - t.s.z) < 750);
+      if (others.length && Math.random() < .7) { const w = others.map(o => o.s.tier === 'Legendary' ? 4 : o.s.tier === 'Unique' ? 2.5 : 1); let r = Math.random() * w.reduce((p, q) => p + q, 0), k = 0; while (k < w.length - 1 && (r -= w[k]) > 0) k++;
+        const o = others[k], an = Math.random() * 6.28; goTo(a, o.s.x + Math.cos(an) * 60, o.s.z + Math.sin(an) * 60); }
+      else { const an = Math.random() * 6.28, d = 80 + Math.random() * 120; goTo(a, t.s.x + Math.cos(an) * d, t.s.z + Math.sin(an) * d); }
+      a.back = true; } }
+  else if (a.st === 'walk' || a.st === 'gather') { const dx = a.tx - m.position.x, dz = a.tz - m.position.z, d = Math.hypot(dx, dz), spd = a.st === 'gather' ? 26 : 16;
+    if (d < 4) { if (a.st === 'gather') a.st = 'event'; else if (a.back) { a.back = false; a.tm = 4 + Math.random() * 5; a.st = 'linger'; } else { a.st = 'idle'; a.tm = 9 + Math.random() * 12; a.ang = Math.atan2(m.position.z - t.s.z, m.position.x - t.s.x); } }
+    else { const st = Math.min(d, spd * dt); m.position.x += dx / d * st; m.position.z += dz / d * st; faceTo(m, a.tx, a.tz, dt); B.position.y = Math.abs(Math.sin(T * 7 + a.ang)) * 2; } }
+  else if (a.st === 'linger') { B.position.y = Math.abs(Math.sin(T * 2 + a.ang)) * .8; a.tm -= dt; if (a.tm < 0) goTo(a, t.s.x + 42, t.s.z); }
+  else if (a.st === 'meet') { const o = a.partner; a.tm -= dt; a.ph += dt;
+    if (a.act === 'chase') { const an = a.base + a.ph * 1.5; m.position.x = a.mx + Math.cos(an) * 16; m.position.z = a.mz + Math.sin(an) * 16; m.rotation.y = -an; B.position.y = Math.abs(Math.sin(T * 8)) * 2.4; }
+    else { const tx = a.mx + Math.cos(a.base + Math.PI) * 13, tz = a.mz + Math.sin(a.base + Math.PI) * 13; m.position.x += (tx - m.position.x) * Math.min(1, dt * 3); m.position.z += (tz - m.position.z) * Math.min(1, dt * 3);
+      if (a.act === 'dance') { m.rotation.y += dt * 3.2; B.position.y = Math.abs(Math.sin(T * 5)) * 1.6; }
+      else { faceTo(m, o.mascot.position.x, o.mascot.position.z, dt, 6);
+        if (a.act === 'greet') B.position.y = Math.abs(Math.sin(T * 6 + a.sd)) * 4;
+        else if (a.act === 'snack') B.position.y = Math.abs(Math.sin(T * 3)) * .8;
+        else if (a.act === 'nap') { B.position.y = 0; B.rotation.z += ((a.sd * .55) - B.rotation.z) * Math.min(1, dt * 3); B.scale.y = .92 + Math.sin(T * 1.5) * .03; } } }
+    if (a.tm < 0) endMeet(t); }
+  else if (a.st === 'event') eventPose(t, a, dt, T);
+  if (!EVT.on && a.cd < 0 && MEETS < 3 && (a.st === 'walk' || a.st === 'linger' || a.st === 'idle')) for (const o of crew) { if (o === t || !o.mascot) continue; const b = aiOf(o);
+    if (b.cd >= 0 || !(b.st === 'walk' || b.st === 'linger' || b.st === 'idle')) continue;
+    if (Math.hypot(o.mascot.position.x - m.position.x, o.mascot.position.z - m.position.z) < 46) { startMeet(t, o); break; } }
+  if (u.emo) { if (u.emoT > 0) { u.emoT -= dt; u.emo.visible = true; u.emo.position.set(m.position.x, 64 + Math.sin(T * 3) * 1.5, m.position.z); u.emo.material.opacity = Math.min(1, u.emoT * 2); } else u.emo.visible = false; } }
+// events: one at a time, every ~5-8 min of active viewing, 3+ creatures, calm; a small chip at the top can fly the camera there
+const EVINFO = { picnic: ['🍡', 'Picnic at '], festival: ['🏮', 'Festival at '], music: ['🎵', 'Music night at '], parade: ['🎉', 'Stroll parade downtown'], nap: ['💤', 'Nap time at '] };
+function eventPose(t, a, dt, T) { const m = t.mascot, B = t.mascot.userData.body, i = EVT.members.indexOf(t), n = EVT.members.length;
+  if (EVT.type === 'parade') { if (!EVT.path) return; const sAt = EVT.t * 14 - i * 26, P = pathAt(EVT.path, Math.max(0, sAt)); m.position.x += (P[0] - m.position.x) * Math.min(1, dt * 4); m.position.z += (P[1] - m.position.z) * Math.min(1, dt * 4);
+    faceTo(m, P[2], P[3], dt); B.position.y = Math.abs(Math.sin(T * 6 + i)) * 2.2; return; }
+  const R = EVT.type === 'festival' ? 62 : EVT.type === 'music' ? 46 : 32, spin = EVT.type === 'festival' ? EVT.t * .22 : 0, an = i / n * Math.PI * 2 + spin;
+  const tx = EVT.x + Math.cos(an) * R, tz = EVT.z + Math.sin(an) * R; m.position.x += (tx - m.position.x) * Math.min(1, dt * 2); m.position.z += (tz - m.position.z) * Math.min(1, dt * 2);
+  if (EVT.type === 'festival') { faceTo(m, EVT.x + Math.cos(an + .3) * R, EVT.z + Math.sin(an + .3) * R, dt); B.position.y = Math.abs(Math.sin(T * 3 + i)) * 1.8; }
+  else if (EVT.type === 'music') { faceTo(m, EVT.x, EVT.z, dt); B.rotation.z = Math.sin(T * 2.4 + i) * .14; B.position.y = Math.abs(Math.sin(T * 4.8 + i)) * 1.2; }
+  else if (EVT.type === 'nap') { faceTo(m, EVT.x, EVT.z, dt); B.position.y = 0; B.rotation.z += ((i % 2 ? .5 : -.5) - B.rotation.z) * Math.min(1, dt * 2); B.scale.y = .92 + Math.sin(T * 1.4 + i) * .03; }
+  else { faceTo(m, EVT.x, EVT.z, dt); B.position.y = Math.abs(Math.sin(T * 1.5 + i)) * .5; } }
+function pathAt(P, d) { let k = 0; while (k < P.cum.length - 1 && P.cum[k + 1] < d) k++; if (k >= P.pts.length - 1) { const a = P.pts[P.pts.length - 2], b = P.pts[P.pts.length - 1]; return [b[0], b[1], b[0] * 2 - a[0], b[1] * 2 - a[1]]; }
+  const a = P.pts[k], b = P.pts[k + 1], f = (d - P.cum[k]) / Math.max(1e-6, P.cum[k + 1] - P.cum[k]); return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, b[0], b[1]]; }
+function startEvent(crew, force) { const cx = crew.reduce((p, t) => p + t.mascot.position.x, 0) / crew.length, cz = crew.reduce((p, t) => p + t.mascot.position.z, 0) / crew.length, near = (x, z) => Math.hypot(x - cx, z - cz);
+  const opts = [], parks = MARKS.filter(m => m.c === 'park' && near(m.x, m.z) < 1300).sort((a, b) => near(a.x, a.z) - near(b.x, b.z));
+  if (parks.length) { opts.push(['picnic', parks[0].x, parks[0].z, parks[0].n]); opts.push(['nap', (parks[1] || parks[0]).x, (parks[1] || parks[0]).z, (parks[1] || parks[0]).n]); }
+  const leg = crew.filter(t => t.s.tier === 'Legendary'); if (leg.length) opts.push(['festival', leg[0].s.x, leg[0].s.z, leg[0].s.n, leg[0]]);
+  const mus = SPOTS.filter(s => (s.ent || []).some(e => e.type === 'live-music') && near(s.x, s.z) < 1500).sort((a, b) => near(a.x, a.z) - near(b.x, b.z)); if (mus.length) opts.push(['music', mus[0].x, mus[0].z, mus[0].n]);
+  const road = (G.roads || []).filter(r => ['primary', 'secondary', 'tertiary'].includes(r.c) && r.pts.length > 3).map(r => { let L = 0; const cum = [0]; for (let k = 1; k < r.pts.length; k++) { L += Math.hypot(r.pts[k][0] - r.pts[k - 1][0], r.pts[k][1] - r.pts[k - 1][1]); cum.push(L); } return { pts: r.pts, cum, L, d: near(r.pts[0][0], r.pts[0][1]) }; }).filter(r => r.L > 350 && r.d < 900).sort((a, b) => a.d - b.d)[0];
+  if (road) opts.push(['parade', road.pts[0][0], road.pts[0][1], '', null, road]);
+  const pick = (force && opts.find(o => o[0] === force)) || opts[Math.floor(Math.random() * opts.length)]; if (!pick) return false;
+  const [type, x, z, name, shrine, path] = pick; Object.assign(EVT, { on: true, t: 0, dur: 38 + Math.random() * 18, type, x, z, path: path || null, shrine: shrine || null, label: EVINFO[type][1] + (name || '') });
+  crew.forEach(t => { const a = aiOf(t); if (a.st === 'meet') endMeet(t); });
+  EVT.members = crew.slice().sort((p, q) => Math.hypot(p.mascot.position.x - x, p.mascot.position.z - z) - Math.hypot(q.mascot.position.x - x, q.mascot.position.z - z)).filter(t => Math.hypot(t.mascot.position.x - x, t.mascot.position.z - z) < 900).slice(0, 6);
+  if (EVT.members.length < 2) { EVT.on = false; return false; }
+  EVT.members.forEach(t => { const a = aiOf(t); resetPose(t.mascot); if (type === 'parade') a.st = 'event'; else goTo(a, x + (Math.random() - .5) * 40, z + (Math.random() - .5) * 40, 'gather'); });
+  if (EVT.shrine) { EVT.shrine.halo.material.opacity = .9; }
+  const chip = $('#evchip'); chip.textContent = EVINFO[type][0] + ' ' + EVT.label; chip.classList.add('on'); return true; }
+function endEvent() { EVT.members.forEach(t => { if (!t.mascot) return; const a = aiOf(t); resetPose(t.mascot); a.cd = 20; goTo(a, t.s.x + 42, t.s.z); });
+  if (EVT.shrine) applyLit(EVT.shrine); EVT.on = false; EVT.members = []; EVT.nextIn = 300 + Math.random() * 180; $('#evchip').classList.remove('on'); }
+function eventTick(dt, T, crew) {
+  if (!EVT.on) { if (crew.length >= 3) { EVT.nextIn -= dt; if (EVT.nextIn <= 0) { if (!startEvent(crew)) EVT.nextIn = 120; } } return; }
+  EVT.t += dt; EVT.members = EVT.members.filter(t => t.mascot);
+  if (EVT.type !== 'parade' && Math.random() < dt * .25) { const m = EVT.members[Math.floor(Math.random() * EVT.members.length)]; if (m) emote(m.mascot, EVINFO[EVT.type][0], 2.6); }
+  if (EVT.t > EVT.dur) endEvent(); }
+/* ---------------- two-finger gesture (phone), Google-Maps style ---------------- */
+const GROUND = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), YAX = new THREE.Vector3(0, 1, 0);
+const GP = new Map(); let G2 = null, G2used = false; const GIN = { v: new THREE.Vector3(), w: 0, t: 0, P: new THREE.Vector3() };
+const groundAt = (x, y) => { mouse.set(x / innerWidth * 2 - 1, -(y / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); const q = new THREE.Vector3(); return ray.ray.intersectPlane(GROUND, q) ? q : null; };
+const g2State = () => { const [a, b] = [...GP.values()]; return { cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, d: Math.hypot(b.x - a.x, b.y - a.y), ang: Math.atan2(b.y - a.y, b.x - a.x), t: performance.now() }; };
+function rotAround(P, th) { camera.position.sub(P).applyAxisAngle(YAX, th).add(P); controls.target.sub(P).applyAxisAngle(YAX, th).add(P); camera.lookAt(controls.target); }
+canvas.addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') return; GP.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (GP.size === 2) { G2 = Object.assign(g2State(), { tw: 0, unlock: false }); G2used = true; fly.t = 1; GIN.t = 0; GIN.v.set(0, 0, 0); GIN.w = 0; } }, true);
+addEventListener('pointermove', e => { if (!GP.has(e.pointerId)) return; GP.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (GP.size !== 2 || !G2) return; poke();
+  const n = g2State(), dts = Math.max(.008, (n.t - G2.t) / 1000);
+  // (a) pan: the ground point under the old centroid follows the fingers
+  const p0 = groundAt(G2.cx, G2.cy), p1 = groundAt(n.cx, n.cy), dv = new THREE.Vector3(); if (p0 && p1) { dv.copy(p0).sub(p1); dv.y = 0; camera.position.add(dv); controls.target.add(dv); }
+  const P = groundAt(n.cx, n.cy);
+  // (b) pinch: dolly toward the point under the fingers, clamped
+  if (P && G2.d > 12 && n.d > 12) { const dist = camera.position.distanceTo(controls.target), want = THREE.MathUtils.clamp(dist * G2.d / n.d, controls.minDistance, controls.maxDistance), f = want / dist;
+    if (Math.abs(f - 1) > 1e-4) { camera.position.sub(P).multiplyScalar(f).add(P); controls.target.sub(P).multiplyScalar(f).add(P); controls.target.y = 0; } }
+  // (c) twist: orbit around the fingers' ground point, 1:1, after a small dead-zone
+  let da = n.ang - G2.ang; if (da > Math.PI) da -= Math.PI * 2; if (da < -Math.PI) da += Math.PI * 2; G2.tw += da; let th = 0;
+  if (!G2.unlock && Math.abs(G2.tw) > .09) G2.unlock = true; else if (G2.unlock && P) { th = da; rotAround(P, th); }
+  GIN.v.lerp(dv.clone().divideScalar(dts), .5); GIN.w = GIN.w * .5 + (th / dts) * .5; if (P) GIN.P.copy(P);
+  controls.update(); Object.assign(G2, { cx: n.cx, cy: n.cy, d: n.d, ang: n.ang, t: n.t }); }, true);
+const g2end = e => { if (!GP.has(e.pointerId)) return; GP.delete(e.pointerId); if (GP.size < 2 && G2) { G2 = null; GIN.t = .4; GIN.w = THREE.MathUtils.clamp(GIN.w * .4, -1.2, 1.2); } if (!GP.size) setTimeout(() => { G2used = false; }, 0); };
+addEventListener('pointerup', g2end, true); addEventListener('pointercancel', g2end, true);
+function gestureInertia(dt) { if (GIN.t <= 0) return; GIN.t -= dt; const k = Math.max(0, GIN.t / .4) ** 2; animBusy = true;
+  const dv = GIN.v.clone().multiplyScalar(dt * k); camera.position.add(dv); controls.target.add(dv); if (Math.abs(GIN.w) > .01) rotAround(controls.target.clone(), GIN.w * dt * k); }
 /* ---------------- loop ---------------- */
 let dockSeen; function syncDock() { if (dockSeen === dOpen) return; dockSeen = dOpen; document.querySelectorAll('.dock [data-d]').forEach(b => b.classList.toggle('on', b.dataset.d === dOpen)); }
 const clock = new THREE.Clock(); let introT = 0;
@@ -850,6 +970,7 @@ const poke = () => { lastAct = performance.now(); if (sleeping && !document.hidd
 ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, poke, { passive: true }));
 document.addEventListener('visibilitychange', () => { if (!document.hidden) poke(); });
 syncLabels();
+const CREW_BUF = [];
 function frame(now = performance.now()) {
   if (document.hidden) { sleeping = true; return; }
   const idle = now - lastAct, busy = introT < 1 || fly.t < 1 || bursts.length || animBusy, gap = busy || idle < 4000 ? 0 : 33; // stays at ~30 fps so dragons never look choppy
@@ -857,23 +978,25 @@ function frame(now = performance.now()) {
   const dt = Math.min(clock.getDelta(), .1), T = clock.elapsedTime;
   if (introT < 1) { introT = Math.min(1, introT + dt / INTRO_DUR); const k = ease(introT); camera.position.lerpVectors(new THREE.Vector3(-600, 4200, 4200), HOME.pos, k); if (introT >= 1) controls.update(); }
   else if (fly.t < 1) { fly.t = Math.min(1, fly.t + dt / fly.dur); const k = ease(fly.t); camera.position.lerpVectors(fly.fp, fly.tp, k); controls.target.lerpVectors(fly.ft, fly.tt, k); }
-  controls.update();
+  gestureInertia(dt); controls.update();
   waveTex.offset.x = T * .004; waveTex.offset.y = T * .0015;
-  totems.forEach(t => { if (Math.abs(t.lit - t.target) > .001) { animBusy = true; t.lit += (t.target - t.lit) * Math.min(1, dt * 1.6); applyLit(t); }
+  const CREW = CREW_BUF; totems.forEach(t => { if (Math.abs(t.lit - t.target) > .001) { animBusy = true; t.lit += (t.target - t.lit) * Math.min(1, dt * 1.6); applyLit(t); }
     t.ring.rotation.z += dt * .6; t.beam.material.uniforms.t.value = T; t.orb.position.y = 23 + Math.sin(T * 1.4 + t.walk) * .8; t.orb.rotation.y += dt * .45;
     if (t.mascot) { const m = t.mascot; if (m.userData.pop < 1) { animBusy = true; m.userData.pop = Math.min(1, m.userData.pop + dt / .9); m.scale.setScalar(3.4 * Math.max(.001, backOut(m.userData.pop))); }
-      t.walk += dt * .22; const R = 42; m.position.set(Math.cos(t.walk) * R, 0, Math.sin(t.walk) * R); m.rotation.y = -t.walk; // strolls around its shrine
-      m.userData.body.position.y = Math.abs(Math.sin(T * 3.2 + t.walk * 4)) * 1.6; m.children.forEach(c => { if (c.userData.spin) c.rotation.z += dt * c.userData.spin; }); } });
+      CREW.push(t); if (m.userData.tick) m.userData.tick(dt, T); m.children.forEach(c => { if (c.userData.spin) c.rotation.z += dt * c.userData.spin; }); } });
+  CREW.forEach(t => crewStep(t, dt, T, CREW)); eventTick(dt, T, CREW); CREW.length = 0;
+  { const kpx = 44 * .768 / innerHeight; BADGES.forEach(b => { const d = camera.position.distanceTo(b.position); b.scale.setScalar(Math.min(30, d * kpx)); }); }
   PICKETS.forEach(g => { g.position.y = Math.abs(Math.sin(T * 2.2 + g.userData.k * 1.3)) * 2.5; g.rotation.z = Math.sin(T * 2.2 + g.userData.k) * .05; });
   flyDragons(dt, T); fantasyTick(dt, T); ISLES.forEach((g, i) => { g.position.y = g.userData.y + Math.sin(T * .25 + i) * 14; g.rotation.y += dt * .01; });
   clouds.children.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 4500) c.position.x = -4500; });
   const pa = pollen.geometry.attributes.position; for (let i = 0; i < PN; i++) { let y = pa.getY(i) + dt * 4; if (y > 170) y = 0; pa.setY(i, y); pa.setX(i, pa.getX(i) + Math.sin(T * .5 + i) * dt * 2); } pa.needsUpdate = true;
   for (let i = bursts.length - 1; i >= 0; i--) { const b = bursts[i]; b.t += dt; const p = b.m.geometry.attributes.position; for (let k = 0; k < p.count; k++) { p.setXYZ(k, p.getX(k) + b.v[k * 3] * dt, p.getY(k) + (b.v[k * 3 + 1] - b.t * 60) * dt, p.getZ(k) + b.v[k * 3 + 2] * dt); } p.needsUpdate = true; b.m.material.opacity = 1 - b.t / 1.6; if (b.t > 1.6) { scene.remove(b.m); bursts.splice(i, 1); } }
-  if (cur && pMascot && sheet.classList.contains('on')) { pMascot.rotation.y = -.25 + Math.sin(T * .8) * .55; pMascot.children[0].position.y = Math.abs(Math.sin(T * 3)) * 1.2; pr3.render(ps, pc); }
+  if (cur && pMascot && sheet.classList.contains('on')) { pMascot.rotation.y = -.25 + Math.sin(T * .8) * .55; if (pMascot.userData.tick) pMascot.userData.tick(dt, T); pMascot.children.forEach(c => { if (c.userData.spin) c.rotation.z += dt * c.userData.spin; }); pr3.render(ps, pc); }
   syncDock(); composer.render(); placeLabels(); requestAnimationFrame(frame);
 }
 addEventListener('resize', () => { poke(); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); });
 requestAnimationFrame(frame);
 setTimeout(() => $('#intro').classList.add('out'), SEEN ? 60 : 500);
-window.__ok = true; window.__view = (px, py, pz, tx, ty, tz) => flyTo(new THREE.Vector3(px, py, pz), new THREE.Vector3(tx, ty, tz), .1); window.__look = (x, z, d = 420) => flyTo(new THREE.Vector3(x + d * .6, d * .7, z + d * .8), new THREE.Vector3(x, 0, z), .1);
+window.__ok = true; window.__gt = { ground: (x, y) => { const q = groundAt(x, y); return q && [q.x, q.z]; }, screen: (x, z) => { const v = new THREE.Vector3(x, 0, z).project(camera); return [(v.x + 1) / 2 * innerWidth, (1 - v.y) / 2 * innerHeight]; }, az: () => Math.atan2(camera.position.x - controls.target.x, camera.position.z - controls.target.z), dist: () => camera.position.distanceTo(controls.target) }; window.__crew = { start: type => { const c = [...totems.values()].filter(t => t.mascot); return startEvent(c, type); }, stats: () => ({ crew: [...totems.values()].filter(t => t.mascot).length, meets: MEETS, evt: EVT.on ? EVT.label : null, nextIn: Math.round(EVT.nextIn), states: [...totems.values()].filter(t => t.mascot).map(t => aiOf(t).st), dragons: DRAGONS.map(o => !!o.d.visible) }), next: s => { EVT.nextIn = s; } };
+$('#evchip').addEventListener('click', () => { if (EVT.on) flyTo(new THREE.Vector3(EVT.x + 260, 320, EVT.z + 360), new THREE.Vector3(EVT.x, 0, EVT.z), 1.6); }); window.__view = (px, py, pz, tx, ty, tz) => flyTo(new THREE.Vector3(px, py, pz), new THREE.Vector3(tx, ty, tz), .1); window.__look = (x, z, d = 420) => flyTo(new THREE.Vector3(x + d * .6, d * .7, z + d * .8), new THREE.Vector3(x, 0, z), .1);
 </script></body></html>
