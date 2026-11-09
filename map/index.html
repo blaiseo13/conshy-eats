@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Conshy Eats</title>
-<script>/* stay fresh: reload when a newer build is on the site */(function(){var V='1794182771273';function chk(){try{fetch('version.txt?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){t=(t||'').trim();if(t&&t!==V&&location.search.indexOf('v='+t)<0){location.replace(location.pathname+'?v='+t+location.hash)}}).catch(function(){})}catch(e){}}chk();document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')chk()});setInterval(chk,300000)})();</script>
+<script>/* stay fresh: reload when a newer build is on the site */(function(){var V='1794182960033';function chk(){try{fetch('version.txt?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){t=(t||'').trim();if(t&&t!==V&&location.search.indexOf('v='+t)<0){location.replace(location.pathname+'?v='+t+location.hash)}}).catch(function(){})}catch(e){}}chk();document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')chk()});setInterval(chk,300000)})();</script>
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png?v=22">
 <link rel="icon" type="image/png" href="../icons/favicon-64.png?v=22">
@@ -192,10 +192,10 @@ body.pinning #c{cursor:crosshair}
 <aside class="drawer panel" id="drawer"></aside>
 <div class="toast panel" id="toast"></div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="../firebase-config.js?v=1794182771273"></script>
-<script src="geo.js?v=1794182771273"></script><script src="spots.js?v=1794182771273"></script><script src="photos.js?v=1794182771273" onerror="window.PHOTOS={}"></script>
-<script src="creatures.js?v=1794182771273"></script>
-<script src="pois.js?v=1794182771273" onerror="window.POIS=[]"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="../firebase-config.js?v=1794182960033"></script>
+<script src="geo.js?v=1794182960033"></script><script src="spots.js?v=1794182960033"></script><script src="photos.js?v=1794182960033" onerror="window.PHOTOS={}"></script>
+<script src="creatures.js?v=1794182960033"></script>
+<script src="pois.js?v=1794182960033" onerror="window.POIS=[]"></script>
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -1151,11 +1151,11 @@ applyCat(CAT);
 const SKYO = {}; // debug overrides (window.__sky)
 const ATM = { cur: null, tgt: null, sunDir: new THREE.Vector3(-.5, .8, .4).normalize(), sunTgt: new THREE.Vector3(-.5, .8, .4).normalize(), season: '', weather: 'clear', night: 0, holiday: '' };
 const PRESET = {
-  night:  { top: '#0B1530', mid: '#1B2A55', bot: '#2A3561', fog: '#1E2748', hs: '#5064A0', hg: '#1E2538', hi: .85, sc: '#A9BCFF', si: .8, ex: 1.0, bl: 1.05, lamp: 2.6, night: 1, stars: 1 },
+  night:  { top: '#13214A', mid: '#2A3C72', bot: '#3C4C84', fog: '#2E3B6A', hs: '#8496D8', hg: '#3A4566', hi: 1.45, sc: '#BFD0FF', si: 1.35, ex: 1.3, bl: 1.0, lamp: 2.6, night: 1, stars: 1 },
   dawn:   { top: '#6F8FC9', mid: '#F2B8A0', bot: '#FFD9B0', fog: '#F1CFB3', hs: '#FFE1C8', hg: '#5E6A4E', hi: .95, sc: '#FFB57A', si: 1.5, ex: 1.0, bl: .7, lamp: 1.1, night: .25, stars: .15 },
   day:    { top: '#86A3D6', mid: '#E8D5EA', bot: '#F0E2CB', fog: '#F0E2CB', hs: '#FFF4E0', hg: '#6B7A4F', hi: 1.15, sc: '#FFEFD2', si: 2.4, ex: 1.05, bl: .55, lamp: .35, night: 0, stars: 0 },
   golden: { top: '#7A8FCB', mid: '#F6C48E', bot: '#FFD39A', fog: '#F2C996', hs: '#FFE0B0', hg: '#6B5A40', hi: 1.0, sc: '#FFB466', si: 2.2, ex: 1.05, bl: .72, lamp: .7, night: .1, stars: 0 },
-  dusk:   { top: '#2F3C78', mid: '#C77A93', bot: '#F09A6A', fog: '#B97A80', hs: '#8C7FB0', hg: '#3A3448', hi: .78, sc: '#FF7E5A', si: 1.0, ex: .97, bl: .9, lamp: 1.9, night: .6, stars: .45 }
+  dusk:   { top: '#2F3C78', mid: '#C77A93', bot: '#F09A6A', fog: '#B97A80', hs: '#A094C4', hg: '#4A4258', hi: 1.0, sc: '#FF8A66', si: 1.25, ex: 1.08, bl: .9, lamp: 1.9, night: .6, stars: .45 }
 };
 const PKEYS = Object.keys(PRESET.day), isCol = k => typeof PRESET.day[k] === 'string';
 const mkP = p => Object.fromEntries(PKEYS.map(k => [k, isCol(k) ? new THREE.Color(p[k]) : p[k]]));
